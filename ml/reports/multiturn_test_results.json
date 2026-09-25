@@ -1,0 +1,281 @@
+[
+  {
+    "conversation_id": "multiturn_escalating_001",
+    "scenario": "gradual_escalation",
+    "turn_results": [
+      {
+        "turn_id": 1,
+        "score": 0.9999,
+        "predicted_scam": true,
+        "is_protective": false,
+        "expected_risk": "low",
+        "safety_brake_expected": false,
+        "status": "FP"
+      },
+      {
+        "turn_id": 2,
+        "score": 1.0,
+        "predicted_scam": true,
+        "is_protective": false,
+        "expected_risk": "medium",
+        "safety_brake_expected": false,
+        "status": "OK"
+      },
+      {
+        "turn_id": 3,
+        "score": 1.0,
+        "predicted_scam": true,
+        "is_protective": false,
+        "expected_risk": "high",
+        "safety_brake_expected": false,
+        "status": "OK"
+      },
+      {
+        "turn_id": 4,
+        "score": 1.0,
+        "predicted_scam": true,
+        "is_protective": false,
+        "expected_risk": "high",
+        "safety_brake_expected": false,
+        "status": "OK"
+      },
+      {
+        "turn_id": 5,
+        "score": 1.0,
+        "predicted_scam": true,
+        "is_protective": false,
+        "expected_risk": "critical",
+        "safety_brake_expected": true,
+        "status": "OK"
+      }
+    ]
+  },
+  {
+    "conversation_id": "multiturn_escalating_002",
+    "scenario": "otp_escalation",
+    "turn_results": [
+      {
+        "turn_id": 1,
+        "score": 0.0037,
+        "predicted_scam": false,
+        "is_protective": false,
+        "expected_risk": "low",
+        "safety_brake_expected": false,
+        "status": "OK"
+      },
+      {
+        "turn_id": 2,
+        "score": 0.162,
+        "predicted_scam": false,
+        "is_protective": false,
+        "expected_risk": "medium",
+        "safety_brake_expected": false,
+        "status": "OK"
+      },
+      {
+        "turn_id": 3,
+        "score": 0.0103,
+        "predicted_scam": false,
+        "is_protective": false,
+        "expected_risk": "high",
+        "safety_brake_expected": false,
+        "status": "MISS"
+      },
+      {
+        "turn_id": 4,
+        "score": 0.0103,
+        "predicted_scam": false,
+        "is_protective": false,
+        "expected_risk": "critical",
+        "safety_brake_expected": true,
+        "status": "MISS"
+      }
+    ]
+  },
+  {
+    "conversation_id": "multiturn_reversal_001",
+    "scenario": "victim_recognizes_scam",
+    "turn_results": [
+      {
+        "turn_id": 1,
+        "score": 0.9993,
+        "predicted_scam": true,
+        "is_protective": false,
+        "expected_risk": "high",
+        "safety_brake_expected": false,
+        "status": "OK"
+      },
+      {
+        "turn_id": 2,
+        "score": 0.9998,
+        "predicted_scam": true,
+        "is_protective": true,
+        "expected_risk": "high",
+        "safety_brake_expected": false,
+        "status": "OK"
+      },
+      {
+        "turn_id": 3,
+        "score": 0.9991,
+        "predicted_scam": true,
+        "is_protective": true,
+        "expected_risk": "high",
+        "safety_brake_expected": false,
+        "status": "OK"
+      },
+      {
+        "turn_id": 4,
+        "score": 0.9986,
+        "predicted_scam": true,
+        "is_protective": true,
+        "expected_risk": "low",
+        "safety_brake_expected": false,
+        "status": "CORRECT (protective)"
+      },
+      {
+        "turn_id": 5,
+        "score": 0.9986,
+        "predicted_scam": true,
+        "is_protective": true,
+        "expected_risk": "low",
+        "safety_brake_expected": false,
+        "status": "CORRECT (protective)"
+      }
+    ]
+  },
+  {
+    "conversation_id": "multiturn_slow_burn_001",
+    "scenario": "slow_trust_build",
+    "turn_results": [
+      {
+        "turn_id": 1,
+        "score": 0.9999,
+        "predicted_scam": true,
+        "is_protective": false,
+        "expected_risk": "low",
+        "safety_brake_expected": false,
+        "status": "FP"
+      },
+      {
+        "turn_id": 2,
+        "score": 0.9999,
+        "predicted_scam": true,
+        "is_protective": false,
+        "expected_risk": "low",
+        "safety_brake_expected": false,
+        "status": "FP"
+      },
+      {
+        "turn_id": 3,
+        "score": 0.9999,
+        "predicted_scam": true,
+        "is_protective": false,
+        "expected_risk": "low_medium",
+        "safety_brake_expected": false,
+        "status": "OK"
+      },
+      {
+        "turn_id": 4,
+        "score": 0.9999,
+        "predicted_scam": true,
+        "is_protective": false,
+        "expected_risk": "high",
+        "safety_brake_expected": false,
+        "status": "OK"
+      },
+      {
+        "turn_id": 5,
+        "score": 0.9999,
+        "predicted_scam": true,
+        "is_protective": false,
+        "expected_risk": "critical",
+        "safety_brake_expected": true,
+        "status": "OK"
+      }
+    ]
+  },
+  {
+    "conversation_id": "multiturn_direct_hindi_001",
+    "scenario": "direct_hindi_scam",
+    "turn_results": [
+      {
+        "turn_id": 1,
+        "score": 0.0048,
+        "predicted_scam": false,
+        "is_protective": false,
+        "expected_risk": "medium",
+        "safety_brake_expected": false,
+        "status": "OK"
+      },
+      {
+        "turn_id": 2,
+        "score": 0.9924,
+        "predicted_scam": true,
+        "is_protective": false,
+        "expected_risk": "high",
+        "safety_brake_expected": false,
+        "status": "OK"
+      },
+      {
+        "turn_id": 3,
+        "score": 0.3784,
+        "predicted_scam": false,
+        "is_protective": false,
+        "expected_risk": "high",
+        "safety_brake_expected": false,
+        "status": "MISS"
+      },
+      {
+        "turn_id": 4,
+        "score": 0.9987,
+        "predicted_scam": true,
+        "is_protective": false,
+        "expected_risk": "critical",
+        "safety_brake_expected": true,
+        "status": "OK"
+      }
+    ]
+  },
+  {
+    "conversation_id": "multiturn_direct_tanglish_001",
+    "scenario": "direct_tanglish_scam",
+    "turn_results": [
+      {
+        "turn_id": 1,
+        "score": 0.0008,
+        "predicted_scam": false,
+        "is_protective": false,
+        "expected_risk": "medium",
+        "safety_brake_expected": false,
+        "status": "OK"
+      },
+      {
+        "turn_id": 2,
+        "score": 0.0004,
+        "predicted_scam": false,
+        "is_protective": false,
+        "expected_risk": "high",
+        "safety_brake_expected": false,
+        "status": "MISS"
+      },
+      {
+        "turn_id": 3,
+        "score": 0.0002,
+        "predicted_scam": false,
+        "is_protective": true,
+        "expected_risk": "high",
+        "safety_brake_expected": false,
+        "status": "MISS"
+      },
+      {
+        "turn_id": 4,
+        "score": 0.0002,
+        "predicted_scam": false,
+        "is_protective": true,
+        "expected_risk": "critical",
+        "safety_brake_expected": true,
+        "status": "MISS"
+      }
+    ]
+  }
+]

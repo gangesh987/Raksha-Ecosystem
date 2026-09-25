@@ -1,0 +1,92 @@
+{
+  "dataset": "ml/datasets/final/val_conversations.jsonl",
+  "total_conversations": 181,
+  "brier_score": 0.18883139265193372,
+  "baseline_brier_score": 0.24596318793687613,
+  "brier_skill_score": 0.2323,
+  "expected_calibration_error": 0.1791,
+  "is_calibrated": false,
+  "recommendation": "ECE >= 0.10: Output is NOT well-calibrated. Document as 'model_score' in all user-facing text, reports, and API responses until calibration (e.g., Platt scaling or isotonic regression) is applied.",
+  "reliability_curve": [
+    {
+      "bin_lower": 0.0,
+      "bin_upper": 0.1,
+      "count": 45,
+      "mean_confidence": 0.0088,
+      "fraction_positives": 0.1333,
+      "calibration_error": 0.1245
+    },
+    {
+      "bin_lower": 0.1,
+      "bin_upper": 0.2,
+      "count": 6,
+      "mean_confidence": 0.1604,
+      "fraction_positives": 0.1667,
+      "calibration_error": 0.0063
+    },
+    {
+      "bin_lower": 0.2,
+      "bin_upper": 0.3,
+      "count": 2,
+      "mean_confidence": 0.2341,
+      "fraction_positives": 0.5,
+      "calibration_error": 0.266
+    },
+    {
+      "bin_lower": 0.3,
+      "bin_upper": 0.4,
+      "count": 1,
+      "mean_confidence": 0.3042,
+      "fraction_positives": 0.0,
+      "calibration_error": 0.3042
+    },
+    {
+      "bin_lower": 0.4,
+      "bin_upper": 0.5,
+      "count": 2,
+      "mean_confidence": 0.4843,
+      "fraction_positives": 0.5,
+      "calibration_error": 0.0157
+    },
+    {
+      "bin_lower": 0.5,
+      "bin_upper": 0.6,
+      "count": 3,
+      "mean_confidence": 0.5804,
+      "fraction_positives": 0.0,
+      "calibration_error": 0.5804
+    },
+    {
+      "bin_lower": 0.6,
+      "bin_upper": 0.7,
+      "count": 5,
+      "mean_confidence": 0.6329,
+      "fraction_positives": 0.2,
+      "calibration_error": 0.4329
+    },
+    {
+      "bin_lower": 0.7,
+      "bin_upper": 0.8,
+      "count": 3,
+      "mean_confidence": 0.735,
+      "fraction_positives": 0.3333,
+      "calibration_error": 0.4017
+    },
+    {
+      "bin_lower": 0.8,
+      "bin_upper": 0.9,
+      "count": 2,
+      "mean_confidence": 0.8132,
+      "fraction_positives": 1.0,
+      "calibration_error": 0.1868
+    },
+    {
+      "bin_lower": 0.9,
+      "bin_upper": 1.0,
+      "count": 65,
+      "mean_confidence": 0.9912,
+      "fraction_positives": 0.6769,
+      "calibration_error": 0.3143
+    }
+  ]
+}

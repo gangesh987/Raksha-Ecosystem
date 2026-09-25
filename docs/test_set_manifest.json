@@ -1,0 +1,36 @@
+{
+  "frozen": true,
+  "freeze_date": "2026-09-26",
+  "phase": "Phase 1 -> Phase 2 boundary",
+  "purpose": "FROZEN independent test set - NEVER modified for any metric improvement",
+  "file": "ml/datasets/final/test_conversations.jsonl",
+  "sha256": "6696db171f4e33d76ac01c622ee4c89ac71de9ffa07b137818e36f806bfa56a0",
+  "file_size_bytes": 674387,
+  "conversation_count": 182,
+  "turn_count": 1292,
+  "language_distribution": {
+    "en": 174,
+    "hi": 4,
+    "ta-Latn": 2,
+    "hi-Latn": 1,
+    "ta": 1
+  },
+  "scam_count": 102,
+  "benign_count": 80,
+  "phase1_metrics": {
+    "binary_accuracy": 0.7582,
+    "precision": 0.7339,
+    "recall": 0.8922,
+    "f1": 0.8053,
+    "confusion_matrix": {
+      "TP": 91,
+      "FP": 33,
+      "TN": 47,
+      "FN": 11
+    },
+    "tactic_micro_f1": 0.7179,
+    "tactic_macro_f1": 0.3943
+  },
+  "integrity_rule": "Any future evaluation MUST produce a hash matching this sha256 before proceeding. Do NOT retrain against this file. Do NOT modify labels. Do NOT add examples from this file to training data.",
+  "verification_command": "python -c \"import hashlib; print(hashlib.sha256(open('ml/datasets/final/test_conversations.jsonl','rb').read()).hexdigest())\""
+}

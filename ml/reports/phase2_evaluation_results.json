@@ -1,0 +1,445 @@
+{
+  "phase": "Phase 2",
+  "evaluation_date": "2026-09-26",
+  "frozen_test_set_verified": true,
+  "frozen_test_hash": "6696db171f4e33d76ac01c622ee4c89ac71de9ffa07b137818e36f806bfa56a0",
+  "adversarial_v2": {
+    "total": 70,
+    "neural": {
+      "precision": 1.0,
+      "recall": 0.7429,
+      "f1": 0.8525,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.2571,
+      "TP": 52,
+      "FP": 0,
+      "TN": 0,
+      "FN": 18
+    },
+    "rule_only": {
+      "precision": 1.0,
+      "recall": 0.6286,
+      "f1": 0.7719,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.3714,
+      "TP": 44,
+      "FP": 0,
+      "TN": 0,
+      "FN": 26
+    },
+    "hybrid": {
+      "precision": 1.0,
+      "recall": 0.9571,
+      "f1": 0.9781,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.0429,
+      "TP": 67,
+      "FP": 0,
+      "TN": 0,
+      "FN": 3
+    },
+    "per_category": {
+      "A_indirect_payment": {
+        "total": 5,
+        "neural_correct": 5,
+        "hybrid_correct": 5
+      },
+      "B_indirect_otp": {
+        "total": 5,
+        "neural_correct": 4,
+        "hybrid_correct": 5
+      },
+      "C_indirect_credential": {
+        "total": 5,
+        "neural_correct": 5,
+        "hybrid_correct": 5
+      },
+      "D_indirect_remote_access": {
+        "total": 5,
+        "neural_correct": 5,
+        "hybrid_correct": 5
+      },
+      "E_implied_authority": {
+        "total": 5,
+        "neural_correct": 5,
+        "hybrid_correct": 5
+      },
+      "F_fear_no_arrest": {
+        "total": 5,
+        "neural_correct": 5,
+        "hybrid_correct": 5
+      },
+      "G_urgency_no_keyword": {
+        "total": 5,
+        "neural_correct": 4,
+        "hybrid_correct": 4
+      },
+      "H_isolation_no_keyword": {
+        "total": 5,
+        "neural_correct": 5,
+        "hybrid_correct": 5
+      },
+      "I_polite_professional_scam": {
+        "total": 5,
+        "neural_correct": 4,
+        "hybrid_correct": 5
+      },
+      "J_code_switching": {
+        "total": 5,
+        "neural_correct": 2,
+        "hybrid_correct": 5
+      },
+      "K_tamil": {
+        "total": 5,
+        "neural_correct": 0,
+        "hybrid_correct": 3
+      },
+      "L_tanglish": {
+        "total": 5,
+        "neural_correct": 3,
+        "hybrid_correct": 5
+      },
+      "M_hindi": {
+        "total": 5,
+        "neural_correct": 4,
+        "hybrid_correct": 5
+      },
+      "N_hinglish": {
+        "total": 5,
+        "neural_correct": 1,
+        "hybrid_correct": 5
+      }
+    }
+  },
+  "hard_negatives": {
+    "total": 50,
+    "neural_false_positives": 37,
+    "neural_fpr": 0.74,
+    "rule_false_positives": 19,
+    "rule_fpr": 0.38,
+    "hybrid_false_positives": 31,
+    "hybrid_fpr": 0.62,
+    "per_category": {
+      "protective_negation": {
+        "total": 10,
+        "neural_fp": 9,
+        "hybrid_fp": 4
+      },
+      "bank_legitimate": {
+        "total": 5,
+        "neural_fp": 5,
+        "hybrid_fp": 5
+      },
+      "police_legitimate": {
+        "total": 3,
+        "neural_fp": 2,
+        "hybrid_fp": 3
+      },
+      "government_service": {
+        "total": 3,
+        "neural_fp": 3,
+        "hybrid_fp": 3
+      },
+      "it_support_legitimate": {
+        "total": 3,
+        "neural_fp": 3,
+        "hybrid_fp": 2
+      },
+      "upi_legitimate": {
+        "total": 3,
+        "neural_fp": 3,
+        "hybrid_fp": 2
+      },
+      "family_emergency": {
+        "total": 3,
+        "neural_fp": 1,
+        "hybrid_fp": 1
+      },
+      "security_training": {
+        "total": 3,
+        "neural_fp": 2,
+        "hybrid_fp": 1
+      },
+      "fraud_reporting": {
+        "total": 3,
+        "neural_fp": 1,
+        "hybrid_fp": 2
+      },
+      "scam_vocabulary_benign_context": {
+        "total": 5,
+        "neural_fp": 3,
+        "hybrid_fp": 5
+      },
+      "protective_hindi": {
+        "total": 3,
+        "neural_fp": 2,
+        "hybrid_fp": 2
+      },
+      "protective_tamil": {
+        "total": 2,
+        "neural_fp": 0,
+        "hybrid_fp": 0
+      },
+      "protective_tanglish": {
+        "total": 2,
+        "neural_fp": 2,
+        "hybrid_fp": 1
+      },
+      "protective_hinglish": {
+        "total": 2,
+        "neural_fp": 1,
+        "hybrid_fp": 0
+      }
+    }
+  },
+  "indic_holdout": {
+    "hi": {
+      "count": 8,
+      "neural": {
+        "precision": 0.6667,
+        "recall": 0.8,
+        "f1": 0.7273,
+        "false_positive_rate": 0.6667,
+        "false_negative_rate": 0.2,
+        "TP": 4,
+        "FP": 2,
+        "TN": 1,
+        "FN": 1
+      },
+      "hybrid": {
+        "precision": 0.7143,
+        "recall": 1.0,
+        "f1": 0.8333,
+        "false_positive_rate": 0.6667,
+        "false_negative_rate": 0.0,
+        "TP": 5,
+        "FP": 2,
+        "TN": 1,
+        "FN": 0
+      },
+      "sample_predictions": [
+        {
+          "text": "मैं CBI headquarters से बोल रहा हूं। आपके नाम पर एक गैरकानूनी पार्सल मिला है जिसमें नारकोटिक्स पाया ",
+          "label": true,
+          "neural": true,
+          "hybrid": true,
+          "score": 0.566
+        },
+        {
+          "text": "मैं SBI बैंक से बोल रहा हूं। आपके खाते में संदिग्ध गतिविधि पाई गई है। सत्यापन के लिए OTP बताइए। OTP ",
+          "label": true,
+          "neural": true,
+          "hybrid": true,
+          "score": 0.9999
+        },
+        {
+          "text": "ED ऑफिसर बोल रहा हूं। मनी लॉन्ड्रिंग केस में आपका नाम है। मामला बंद करने के लिए RBI clearance accoun",
+          "label": true,
+          "neural": true,
+          "hybrid": true,
+          "score": 0.9999
+        },
+        {
+          "text": "TRAI साइबर सेल। आपके फोन का उपयोग अवैध तरीके से हो रहा है। AnyDesk ऐप डाउनलोड करें। डाउनलोड कर लिया।",
+          "label": true,
+          "neural": false,
+          "hybrid": true,
+          "score": 0.2738
+        },
+        {
+          "text": "आपके आधार पर ड्रग्स तस्करी केस दर्ज है। यह मामला गोपनीय है। किसी परिवार वाले को मत बताना। मुझे डर लग",
+          "label": true,
+          "neural": true,
+          "hybrid": true,
+          "score": 0.9999
+        }
+      ]
+    },
+    "hi-Latn": {
+      "count": 5,
+      "neural": {
+        "precision": 0.6667,
+        "recall": 0.6667,
+        "f1": 0.6667,
+        "false_positive_rate": 0.5,
+        "false_negative_rate": 0.3333,
+        "TP": 2,
+        "FP": 1,
+        "TN": 1,
+        "FN": 1
+      },
+      "hybrid": {
+        "precision": 0.6667,
+        "recall": 0.6667,
+        "f1": 0.6667,
+        "false_positive_rate": 0.5,
+        "false_negative_rate": 0.3333,
+        "TP": 2,
+        "FP": 1,
+        "TN": 1,
+        "FN": 1
+      },
+      "sample_predictions": [
+        {
+          "text": "Main CBI officer bol raha hoon. Aapke naam par illegal drugs parcel pakda gaya hai. Bahut serious ma",
+          "label": true,
+          "neural": false,
+          "hybrid": false,
+          "score": 0.0004
+        },
+        {
+          "text": "Main SBI se call kar raha hoon. Account verify karne ke liye phone par aaya OTP batao. OTP aa gaya. ",
+          "label": true,
+          "neural": true,
+          "hybrid": true,
+          "score": 0.865
+        },
+        {
+          "text": "Customs officer bol raha hoon. Aapka parcel rok liya gaya - clearance ke liye 40,000 rupaye RBI acco",
+          "label": true,
+          "neural": true,
+          "hybrid": true,
+          "score": 1.0
+        },
+        {
+          "text": "Yaar, mujhe koi CBI wala bol raha tha arrest hogi. Mujhe lagta hai scam hai. Bilkul scam hai! CBI ka",
+          "label": false,
+          "neural": false,
+          "hybrid": false,
+          "score": 0.0016
+        },
+        {
+          "text": "HDFC customer care se bol raha hoon. Aapka credit card renewal due hai. Please branch visit karein -",
+          "label": false,
+          "neural": true,
+          "hybrid": true,
+          "score": 0.9995
+        }
+      ]
+    },
+    "ta": {
+      "count": 10,
+      "neural": {
+        "precision": 0.5,
+        "recall": 0.2,
+        "f1": 0.2857,
+        "false_positive_rate": 0.2,
+        "false_negative_rate": 0.8,
+        "TP": 1,
+        "FP": 1,
+        "TN": 4,
+        "FN": 4
+      },
+      "hybrid": {
+        "precision": 0.625,
+        "recall": 1.0,
+        "f1": 0.7692,
+        "false_positive_rate": 0.6,
+        "false_negative_rate": 0.0,
+        "TP": 5,
+        "FP": 3,
+        "TN": 2,
+        "FN": 0
+      },
+      "sample_predictions": [
+        {
+          "text": "நான் மும்பை சைபர் க்ரைம் டிபார்ட்மென்ட்டிலிருந்து பேசுகிறேன். உங்கள் ஆதார் கார்டில் சட்டவிரோத பரிவர்",
+          "label": true,
+          "neural": false,
+          "hybrid": true,
+          "score": 0.0002
+        },
+        {
+          "text": "நான் SBI பாங்க் அதிகாரி பேசுகிறேன். உங்கள் கணக்கில் சிக்கல் உள்ளது. சரிபார்ப்பிற்காக OTP சொல்லுங்கள்",
+          "label": true,
+          "neural": false,
+          "hybrid": true,
+          "score": 0.0224
+        },
+        {
+          "text": "உங்கள் ஆதார் கணக்கில் கருப்பு பணம் கண்டுபிடிக்கப்பட்டுள்ளது. வழக்கை நிறுத்த RBI சரிபார்ப்பு கணக்கிற்",
+          "label": true,
+          "neural": true,
+          "hybrid": true,
+          "score": 0.9937
+        },
+        {
+          "text": "நான் TRAI அதிகாரி. உங்கள் ஸ்மார்ட்போன் சட்டவிரோத நடவடிக்கைகளுக்கு பயன்படுத்தப்படுகிறது. AnyDesk செயல",
+          "label": true,
+          "neural": false,
+          "hybrid": true,
+          "score": 0.0015
+        },
+        {
+          "text": "இது உங்களுக்கு கடைசி எச்சரிக்கை. நீங்கள் கூட்டுழைப்பு மறுத்தால் காவல்துறை படை உங்கள் வீட்டிற்கு அனுப",
+          "label": true,
+          "neural": false,
+          "hybrid": true,
+          "score": 0.0008
+        }
+      ]
+    },
+    "ta-Latn": {
+      "count": 8,
+      "neural": {
+        "precision": 0.3333,
+        "recall": 0.2,
+        "f1": 0.25,
+        "false_positive_rate": 0.6667,
+        "false_negative_rate": 0.8,
+        "TP": 1,
+        "FP": 2,
+        "TN": 1,
+        "FN": 4
+      },
+      "hybrid": {
+        "precision": 0.8333,
+        "recall": 1.0,
+        "f1": 0.9091,
+        "false_positive_rate": 0.3333,
+        "false_negative_rate": 0.0,
+        "TP": 5,
+        "FP": 1,
+        "TN": 2,
+        "FN": 0
+      },
+      "sample_predictions": [
+        {
+          "text": "Naan Mumbai Cyber Crime Department-la irunthu pesuren. Unga Aadhaar card-la illegal transaction nada",
+          "label": true,
+          "neural": false,
+          "hybrid": true,
+          "score": 0.0019
+        },
+        {
+          "text": "Naan SBI officer. Unga account-la problem irukku. Verify panna phone-ku vantha OTP sollunga. OTP van",
+          "label": true,
+          "neural": false,
+          "hybrid": true,
+          "score": 0.0083
+        },
+        {
+          "text": "Unga account-la illegal activity detect pannirukkom. RBI clearance account-ku panam anuppanum. Evval",
+          "label": true,
+          "neural": true,
+          "hybrid": true,
+          "score": 0.9997
+        },
+        {
+          "text": "Naan TRAI officer. Unga phone-la illegal activity irukku. AnyDesk app install pannunga. Install pann",
+          "label": true,
+          "neural": false,
+          "hybrid": true,
+          "score": 0.0007
+        },
+        {
+          "text": "Idhu oru confidential investigation. Unga kittey oru matter pesanum. Yarukkum sollaathinga. Seri, so",
+          "label": true,
+          "neural": false,
+          "hybrid": true,
+          "score": 0.0026
+        }
+      ]
+    }
+  }
+}
