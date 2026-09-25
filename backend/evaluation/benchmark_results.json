@@ -9,7 +9,7 @@
   "f1_score": 100.0,
   "false_positive_rate": 0.0,
   "false_negative_rate": 0.0,
-  "mean_inference_latency_ms": 7.58,
+  "mean_inference_latency_ms": 217.55,
   "scenario_results": [
     {
       "id": "EN-SCAM-01",
@@ -21,10 +21,10 @@
       "final_stage": "PAYMENT_CREDENTIAL",
       "tactics": [
         "AUTHORITY",
+        "PAYMENT",
         "FEAR",
         "ISOLATION",
         "URGENCY",
-        "PAYMENT",
         "CREDENTIAL",
         "SUSPICIOUS_LINK"
       ]
@@ -35,14 +35,15 @@
       "type": "SCAM",
       "expected_brake": true,
       "predicted_brake": true,
-      "final_risk_score": 67,
+      "final_risk_score": 84,
       "final_stage": "PAYMENT_CREDENTIAL",
       "tactics": [
         "AUTHORITY",
         "FEAR",
+        "PAYMENT",
+        "CREDENTIAL",
         "URGENCY",
-        "ISOLATION",
-        "CREDENTIAL"
+        "ISOLATION"
       ]
     },
     {
@@ -51,11 +52,11 @@
       "type": "SCAM",
       "expected_brake": true,
       "predicted_brake": true,
-      "final_risk_score": 69,
+      "final_risk_score": 86,
       "final_stage": "PAYMENT_CREDENTIAL",
       "tactics": [
-        "URGENCY",
         "PAYMENT",
+        "URGENCY",
         "REMOTE_ACCESS",
         "CREDENTIAL"
       ]
@@ -70,9 +71,9 @@
       "final_stage": "CRITICAL_BRAKE",
       "tactics": [
         "AUTHORITY",
+        "PAYMENT",
         "FEAR",
         "URGENCY",
-        "PAYMENT",
         "ESCALATION"
       ]
     },
@@ -82,11 +83,11 @@
       "type": "SCAM",
       "expected_brake": true,
       "predicted_brake": true,
-      "final_risk_score": 66,
+      "final_risk_score": 67,
       "final_stage": "PAYMENT_CREDENTIAL",
       "tactics": [
-        "URGENCY",
         "PAYMENT",
+        "URGENCY",
         "SUSPICIOUS_LINK"
       ]
     },
@@ -106,9 +107,10 @@
       "type": "BENIGN",
       "expected_brake": false,
       "predicted_brake": false,
-      "final_risk_score": 21,
-      "final_stage": "FEAR",
+      "final_risk_score": 33,
+      "final_stage": "PAYMENT_CREDENTIAL",
       "tactics": [
+        "PAYMENT",
         "AUTHORITY",
         "SUSPICIOUS_LINK"
       ]
@@ -191,9 +193,9 @@
         "ESCALATION",
         "URGENCY",
         "ISOLATION",
+        "PAYMENT",
         "CREDENTIAL",
-        "SUSPICIOUS_LINK",
-        "PAYMENT"
+        "SUSPICIOUS_LINK"
       ]
     },
     {
@@ -202,10 +204,12 @@
       "type": "SCAM",
       "expected_brake": true,
       "predicted_brake": true,
-      "final_risk_score": 62,
+      "final_risk_score": 72,
       "final_stage": "PAYMENT_CREDENTIAL",
       "tactics": [
         "AUTHORITY",
+        "URGENCY",
+        "PAYMENT",
         "CREDENTIAL"
       ]
     },
@@ -215,9 +219,10 @@
       "type": "SCAM",
       "expected_brake": true,
       "predicted_brake": true,
-      "final_risk_score": 66,
+      "final_risk_score": 75,
       "final_stage": "PAYMENT_CREDENTIAL",
       "tactics": [
+        "PAYMENT",
         "CREDENTIAL",
         "REMOTE_ACCESS",
         "SUSPICIOUS_LINK"
@@ -249,11 +254,12 @@
       "type": "SCAM",
       "expected_brake": true,
       "predicted_brake": false,
-      "final_risk_score": 67,
-      "final_stage": "DEMAND",
+      "final_risk_score": 77,
+      "final_stage": "PAYMENT_CREDENTIAL",
       "tactics": [
         "AUTHORITY",
         "FEAR",
+        "PAYMENT",
         "ISOLATION",
         "URGENCY"
       ]
@@ -293,9 +299,10 @@
       "type": "SCAM",
       "expected_brake": true,
       "predicted_brake": true,
-      "final_risk_score": 68,
+      "final_risk_score": 84,
       "final_stage": "PAYMENT_CREDENTIAL",
       "tactics": [
+        "PAYMENT",
         "FEAR",
         "CREDENTIAL",
         "SUSPICIOUS_LINK"

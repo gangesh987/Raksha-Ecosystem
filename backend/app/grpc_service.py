@@ -154,7 +154,12 @@ class ProtectionServiceImpl(pb2_grpc.ProtectionServiceServicer):
                     "velocity": velocity_calc.level,
                     "tactics": jev_result.tactic_probabilities,
                     "brake": fused_decision.safety_brake_triggered,
-                    "transcript": transcript_text
+                    "transcript": transcript_text,
+                    "model_version": jev_result.semantic_model.get("model_version", "RakshaCall-v2"),
+                    "neural_scam_prob": jev_result.scam_probability,
+                    "top_tactic": jev_result.top_tactic,
+                    "top_tactic_prob": jev_result.top_tactic_probability,
+                    "rule_floor_triggered": jev_result.rule_floor.get("triggered", False)
                 }
             )
 

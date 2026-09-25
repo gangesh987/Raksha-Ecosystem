@@ -81,7 +81,7 @@ Inspection of the existing repository confirms **no pre-existing "JEV" library, 
 RakshaCall encapsulates JEV behind a strict **`JEVProvider` interface**.
 - The interface contracts semantic intent extraction, tactic probability distribution, and reasoning traces.
 - Pluggable provider implementations are supported:
-  1. `LocalSemanticJEVProvider`: Offline vector embedding matcher and intent classifier using sentence embeddings and cosine similarity.
+  1. `LocalSemanticJEVProvider`: Hybrid production intent engine combining a real PyTorch neural classifier (`RakshaCallMultilingualSemanticModel` with Bidirectional GRU and dual heads) with a deterministic `RuleBasedSafetyFloor` guardrail.
   2. `HuggingFaceJEVProvider`: Connects to local or remote ONNX/Transformers model endpoints.
   3. `CloudLLMJEVProvider`: Backend-isolated provider leveraging Groq (LLaMA-3) or Gemini for deep contextual reasoning.
   4. `MockJEVProvider`: Controlled, deterministic provider for unit testing and CI validation.

@@ -1,17 +1,41 @@
 """
 RakshaCall JEV (Joint Embedding / Intent Verifier) Provider Abstraction.
 Encapsulates semantic intent understanding behind a strict provider boundary.
-Does NOT fabricate capabilities: supports Local Semantic Vector Matcher,
-HuggingFace / ONNX, Cloud LLM, and Mock testing providers.
+
+Architecture (Phase 1 Integration):
+- Primary Semantic Intelligence: Real PyTorch Neural Classifier (RakshaCall Multilingual Semantic Model V2)
+  Bidirectional GRU + 768-dim subword representation + dual classification heads.
+- Deterministic Safety Floor: RuleBasedSafetyFloor
+  Multi-word phrase matching and discriminative keyword guardrail for explicit irreversible threats.
+- Fusion Layer: Explainable synthesis prioritizing protective negation, combining neural probabilities
+  with safety floor floors, and exposing complete diagnostic telemetry.
 """
 
 from __future__ import annotations
 import math
 import os
 import re
+import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Tuple
+
+from ..ml.scam_classifier import get_scam_classifier, ScamClassifier
+
+# Mapping from canonical 9-tactic names to JEV short-key taxonomy
+CANONICAL_TO_JEV = {
+    "AUTHORITY_IMPERSONATION": "AUTHORITY",
+    "CRIMINAL_ALLEGATION_FEAR": "FEAR",
+    "URGENCY": "URGENCY",
+    "ISOLATION": "ISOLATION",
+    "PAYMENT_DEMAND": "PAYMENT",
+    "CREDENTIAL_OTP_PRESSURE": "CREDENTIAL",
+    "REMOTE_ACCESS_PRESSURE": "REMOTE_ACCESS",
+    "SUSPICIOUS_LINK": "SUSPICIOUS_LINK",
+    "SUSPICIOUS_LINKS": "SUSPICIOUS_LINK",
+    "ESCALATION_COERCION": "ESCALATION"
+}
+JEV_TO_CANONICAL = {v: k for k, v in CANONICAL_TO_JEV.items()}
 
 
 @dataclass
@@ -26,10 +50,17 @@ class JEVAnalysisResult:
     model_provider: str
     latency_ms: float = 0.0
 
+    # Phase 8 telemetry extensions
+    scam_probability: float = 0.0
+    top_tactic: str = ""
+    top_tactic_probability: float = 0.0
+    semantic_model: Dict[str, Any] = field(default_factory=dict)
+    rule_floor: Dict[str, Any] = field(default_factory=dict)
+
 
 class JEVProvider(ABC):
     """Abstract interface for JEV Semantic Intelligence Engine."""
-    
+
     @property
     @abstractmethod
     def provider_name(self) -> str:
@@ -46,15 +77,25 @@ class JEVProvider(ABC):
         pass
 
 
-class LocalSemanticJEVProvider(JEVProvider):
+class RuleBasedSafetyFloor:
     """
-    High-Reliability Offline Semantic Intent Engine.
-    Uses dense semantic n-gram embeddings and cosine similarity against
-    curated scam intent prototypes across Tamil, Tanglish, Hindi, Hinglish, and English.
-    Handles negation and protective context explicitly.
+    Deterministic Safety Guardrail (Safety Floor).
+    Provides rule-based regex patterns, discriminative term matching,
+    and negation/protective filtering.
+    Does NOT claim to be a neural embedding model.
+    Acts as a guaranteed minimum detection floor for unambiguous critical scam phrases.
     """
-    
-    # 9-Tactic Multilingual Semantic Prototypes
+
+    PROTECTIVE_PATTERNS = [
+        r'(never share|do not share|don\'t share|never send|do not transfer|don\'t transfer|never transfer)',
+        r'(eppovume sollatha|sollathinga|anuppathinga|panam kudukathinga|அனுப்பாதீர்கள்|கேட்க மாட்டார்கள்)',
+        r'(kisi ko mat dena|mat batao|mat bhejo|kabhi mat do)',
+        r'(is a scam|this is fraud|will never ask|மோசடி)',
+        r'(sounds like a scam|like a scam|scam call|scam warning|scam aayirukku|fraud call|fraud hai)',
+        r'(i am disconnecting|disconnecting this call|ithu fraud|polise-kitta complaint pannunga)',
+        r'(there is no fee|no fee for this|free of cost|no charge)'
+    ]
+
     INTENT_PROTOTYPES = {
         "AUTHORITY": [
             "cbi officer cyber crime branch supreme court high court mumbai police delhi police customs department enforcement directorate trai telecom authority rbi headquarters inspector commissioner",
@@ -114,76 +155,6 @@ class LocalSemanticJEVProvider(JEVProvider):
         ]
     }
 
-    # Negation and protective patterns
-    PROTECTIVE_PATTERNS = [
-        r'(never share|do not share|don\'t share|never send|do not transfer|don\'t transfer)',
-        r'(eppovume sollatha|sollathinga|anuppathinga|panam kudukathinga|அனுப்பாதீர்கள்|கேட்க மாட்டார்கள்)',
-        r'(kisi ko mat dena|mat batao|mat bhejo|kabhi mat do)',
-        r'(is a scam|this is fraud|police will never ask|bank will never ask|மோசடி)',
-        r'(sounds like a scam|like a scam|scam call|scam aayirukku|fraud call|fraud hai)',
-        r'(i am disconnecting|disconnecting this call|ithu fraud|polise-kitta complaint pannunga)',
-        r'(there is no fee|no fee for this|free of cost|no charge)'
-    ]
-
-
-    @property
-    def provider_name(self) -> str:
-        return "LocalSemanticJEVProvider (Offline Multi-Intent Engine)"
-
-    def analyze_window(
-        self,
-        current_utterance: str,
-        conversation_context: List[str],
-        detected_language: str
-    ) -> JEVAnalysisResult:
-        full_text = " ".join(conversation_context + [current_utterance]).lower().strip()
-        current_lower = current_utterance.lower().strip()
-
-        # Check for protective/negation intent in current utterance
-        is_protective = any(re.search(pat, current_lower) for pat in self.PROTECTIVE_PATTERNS)
-        
-        tactic_probs: Dict[str, float] = {}
-        evidence: Dict[str, str] = {}
-        reasons: List[str] = []
-
-        if is_protective:
-            # Negated protective statement: suppress risk
-            return JEVAnalysisResult(
-                primary_intent="PROTECTIVE_ADVISORY",
-                tactic_probabilities={k: 0.0 for k in self.INTENT_PROTOTYPES},
-                confidence=0.96,
-                supporting_evidence={"PROTECTIVE": current_utterance},
-                explanation="Protective utterance advising against sharing sensitive information or money.",
-                is_irreversible_action=False,
-                model_provider=self.provider_name
-            )
-
-        for tactic, prototypes in self.INTENT_PROTOTYPES.items():
-            prob, ev = self._compute_intent_similarity(full_text, current_lower, prototypes)
-            if prob > 0.30:
-                tactic_probs[tactic] = round(prob, 3)
-                evidence[tactic] = ev
-                reasons.append(f"{tactic}: {ev}")
-
-        # Determine primary intent
-        primary = max(tactic_probs.keys(), key=lambda k: tactic_probs[k]) if tactic_probs else "BENIGN_INQUIRY"
-        conf = max(tactic_probs.values()) if tactic_probs else 0.85
-        
-        irreversible = any(t in tactic_probs and tactic_probs[t] >= 0.50 
-                           for t in ("PAYMENT", "CREDENTIAL", "REMOTE_ACCESS"))
-
-        explanation = "; ".join(reasons) if reasons else "No coercive scam tactics detected in conversation window."
-
-        return JEVAnalysisResult(
-            primary_intent=primary,
-            tactic_probabilities=tactic_probs,
-            confidence=round(conf, 3),
-            supporting_evidence=evidence,
-            explanation=explanation,
-            is_irreversible_action=irreversible,
-            model_provider=self.provider_name
-        )
-
     STOPWORDS = {
         "the", "a", "an", "is", "in", "it", "on", "at", "to", "for", "with", "from",
         "of", "and", "or", "by", "your", "my", "our", "you", "we", "they", "this",
@@ -199,7 +170,6 @@ class LocalSemanticJEVProvider(JEVProvider):
         "போதைப்பொருள்", "ஓடிபி", "யுபிஐ", "எனிகெஸ்க்", "அரெஸ்ட்"
     }
 
-    # High-signal multi-word intent phrases
     TACTIC_PHRASES = {
         "AUTHORITY": ["cbi officer", "cyber crime", "crime branch", "supreme court", "high court", "police station", "customs officer", "enforcement directorate", "telecom authority", "trai", "rbi headquarters", "சிபிஐ", "காவல் துறை", "सीबीआई हेडक्वार्टर", "पुलिस"],
         "FEAR": ["narcotics parcel", "illegal drugs", "drugs case", "money laundering", "arrest warrant", "non bailable", "fir registered", "criminal case", "போதைப்பொருள்", "பண மோசடி", "கைது வாரண்ட்", "अरेस्ट वारंट", "मनी लॉन्ड्रिंग", "गैरकानूनी पार्सल"],
@@ -212,28 +182,31 @@ class LocalSemanticJEVProvider(JEVProvider):
         "ESCALATION": ["police patrol", "raid your", "physical arrest", "seize property", "blacklist aadhaar", "jail term", "veetukku vanthu", "வீட்டிற்கு அனுப்பப்படும்"]
     }
 
-    def _compute_intent_similarity(
+    def is_protective(self, text: str) -> bool:
+        lower = text.lower().strip()
+        return any(re.search(pat, lower) for pat in self.PROTECTIVE_PATTERNS)
+
+    def evaluate_tactic_match(
         self,
         full_window: str,
         current_utterance: str,
-        prototypes: List[str]
-    ) -> tuple[float, str]:
-        """Compute semantic match score between text and intent prototype vocabulary."""
+        tactic: str
+    ) -> Tuple[float, str]:
+        prototypes = self.INTENT_PROTOTYPES.get(tactic, [])
+        phrases = self.TACTIC_PHRASES.get(tactic, [])
         best_score = 0.0
         best_match = ""
 
-        # 1. Multi-word phrase matching with word boundaries
-        for tactic_id, phrases in self.TACTIC_PHRASES.items():
-            if prototypes == self.INTENT_PROTOTYPES.get(tactic_id):
-                for phrase in phrases:
-                    pattern = r'(?i)\b' + re.escape(phrase) + r'\b'
-                    if re.search(pattern, current_utterance):
-                        return 0.92, phrase
-                    elif re.search(pattern, full_window):
-                        best_score = max(best_score, 0.75)
-                        best_match = phrase
+        # 1. Multi-word phrase matching
+        for phrase in phrases:
+            pattern = r'(?i)\b' + re.escape(phrase) + r'\b'
+            if re.search(pattern, current_utterance):
+                return 0.92, phrase
+            elif re.search(pattern, full_window):
+                best_score = max(best_score, 0.75)
+                best_match = phrase
 
-        # 2. Discriminative token matching (excluding stopwords)
+        # 2. Token overlap
         proto_words = {
             w for p in prototypes for w in p.split()
             if w not in self.STOPWORDS and len(w) >= 3
@@ -251,7 +224,6 @@ class LocalSemanticJEVProvider(JEVProvider):
                     return True
             return False
 
-        # Clean punctuation from tokens
         import string
         translator = str.maketrans('', '', string.punctuation)
         clean_current = current_utterance.translate(translator)
@@ -259,11 +231,10 @@ class LocalSemanticJEVProvider(JEVProvider):
 
         current_tokens = [w for w in clean_current.split() if w not in self.STOPWORDS]
         current_hits = [w for w in current_tokens if any(_match_token(w, p) for p in proto_words)]
-        
+
         window_tokens = [w for w in clean_window.split() if w not in self.STOPWORDS]
         window_hits = [w for w in window_tokens if any(_match_token(w, p) for p in proto_words)]
 
-        # Check for discriminative hits
         has_discrim = any(w in self.DISCRIMINATIVE_TERMS for w in current_hits + window_hits)
 
         if has_discrim or len(current_hits) >= 2 or (len(current_hits) >= 1 and len(window_hits) >= 2):
@@ -274,6 +245,162 @@ class LocalSemanticJEVProvider(JEVProvider):
                 best_match = " ".join(current_hits[:3]) if current_hits else " ".join(window_hits[:3])
 
         return best_score, best_match
+
+
+class LocalSemanticJEVProvider(JEVProvider):
+    """
+    Hybrid Production JEV Intent Engine.
+    PRIMARY: Real PyTorch Neural Classifier (SemanticSubwordEncoder + Dual Heads).
+    SAFETY FLOOR: RuleBasedSafetyFloor guardrail for guaranteed explicit pattern detection.
+    """
+
+    def __init__(self, classifier: Optional[ScamClassifier] = None):
+        self.safety_floor = RuleBasedSafetyFloor()
+        try:
+            self.neural_classifier = classifier or get_scam_classifier()
+        except Exception as e:
+            # Fallback if torch / weights are unavailable
+            self.neural_classifier = None
+
+    @property
+    def provider_name(self) -> str:
+        version = self.neural_classifier.model_version if self.neural_classifier else "unavailable"
+        return f"LocalSemanticJEVProvider (PyTorch Neural Engine v2: {version} + Rule Safety Floor)"
+
+    def analyze_window(
+        self,
+        current_utterance: str,
+        conversation_context: List[str],
+        detected_language: str
+    ) -> JEVAnalysisResult:
+        t0 = time.perf_counter()
+        full_text = " ".join(conversation_context + [current_utterance]).lower().strip()
+        current_lower = current_utterance.lower().strip()
+
+        # -------------------------------------------------------------
+        # 1. Strict Negation / Protective Filtering
+        # -------------------------------------------------------------
+        if self.safety_floor.is_protective(current_lower):
+            return JEVAnalysisResult(
+                primary_intent="PROTECTIVE_ADVISORY",
+                tactic_probabilities={k: 0.0 for k in self.safety_floor.INTENT_PROTOTYPES},
+                confidence=0.96,
+                supporting_evidence={"PROTECTIVE": current_utterance},
+                explanation="Protective utterance advising against sharing sensitive information or money.",
+                is_irreversible_action=False,
+                model_provider=self.provider_name,
+                latency_ms=round((time.perf_counter() - t0) * 1000.0, 2),
+                scam_probability=0.0,
+                top_tactic="PROTECTIVE_ADVISORY",
+                top_tactic_probability=0.0,
+                semantic_model={"scam_probability": 0.0, "status": "suppressed_by_protective_context"},
+                rule_floor={"triggered": False, "reason": "protective_context_detected"}
+            )
+
+        # -------------------------------------------------------------
+        # 2. Primary Neural Classification (PyTorch)
+        # -------------------------------------------------------------
+        neural_scam_prob = 0.0
+        neural_tactic_probs: Dict[str, float] = {}
+        neural_meta: Dict[str, Any] = {}
+
+        if self.neural_classifier and self.neural_classifier.is_loaded:
+            try:
+                # Classify the current utterance combined with recent context
+                pred_text = f"{conversation_context[-1]} {current_utterance}" if conversation_context else current_utterance
+                neural_res = self.neural_classifier.predict(pred_text)
+                neural_scam_prob = neural_res.get("scam_probability", 0.0)
+                neural_tactic_probs = neural_res.get("tactic_probabilities", {})
+                neural_meta = {
+                    "model_version": neural_res.get("model_version"),
+                    "scam_probability": neural_scam_prob,
+                    "representation_dim": neural_res.get("representation_dim", 768)
+                }
+            except Exception as e:
+                neural_meta = {"error": str(e)}
+
+        # -------------------------------------------------------------
+        # 3. Deterministic Safety Floor Evaluation
+        # -------------------------------------------------------------
+        floor_probs: Dict[str, float] = {}
+        floor_evidence: Dict[str, str] = {}
+        for tactic in self.safety_floor.INTENT_PROTOTYPES.keys():
+            score, ev = self.safety_floor.evaluate_tactic_match(full_text, current_lower, tactic)
+            if score > 0.0:
+                floor_probs[tactic] = score
+                floor_evidence[tactic] = ev
+
+        # -------------------------------------------------------------
+        # 4. Explainable Fusion Policy
+        # -------------------------------------------------------------
+        # For each tactic, the fused probability is the combination of
+        # the neural model probability and the deterministic safety floor.
+        # The safety floor guarantees that explicit keyword/regex hits
+        # (e.g., OTP solicitation or payment account details) are never missed,
+        # while the neural model detects subtle, paraphrased semantic coercions.
+        final_tactic_probs: Dict[str, float] = {}
+        final_evidence: Dict[str, str] = {}
+        reasons: List[str] = []
+
+        for tactic in self.safety_floor.INTENT_PROTOTYPES.keys():
+            canonical_name = JEV_TO_CANONICAL.get(tactic, tactic)
+            n_prob = neural_tactic_probs.get(canonical_name, 0.0)
+            f_prob = floor_probs.get(tactic, 0.0)
+
+            # Fusion rule:
+            # - If safety floor triggered: fused = max(n_prob, f_prob)
+            # - If neural model detected semantic signal without rule trigger: fused = n_prob
+            if f_prob > 0.0:
+                fused = round(max(n_prob, f_prob), 3)
+                ev = floor_evidence.get(tactic, "Deterministic pattern match")
+            else:
+                fused = round(n_prob, 3)
+                ev = f"Neural semantic pattern (p={n_prob:.3f})"
+
+            if fused >= 0.30:
+                final_tactic_probs[tactic] = fused
+                final_evidence[tactic] = ev
+                reasons.append(f"{tactic}: {ev} (p={fused})")
+
+        # Overall scam probability: maximum of neural scam head and peak tactic probability
+        peak_tactic_prob = max(final_tactic_probs.values()) if final_tactic_probs else 0.0
+        fused_scam_prob = round(max(neural_scam_prob, peak_tactic_prob), 4)
+
+        # Primary intent
+        if final_tactic_probs:
+            top_tactic = max(final_tactic_probs.keys(), key=lambda k: final_tactic_probs[k])
+            top_prob = final_tactic_probs[top_tactic]
+        else:
+            top_tactic = "BENIGN_INQUIRY"
+            top_prob = 0.85
+
+        irreversible = any(
+            t in final_tactic_probs and final_tactic_probs[t] >= 0.50
+            for t in ("PAYMENT", "CREDENTIAL", "REMOTE_ACCESS")
+        )
+
+        explanation = "; ".join(reasons) if reasons else "No coercive scam tactics detected in conversation window."
+        elapsed_ms = round((time.perf_counter() - t0) * 1000.0, 2)
+
+        return JEVAnalysisResult(
+            primary_intent=top_tactic,
+            tactic_probabilities=final_tactic_probs,
+            confidence=round(top_prob, 3),
+            supporting_evidence=final_evidence,
+            explanation=explanation,
+            is_irreversible_action=irreversible,
+            model_provider=self.provider_name,
+            latency_ms=elapsed_ms,
+            scam_probability=fused_scam_prob,
+            top_tactic=top_tactic,
+            top_tactic_probability=round(top_prob, 3),
+            semantic_model=neural_meta,
+            rule_floor={
+                "triggered": len(floor_probs) > 0,
+                "floor_matches": floor_probs,
+                "floor_evidence": floor_evidence
+            }
+        )
 
 
 class CloudLLMJEVProvider(JEVProvider):
@@ -314,7 +441,10 @@ class CloudLLMJEVProvider(JEVProvider):
                 supporting_evidence={t: current_utterance for t in tactics},
                 explanation="; ".join(res.get("reasons", ["Cloud model inference"])),
                 is_irreversible_action=bool(res.get("irreversible_action", False)),
-                model_provider=self.provider_name
+                model_provider=self.provider_name,
+                scam_probability=float(res.get("risk_score", 0.8)),
+                top_tactic=tactics[0] if tactics else "BENIGN",
+                top_tactic_probability=float(res.get("confidence", 0.90))
             )
         except Exception:
             return self._local_fallback.analyze_window(current_utterance, conversation_context, detected_language)
@@ -325,6 +455,9 @@ class JEVProviderFactory:
     @staticmethod
     def get_provider() -> JEVProvider:
         if os.getenv("GROQ_API_KEY"):
-            from . import groq_provider
-            return CloudLLMJEVProvider(backend_groq_func=groq_provider.analyze)
+            try:
+                from . import groq_provider
+                return CloudLLMJEVProvider(backend_groq_func=groq_provider.analyze)
+            except Exception:
+                pass
         return LocalSemanticJEVProvider()

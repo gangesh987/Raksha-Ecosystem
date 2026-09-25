@@ -1,0 +1,134 @@
+{
+  "evaluation_dataset": "ml/datasets/final/test_conversations.jsonl",
+  "total_conversations": 182,
+  "total_turns": 1292,
+  "elapsed_seconds": 21.43,
+  "ms_per_conversation": 117.76,
+  "binary_scam_metrics": {
+    "accuracy": 0.7582,
+    "precision": 0.7339,
+    "recall": 0.8922,
+    "f1_score": 0.8053,
+    "confusion_matrix": {
+      "true_negative": 47,
+      "false_positive": 33,
+      "false_negative": 11,
+      "true_positive": 91
+    }
+  },
+  "multilabel_tactic_metrics": {
+    "macro_precision": 0.446,
+    "macro_recall": 0.3554,
+    "macro_f1": 0.3943,
+    "micro_precision": 0.8296,
+    "micro_recall": 0.6328,
+    "micro_f1": 0.7179,
+    "per_tactic": {
+      "AUTHORITY_IMPERSONATION": {
+        "support": 36,
+        "predicted": 29,
+        "precision": 1.0,
+        "recall": 0.8056,
+        "f1": 0.8923
+      },
+      "CRIMINAL_ALLEGATION_FEAR": {
+        "support": 34,
+        "predicted": 30,
+        "precision": 0.9667,
+        "recall": 0.8529,
+        "f1": 0.9062
+      },
+      "URGENCY": {
+        "support": 6,
+        "predicted": 4,
+        "precision": 0.5,
+        "recall": 0.3333,
+        "f1": 0.4
+      },
+      "ISOLATION": {
+        "support": 1,
+        "predicted": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PAYMENT_DEMAND": {
+        "support": 65,
+        "predicted": 42,
+        "precision": 0.5476,
+        "recall": 0.3538,
+        "f1": 0.4299
+      },
+      "CREDENTIAL_OTP_PRESSURE": {
+        "support": 34,
+        "predicted": 29,
+        "precision": 1.0,
+        "recall": 0.8529,
+        "f1": 0.9206
+      },
+      "REMOTE_ACCESS_PRESSURE": {
+        "support": 1,
+        "predicted": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "SUSPICIOUS_LINK": {
+        "support": 0,
+        "predicted": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ESCALATION_COERCION": {
+        "support": 0,
+        "predicted": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    }
+  },
+  "per_language_metrics": {
+    "en": {
+      "count": 174,
+      "scam_count": 96,
+      "accuracy": 0.7759,
+      "precision": 0.7395,
+      "recall": 0.9167,
+      "f1": 0.8186
+    },
+    "hi": {
+      "count": 4,
+      "scam_count": 3,
+      "accuracy": 0.5,
+      "precision": 0.6667,
+      "recall": 0.6667,
+      "f1": 0.6667
+    },
+    "hi-Latn": {
+      "count": 1,
+      "scam_count": 1,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "ta": {
+      "count": 1,
+      "scam_count": 1,
+      "accuracy": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "ta-Latn": {
+      "count": 2,
+      "scam_count": 1,
+      "accuracy": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    }
+  }
+}

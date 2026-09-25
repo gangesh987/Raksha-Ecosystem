@@ -1,0 +1,189 @@
+{
+  "total_cases": 15,
+  "neural_accuracy": 0.4667,
+  "hybrid_accuracy": 0.5333,
+  "details": [
+    {
+      "id": "adv_01",
+      "text": "For verification purposes, temporarily move the balance to t...",
+      "expected_scam": true,
+      "neural_prob": 0.9998,
+      "neural_correct": true,
+      "hybrid_scam_prob": 0.9998,
+      "hybrid_tactics": [
+        "PAYMENT",
+        "SUSPICIOUS_LINK"
+      ],
+      "hybrid_intent": "PAYMENT",
+      "hybrid_correct": true
+    },
+    {
+      "id": "adv_02",
+      "text": "Your account will remain restricted until the required secur...",
+      "expected_scam": true,
+      "neural_prob": 0.9998,
+      "neural_correct": true,
+      "hybrid_scam_prob": 0.9998,
+      "hybrid_tactics": [
+        "PAYMENT"
+      ],
+      "hybrid_intent": "PAYMENT",
+      "hybrid_correct": true
+    },
+    {
+      "id": "adv_03",
+      "text": "Please install this support application so our officer can i...",
+      "expected_scam": true,
+      "neural_prob": 0.9975,
+      "neural_correct": true,
+      "hybrid_scam_prob": 0.9975,
+      "hybrid_tactics": [
+        "PAYMENT"
+      ],
+      "hybrid_intent": "PAYMENT",
+      "hybrid_correct": true
+    },
+    {
+      "id": "adv_04",
+      "text": "Keep this matter strictly confidential until the official in...",
+      "expected_scam": true,
+      "neural_prob": 0.9972,
+      "neural_correct": true,
+      "hybrid_scam_prob": 0.9972,
+      "hybrid_tactics": [
+        "ISOLATION",
+        "PAYMENT"
+      ],
+      "hybrid_intent": "ISOLATION",
+      "hybrid_correct": true
+    },
+    {
+      "id": "adv_05",
+      "text": "The statutory window for compliance lapses in eight minutes,...",
+      "expected_scam": true,
+      "neural_prob": 0.0059,
+      "neural_correct": false,
+      "hybrid_scam_prob": 0.0059,
+      "hybrid_tactics": [],
+      "hybrid_intent": "BENIGN_INQUIRY",
+      "hybrid_correct": false
+    },
+    {
+      "id": "adv_06",
+      "text": "We are reaching out from the central telecom oversight regis...",
+      "expected_scam": true,
+      "neural_prob": 0.0733,
+      "neural_correct": false,
+      "hybrid_scam_prob": 0.0733,
+      "hybrid_tactics": [],
+      "hybrid_intent": "BENIGN_INQUIRY",
+      "hybrid_correct": false
+    },
+    {
+      "id": "adv_07",
+      "text": "State the authentication numerals dispatched to your handhel...",
+      "expected_scam": true,
+      "neural_prob": 0.0903,
+      "neural_correct": false,
+      "hybrid_scam_prob": 0.0903,
+      "hybrid_tactics": [],
+      "hybrid_intent": "BENIGN_INQUIRY",
+      "hybrid_correct": false
+    },
+    {
+      "id": "adv_08",
+      "text": "Navigate to the link transmitted in your messaging inbox to ...",
+      "expected_scam": true,
+      "neural_prob": 0.9998,
+      "neural_correct": true,
+      "hybrid_scam_prob": 0.9998,
+      "hybrid_tactics": [
+        "PAYMENT",
+        "SUSPICIOUS_LINK"
+      ],
+      "hybrid_intent": "SUSPICIOUS_LINK",
+      "hybrid_correct": true
+    },
+    {
+      "id": "adv_09",
+      "text": "A specialized squad is en route to your residential premises...",
+      "expected_scam": true,
+      "neural_prob": 0.0064,
+      "neural_correct": false,
+      "hybrid_scam_prob": 0.0064,
+      "hybrid_tactics": [],
+      "hybrid_intent": "BENIGN_INQUIRY",
+      "hybrid_correct": false
+    },
+    {
+      "id": "adv_10",
+      "text": "Kindly review the terms and conditions outlined in our stand...",
+      "expected_scam": false,
+      "neural_prob": 0.9999,
+      "neural_correct": false,
+      "hybrid_scam_prob": 0.9999,
+      "hybrid_tactics": [],
+      "hybrid_intent": "BENIGN_INQUIRY",
+      "hybrid_correct": true
+    },
+    {
+      "id": "adv_11",
+      "text": "Our customer assistance center will never request your login...",
+      "expected_scam": false,
+      "neural_prob": 0.9994,
+      "neural_correct": false,
+      "hybrid_scam_prob": 0.9994,
+      "hybrid_tactics": [
+        "PAYMENT"
+      ],
+      "hybrid_intent": "PAYMENT",
+      "hybrid_correct": false
+    },
+    {
+      "id": "adv_12",
+      "text": "Could you please confirm if the deposit of 2500 dollars was ...",
+      "expected_scam": false,
+      "neural_prob": 0.0407,
+      "neural_correct": true,
+      "hybrid_scam_prob": 0.0407,
+      "hybrid_tactics": [],
+      "hybrid_intent": "BENIGN_INQUIRY",
+      "hybrid_correct": true
+    },
+    {
+      "id": "adv_13",
+      "text": "Please move your remaining savings into the safekeeping trea...",
+      "expected_scam": true,
+      "neural_prob": 0.0039,
+      "neural_correct": false,
+      "hybrid_scam_prob": 0.0039,
+      "hybrid_tactics": [],
+      "hybrid_intent": "BENIGN_INQUIRY",
+      "hybrid_correct": false
+    },
+    {
+      "id": "adv_14",
+      "text": "Do not consult your associates or relatives while this natio...",
+      "expected_scam": true,
+      "neural_prob": 0.6042,
+      "neural_correct": true,
+      "hybrid_scam_prob": 0.6042,
+      "hybrid_tactics": [],
+      "hybrid_intent": "BENIGN_INQUIRY",
+      "hybrid_correct": true
+    },
+    {
+      "id": "adv_15",
+      "text": "Your utility billing receipt for the preceding quarter has b...",
+      "expected_scam": false,
+      "neural_prob": 1.0,
+      "neural_correct": false,
+      "hybrid_scam_prob": 1.0,
+      "hybrid_tactics": [
+        "PAYMENT"
+      ],
+      "hybrid_intent": "PAYMENT",
+      "hybrid_correct": false
+    }
+  ]
+}
