@@ -1,0 +1,113 @@
+# RakshaCall Online Datasets Configuration
+# Version: 1.0.0
+# Datasets for Real-Time Multilingual Multimodal Scam Defense
+
+datasets:
+  indic_voices:
+    dataset_name: "ai4bharat/IndicVoices"
+    source: "https://huggingface.co/datasets/ai4bharat/IndicVoices"
+    license: "CC-BY-4.0 / Research Use (Access approval required)"
+    languages:
+      - "ta"   # Tamil
+      - "hi"   # Hindi
+      - "en"   # Indian English
+    purpose: "Multilingual Indian speech / ASR acoustic evaluation"
+    download_mode: "streaming"
+    sample_limit: 200
+    split: "train"
+    enabled: true
+    requires_auth: true
+    notes: "Speech/ASR corpus. Use streaming to avoid downloading massive multi-terabyte full audio archive."
+
+  scambench:
+    dataset_name: "shaw/scambench-training"
+    source: "https://huggingface.co/datasets/shaw/scambench-training"
+    license: "Open Data Commons / Research"
+    languages:
+      - "en"
+      - "hi"
+      - "multi"
+    purpose: "Multilingual multi-turn scam / social engineering conversation understanding"
+    download_mode: "direct"
+    sample_limit: 1000
+    split: "train"
+    enabled: true
+    requires_auth: false
+    notes: "Multi-turn conversations. Do not assume Tamil is present; inspect actual language distribution."
+
+  scam_dialogue:
+    dataset_name: "BothBosu/scam-dialogue"
+    source: "https://huggingface.co/datasets/BothBosu/scam-dialogue"
+    license: "Research / Open"
+    languages:
+      - "en"
+      - "multi"
+    purpose: "Multi-turn scam dialogue structure (caller vs receiver dialogue boundaries)"
+    download_mode: "direct"
+    sample_limit: 500
+    split: "train"
+    enabled: true
+    requires_auth: false
+    notes: "Preserve dialogue turn boundaries. Do not flatten conversations into isolated utterances."
+
+  hinglish_scam:
+    dataset_name: "bolewara/hinglish-scam-text-dataset"
+    source: "https://huggingface.co/datasets/bolewara/hinglish-scam-text-dataset"
+    license: "MIT / Open"
+    languages:
+      - "hi-Latn"  # Hinglish
+      - "en-IN"    # Indian English
+    purpose: "Indian financial scam semantic adaptation (KYC, Aadhaar, UPI, OTP, loan scams)"
+    download_mode: "direct"
+    sample_limit: 1000
+    split: "train"
+    enabled: true
+    requires_auth: false
+    notes: "Crucial for Indian financial fraud context (digital arrest, electricity disconnection, OTP theft)."
+
+  phishing_supplement:
+    dataset_name: "ealvaradob/phishing-dataset"
+    source: "https://huggingface.co/datasets/ealvaradob/phishing-dataset"
+    license: "Open / Educational"
+    languages:
+      - "en"
+    purpose: "Supplementary phishing / smishing / malicious URL & suspicious link context"
+    download_mode: "subset"
+    subset_config: "sms"
+    sample_limit: 500
+    split: "train"
+    enabled: true
+    requires_auth: false
+    notes: "Supplementary signal only. Do not download entire 1.7GB archive; ingest small text/smishing slice."
+
+  indic_tts_tamil:
+    dataset_name: "SPRINGLab/IndicTTS_Tamil"
+    source: "https://huggingface.co/datasets/SPRINGLab/IndicTTS_Tamil"
+    license: "Research / Non-Commercial"
+    languages:
+      - "ta"
+    purpose: "Supplementary Tamil speech research & acoustic adaptation"
+    download_mode: "streaming"
+    sample_limit: 50
+    split: "train"
+    enabled: true
+    requires_auth: false
+    notes: "NOTE: This is a TTS corpus. Do NOT falsely label as an ASR dataset. Used for speech acoustic adaptation/TTS alert validation."
+
+  rakshacall_domain_indian:
+    dataset_name: "rakshacall_domain_indian"
+    source: "local_authored_verified"
+    license: "Proprietary RakshaCall Evaluation License"
+    languages:
+      - "ta"
+      - "ta-Latn"
+      - "hi"
+      - "hi-Latn"
+      - "en"
+    purpose: "Targeted Indian Digital Arrest, ED/CBI Impersonation, TRAI, and Negative Control evaluation set"
+    download_mode: "local"
+    sample_limit: 500
+    split: "all"
+    enabled: true
+    requires_auth: false
+    notes: "Covers rural and semi-urban colloquial Tamil/Tanglish, negative controls, and multi-turn escalation."

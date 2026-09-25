@@ -1,0 +1,50 @@
+[
+  {
+    "key": "indic_voices",
+    "name": "ai4bharat/IndicVoices",
+    "status": "AUTH_REQUIRED_GATED_NOT_USED",
+    "samples": 0,
+    "error": "Gated audio dataset on Hugging Face; requires user terms acceptance and active HF_TOKEN. Not used in text pipeline."
+  },
+  {
+    "key": "scambench",
+    "name": "shaw/scambench-training",
+    "status": "DOWNLOADED_AND_INGESTED",
+    "samples": 1000,
+    "error": null
+  },
+  {
+    "key": "scam_dialogue",
+    "name": "BothBosu/scam-dialogue",
+    "status": "DOWNLOADED_AND_INGESTED",
+    "samples": 500,
+    "error": null
+  },
+  {
+    "key": "hinglish_scam",
+    "name": "bolewara/hinglish-scam-text-dataset",
+    "status": "DOWNLOADED_AND_INGESTED",
+    "samples": 3787,
+    "error": null
+  },
+  {
+    "key": "phishing_supplement",
+    "name": "ealvaradob/phishing-dataset",
+    "status": "METADATA_ONLY_NOT_INGESTED",
+    "samples": 0,
+    "error": "Full raw archive contains URLs/HTML; not applicable for conversational speech transcripts."
+  },
+  {
+    "key": "indic_tts_tamil",
+    "name": "SPRINGLab/IndicTTS_Tamil",
+    "status": "ACOUSTIC_CORPUS_NOT_INGESTED",
+    "samples": 0,
+    "error": "TTS audio synthesis corpus; excluded from semantic text classification."
+  },
+  {
+    "key": "rakshacall_domain_indian",
+    "name": "rakshacall_domain_indian",
+    "status": "LOCAL_VERIFIED_AUTHORED",
+    "samples": 500
+  }
+]

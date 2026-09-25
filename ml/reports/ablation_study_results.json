@@ -1,0 +1,52 @@
+{
+  "ML Only": {
+    "precision": 0.9371,
+    "recall": 0.9371,
+    "f1_score": 0.9371,
+    "fpr": 40.45,
+    "fnr": 6.29,
+    "false_positives": 72,
+    "false_negatives": 72,
+    "latency_ms": 11.8
+  },
+  "ML + Stage": {
+    "precision": 0.8947,
+    "recall": 0.1932,
+    "f1_score": 0.3178,
+    "fpr": 14.61,
+    "fnr": 80.68,
+    "false_positives": 26,
+    "false_negatives": 923,
+    "latency_ms": 12.897
+  },
+  "ML + Stage + Velocity": {
+    "precision": 0.9364,
+    "recall": 0.9388,
+    "f1_score": 0.9376,
+    "fpr": 41.01,
+    "fnr": 6.12,
+    "false_positives": 73,
+    "false_negatives": 70,
+    "latency_ms": 13.175
+  },
+  "ML + Stage + Velocity + YOLO": {
+    "precision": 1.0,
+    "recall": 0.0481,
+    "f1_score": 0.0917,
+    "fpr": 0.0,
+    "fnr": 95.19,
+    "false_positives": 0,
+    "false_negatives": 1089,
+    "latency_ms": 15.994
+  },
+  "ML + Stage + Velocity + YOLO + JEV Guardrail": {
+    "precision": 0.8108,
+    "recall": 0.0262,
+    "f1_score": 0.0508,
+    "fpr": 3.93,
+    "fnr": 97.38,
+    "false_positives": 7,
+    "false_negatives": 1114,
+    "latency_ms": 24.565
+  }
+}

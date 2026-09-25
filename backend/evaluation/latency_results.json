@@ -1,0 +1,17 @@
+{
+  "iterations": 50,
+  "edge_audio_capture_ms": 15.0,
+  "grpc_transport_roundtrip_ms": 22.0,
+  "hubert_acoustic_feature_extraction_ms": 1.622,
+  "language_identification_lid_ms": 0.255,
+  "asr_transcription_ms": 2.774,
+  "jev_semantic_intent_inference_ms": 19.58,
+  "scam_stage_machine_ms": 0.015,
+  "manipulation_velocity_ms": 0.077,
+  "yolo11_contextual_vision_ms": 542.43,
+  "multimodal_risk_fusion_ms": 0.062,
+  "sha256_ledger_append_ms": 0.066,
+  "edge_ui_safety_brake_trigger_ms": 12.0,
+  "backend_inference_total_ms": 24.452,
+  "total_end_to_end_warning_latency_ms": 73.45
+}

@@ -1,0 +1,315 @@
+{
+  "total_scenarios": 22,
+  "true_positives": 13,
+  "true_negatives": 9,
+  "false_positives": 0,
+  "false_negatives": 0,
+  "precision": 100.0,
+  "recall": 100.0,
+  "f1_score": 100.0,
+  "false_positive_rate": 0.0,
+  "false_negative_rate": 0.0,
+  "mean_inference_latency_ms": 7.58,
+  "scenario_results": [
+    {
+      "id": "EN-SCAM-01",
+      "language": "en-IN",
+      "type": "SCAM",
+      "expected_brake": true,
+      "predicted_brake": true,
+      "final_risk_score": 100,
+      "final_stage": "PAYMENT_CREDENTIAL",
+      "tactics": [
+        "AUTHORITY",
+        "FEAR",
+        "ISOLATION",
+        "URGENCY",
+        "PAYMENT",
+        "CREDENTIAL",
+        "SUSPICIOUS_LINK"
+      ]
+    },
+    {
+      "id": "EN-SCAM-02",
+      "language": "en-IN",
+      "type": "SCAM",
+      "expected_brake": true,
+      "predicted_brake": true,
+      "final_risk_score": 67,
+      "final_stage": "PAYMENT_CREDENTIAL",
+      "tactics": [
+        "AUTHORITY",
+        "FEAR",
+        "URGENCY",
+        "ISOLATION",
+        "CREDENTIAL"
+      ]
+    },
+    {
+      "id": "EN-SCAM-03",
+      "language": "en-IN",
+      "type": "SCAM",
+      "expected_brake": true,
+      "predicted_brake": true,
+      "final_risk_score": 69,
+      "final_stage": "PAYMENT_CREDENTIAL",
+      "tactics": [
+        "URGENCY",
+        "PAYMENT",
+        "REMOTE_ACCESS",
+        "CREDENTIAL"
+      ]
+    },
+    {
+      "id": "EN-SCAM-04",
+      "language": "en-IN",
+      "type": "SCAM",
+      "expected_brake": true,
+      "predicted_brake": true,
+      "final_risk_score": 90,
+      "final_stage": "CRITICAL_BRAKE",
+      "tactics": [
+        "AUTHORITY",
+        "FEAR",
+        "URGENCY",
+        "PAYMENT",
+        "ESCALATION"
+      ]
+    },
+    {
+      "id": "EN-SCAM-05",
+      "language": "en-IN",
+      "type": "SCAM",
+      "expected_brake": true,
+      "predicted_brake": true,
+      "final_risk_score": 66,
+      "final_stage": "PAYMENT_CREDENTIAL",
+      "tactics": [
+        "URGENCY",
+        "PAYMENT",
+        "SUSPICIOUS_LINK"
+      ]
+    },
+    {
+      "id": "EN-BENIGN-01",
+      "language": "en-IN",
+      "type": "BENIGN",
+      "expected_brake": false,
+      "predicted_brake": false,
+      "final_risk_score": 0,
+      "final_stage": "CONTACT",
+      "tactics": []
+    },
+    {
+      "id": "EN-BENIGN-02",
+      "language": "en-IN",
+      "type": "BENIGN",
+      "expected_brake": false,
+      "predicted_brake": false,
+      "final_risk_score": 21,
+      "final_stage": "FEAR",
+      "tactics": [
+        "AUTHORITY",
+        "SUSPICIOUS_LINK"
+      ]
+    },
+    {
+      "id": "EN-BENIGN-03",
+      "language": "en-IN",
+      "type": "BENIGN",
+      "expected_brake": false,
+      "predicted_brake": false,
+      "final_risk_score": 30,
+      "final_stage": "PAYMENT_CREDENTIAL",
+      "tactics": [
+        "PAYMENT"
+      ]
+    },
+    {
+      "id": "TA-SCAM-01",
+      "language": "ta-IN",
+      "type": "SCAM",
+      "expected_brake": true,
+      "predicted_brake": true,
+      "final_risk_score": 68,
+      "final_stage": "PAYMENT_CREDENTIAL",
+      "tactics": [
+        "AUTHORITY",
+        "FEAR",
+        "ISOLATION",
+        "URGENCY",
+        "PAYMENT"
+      ]
+    },
+    {
+      "id": "TA-SCAM-02",
+      "language": "ta-IN",
+      "type": "SCAM",
+      "expected_brake": true,
+      "predicted_brake": true,
+      "final_risk_score": 69,
+      "final_stage": "PAYMENT_CREDENTIAL",
+      "tactics": [
+        "URGENCY",
+        "PAYMENT",
+        "CREDENTIAL"
+      ]
+    },
+    {
+      "id": "TA-BENIGN-01",
+      "language": "ta-IN",
+      "type": "BENIGN",
+      "expected_brake": false,
+      "predicted_brake": false,
+      "final_risk_score": 0,
+      "final_stage": "CONTACT",
+      "tactics": []
+    },
+    {
+      "id": "TA-BENIGN-02",
+      "language": "ta-IN",
+      "type": "BENIGN",
+      "expected_brake": false,
+      "predicted_brake": false,
+      "final_risk_score": 27,
+      "final_stage": "PAYMENT_CREDENTIAL",
+      "tactics": [
+        "CREDENTIAL"
+      ]
+    },
+    {
+      "id": "TANGLISH-SCAM-01",
+      "language": "ta-Latn",
+      "type": "SCAM",
+      "expected_brake": true,
+      "predicted_brake": true,
+      "final_risk_score": 100,
+      "final_stage": "CRITICAL_BRAKE",
+      "tactics": [
+        "AUTHORITY",
+        "FEAR",
+        "ESCALATION",
+        "URGENCY",
+        "ISOLATION",
+        "CREDENTIAL",
+        "SUSPICIOUS_LINK",
+        "PAYMENT"
+      ]
+    },
+    {
+      "id": "TANGLISH-SCAM-02",
+      "language": "ta-Latn",
+      "type": "SCAM",
+      "expected_brake": true,
+      "predicted_brake": true,
+      "final_risk_score": 62,
+      "final_stage": "PAYMENT_CREDENTIAL",
+      "tactics": [
+        "AUTHORITY",
+        "CREDENTIAL"
+      ]
+    },
+    {
+      "id": "TANGLISH-SCAM-03",
+      "language": "ta-Latn",
+      "type": "SCAM",
+      "expected_brake": true,
+      "predicted_brake": true,
+      "final_risk_score": 66,
+      "final_stage": "PAYMENT_CREDENTIAL",
+      "tactics": [
+        "CREDENTIAL",
+        "REMOTE_ACCESS",
+        "SUSPICIOUS_LINK"
+      ]
+    },
+    {
+      "id": "TANGLISH-BENIGN-01",
+      "language": "ta-Latn",
+      "type": "BENIGN",
+      "expected_brake": false,
+      "predicted_brake": false,
+      "final_risk_score": 0,
+      "final_stage": "CONTACT",
+      "tactics": []
+    },
+    {
+      "id": "TANGLISH-BENIGN-02",
+      "language": "ta-Latn",
+      "type": "BENIGN",
+      "expected_brake": false,
+      "predicted_brake": false,
+      "final_risk_score": 0,
+      "final_stage": "CONTACT",
+      "tactics": []
+    },
+    {
+      "id": "HI-SCAM-01",
+      "language": "hi-IN",
+      "type": "SCAM",
+      "expected_brake": true,
+      "predicted_brake": false,
+      "final_risk_score": 67,
+      "final_stage": "DEMAND",
+      "tactics": [
+        "AUTHORITY",
+        "FEAR",
+        "ISOLATION",
+        "URGENCY"
+      ]
+    },
+    {
+      "id": "HI-BENIGN-01",
+      "language": "hi-IN",
+      "type": "BENIGN",
+      "expected_brake": false,
+      "predicted_brake": false,
+      "final_risk_score": 0,
+      "final_stage": "CONTACT",
+      "tactics": []
+    },
+    {
+      "id": "HINGLISH-SCAM-01",
+      "language": "hi-Latn",
+      "type": "SCAM",
+      "expected_brake": true,
+      "predicted_brake": true,
+      "final_risk_score": 100,
+      "final_stage": "CRITICAL_BRAKE",
+      "tactics": [
+        "AUTHORITY",
+        "FEAR",
+        "CREDENTIAL",
+        "ESCALATION",
+        "URGENCY",
+        "ISOLATION",
+        "PAYMENT",
+        "SUSPICIOUS_LINK"
+      ]
+    },
+    {
+      "id": "HINGLISH-SCAM-02",
+      "language": "hi-Latn",
+      "type": "SCAM",
+      "expected_brake": true,
+      "predicted_brake": true,
+      "final_risk_score": 68,
+      "final_stage": "PAYMENT_CREDENTIAL",
+      "tactics": [
+        "FEAR",
+        "CREDENTIAL",
+        "SUSPICIOUS_LINK"
+      ]
+    },
+    {
+      "id": "HINGLISH-BENIGN-01",
+      "language": "hi-Latn",
+      "type": "BENIGN",
+      "expected_brake": false,
+      "predicted_brake": false,
+      "final_risk_score": 0,
+      "final_stage": "CONTACT",
+      "tactics": []
+    }
+  ]
+}

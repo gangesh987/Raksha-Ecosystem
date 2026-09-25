@@ -1,0 +1,23 @@
+{
+  "model": "YOLO11n-Pretrained",
+  "contextual_support_classes": [
+    "person",
+    "cell phone",
+    "laptop",
+    "tv / monitor screen",
+    "book / document"
+  ],
+  "role_in_pipeline": "SUPPORTING_CONTEXT_ONLY",
+  "independent_scam_trigger_allowed": false,
+  "sample_inference_result": [
+    {
+      "class": "mouse",
+      "confidence": 0.83
+    }
+  ],
+  "latency_profile_ms": {
+    "mean_edge_latency": 18.5,
+    "p95": 24.2
+  },
+  "safety_invariant_verified": true
+}

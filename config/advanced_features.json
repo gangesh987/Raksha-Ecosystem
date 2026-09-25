@@ -1,0 +1,74 @@
+{
+  "version": "3.0",
+  "codename": "RakshaCall Sentinel",
+  "principles": [
+    "Conversation/coercion remains the primary risk signal.",
+    "Visual and liveness signals remain supporting/experimental signals.",
+    "Every alert is explainable and evidence-backed.",
+    "No silent interception of encrypted applications.",
+    "Consent is explicit, revocable, and auditable."
+  ],
+  "features": {
+    "adaptive_risk_engine": [
+      "time-decayed risk memory",
+      "scenario-aware thresholds",
+      "confidence calibration boundary",
+      "signal disagreement detection",
+      "risk trajectory and acceleration",
+      "counterfactual explanation: what would lower risk"
+    ],
+    "conversation_intelligence": [
+      "multi-stage scam script state machine",
+      "coercion/timeliness/isolation/payment/authority tactic tagging",
+      "entity extraction for amount, account, OTP, UPI, links and phone numbers",
+      "repetition and escalation detection",
+      "language-switch awareness",
+      "speaker-turn risk timeline"
+    ],
+    "visual_intelligence": [
+      "face continuity/identity consistency boundary",
+      "pose/gaze anomaly supporting signal",
+      "screen-share/context anomaly supporting signal",
+      "explicit experimental liveness boundary"
+    ],
+    "incident_response": [
+      "graduated intervention ladder",
+      "trusted-contact escalation policy",
+      "incident state machine",
+      "cooldown and anti-spam logic",
+      "panic action boundary"
+    ],
+    "evidence": [
+      "tamper-evident hash chain",
+      "event signing boundary",
+      "manifest with timestamps and model versions",
+      "JSON export",
+      "PDF export boundary",
+      "redaction policy"
+    ],
+    "security": [
+      "RBAC boundary",
+      "refresh-token rotation boundary",
+      "rate-limit middleware boundary",
+      "security headers",
+      "audit trail",
+      "health/readiness endpoints",
+      "secret configuration"
+    ],
+    "observability": [
+      "structured event logs",
+      "risk decision telemetry",
+      "model latency metrics",
+      "signal quality metrics",
+      "drift monitoring boundary"
+    ],
+    "mlops": [
+      "model adapter interfaces",
+      "dataset schema",
+      "offline evaluation harness",
+      "calibration metrics",
+      "model registry metadata boundary",
+      "ONNX/local inference adapter boundary"
+    ]
+  }
+}

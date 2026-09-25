@@ -1,0 +1,127 @@
+{
+  "model": "RakshaCall-Multilingual-Semantic-v2",
+  "type": "Shared Multilingual Representation (768D) + Multi-Task Dual Heads",
+  "total_parameters": 6435850,
+  "test_turns": 1292,
+  "scam_classification": {
+    "precision": 0.9478,
+    "recall": 0.9371,
+    "f1_score": 0.9424,
+    "fpr": 39.86,
+    "fnr": 6.29,
+    "confusion_matrix": {
+      "TN": 89,
+      "FP": 59,
+      "FN": 72,
+      "TP": 1072
+    }
+  },
+  "tactics_classification": {
+    "macro_f1": 0.4166,
+    "micro_f1": 0.8438,
+    "per_tactic": {
+      "AUTHORITY_IMPERSONATION": {
+        "precision": 0.9339,
+        "recall": 0.8602,
+        "f1": 0.8955,
+        "support": 279
+      },
+      "CRIMINAL_ALLEGATION_FEAR": {
+        "precision": 0.9333,
+        "recall": 0.8592,
+        "f1": 0.8947,
+        "support": 277
+      },
+      "URGENCY": {
+        "precision": 0.6667,
+        "recall": 0.2222,
+        "f1": 0.3333,
+        "support": 9
+      },
+      "ISOLATION": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "PAYMENT_DEMAND": {
+        "precision": 0.7112,
+        "recall": 0.7484,
+        "f1": 0.7293,
+        "support": 306
+      },
+      "CREDENTIAL_OTP_PRESSURE": {
+        "precision": 0.9336,
+        "recall": 0.8628,
+        "f1": 0.8968,
+        "support": 277
+      },
+      "REMOTE_ACCESS_PRESSURE": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      },
+      "SUSPICIOUS_LINKS": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "ESCALATION_COERCION": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      }
+    }
+  },
+  "hard_negatives": {
+    "total_samples": 30,
+    "false_alarms": 13,
+    "false_alarm_rate_pct": 43.33
+  },
+  "per_language": {
+    "en": {
+      "samples": 1236,
+      "precision": 0.9487,
+      "recall": 0.9461,
+      "f1": 0.9474,
+      "fpr": 39.72,
+      "fnr": 5.39
+    },
+    "ta": {
+      "samples": 4,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "fpr": 0.0,
+      "fnr": 100.0
+    },
+    "ta-Latn": {
+      "samples": 10,
+      "precision": 0.8333,
+      "recall": 0.7143,
+      "f1": 0.7692,
+      "fpr": 33.33,
+      "fnr": 28.57
+    },
+    "hi": {
+      "samples": 38,
+      "precision": 0.931,
+      "recall": 0.7941,
+      "f1": 0.8571,
+      "fpr": 50.0,
+      "fnr": 20.59
+    },
+    "hi-Latn": {
+      "samples": 4,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "fnr": 0.0
+    }
+  },
+  "latency_profile_ms": 2.57
+}

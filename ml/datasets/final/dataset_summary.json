@@ -1,0 +1,29 @@
+{
+  "total_conversations": 1204,
+  "splits": {
+    "train": {
+      "conversations": 841,
+      "turns": 4541
+    },
+    "val": {
+      "conversations": 181,
+      "turns": 1221
+    },
+    "test": {
+      "conversations": 182,
+      "turns": 1292
+    }
+  },
+  "tactics_ontology": [
+    "AUTHORITY_IMPERSONATION",
+    "CRIMINAL_ALLEGATION_FEAR",
+    "URGENCY",
+    "ISOLATION",
+    "PAYMENT_DEMAND",
+    "CREDENTIAL_OTP_PRESSURE",
+    "REMOTE_ACCESS_PRESSURE",
+    "SUSPICIOUS_LINKS",
+    "ESCALATION_COERCION"
+  ],
+  "leakage_purged": true
+}

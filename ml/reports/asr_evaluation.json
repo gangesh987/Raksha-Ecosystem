@@ -1,0 +1,59 @@
+{
+  "hubert_phonetic": {
+    "wer_by_lang": {
+      "ta": 0.0,
+      "ta-Latn": 0.0,
+      "hi": 0.0,
+      "hi-Latn": 0.0,
+      "en": 0.0
+    },
+    "cer_by_lang": {
+      "ta": 0.0,
+      "ta-Latn": 0.0,
+      "hi": 0.0,
+      "hi-Latn": 0.0,
+      "en": 0.0
+    },
+    "overall_wer": 0.0,
+    "overall_cer": 0.0,
+    "latency_ms": 32.1
+  },
+  "indic_asr": {
+    "wer_by_lang": {
+      "ta": 14.29,
+      "ta-Latn": 11.11,
+      "hi": 9.09,
+      "hi-Latn": 9.09,
+      "en": 27.27
+    },
+    "cer_by_lang": {
+      "ta": 2.17,
+      "ta-Latn": 1.72,
+      "hi": 5.0,
+      "hi-Latn": 2.0,
+      "en": 0.0
+    },
+    "overall_wer": 14.17,
+    "overall_cer": 2.18,
+    "latency_ms": 85.4
+  },
+  "cloud_asr": {
+    "wer_by_lang": {
+      "ta": 42.86,
+      "ta-Latn": 33.33,
+      "hi": 0.0,
+      "hi-Latn": 9.09,
+      "en": 0.0
+    },
+    "cer_by_lang": {
+      "ta": 6.52,
+      "ta-Latn": 0.0,
+      "hi": 0.0,
+      "hi-Latn": 2.0,
+      "en": 0.0
+    },
+    "overall_wer": 17.06,
+    "overall_cer": 1.7,
+    "latency_ms": 142.8
+  }
+}

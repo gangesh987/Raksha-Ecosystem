@@ -1,0 +1,38 @@
+================================================================================
+  RAKSHACALL (APP OF RAKSHA) - QUICK INSTALLATION & SETUP GUIDE
+================================================================================
+
+1. HOW TO INSTALL ON ANDROID PHONES (FOR SIR / EVALUATOR):
+--------------------------------------------------------------------------------
+   - Send the file: "RakshaCall-Release.apk" (or "RakshaCall.apk") directly via WhatsApp.
+   - On the Android phone, tap the APK file.
+   - Tap "Install".
+   - If Android shows "Install unknown apps":
+     -> Tap "Settings" -> Toggle ON "Allow from this source" -> Tap "Install".
+   - Open RakshaCall and allow permissions (Microphone, Camera preview for live protection).
+
+   *NOTE: Android phones CANNOT install .zip files directly. Tapping a .zip inside
+    WhatsApp will show: "You may not have a proper app for viewing this content".
+    Always send the .apk file for direct installation on mobile!
+
+
+2. HOW TO VIEW / EXTRACT PROJECT CODE:
+--------------------------------------------------------------------------------
+   - On PC / Laptop:
+     Right-click "APP OF RAKSHA.zip" -> "Extract All".
+     Open the folder in Android Studio or VS Code.
+
+   - On Mobile:
+     Save "APP OF RAKSHA.zip" to device downloads.
+     Open the "Files by Google" app -> Tap "Downloads" -> Tap "APP OF RAKSHA.zip" -> Tap "Extract".
+
+
+3. PROJECT STRUCTURE:
+--------------------------------------------------------------------------------
+   - RakshaCall-Release.apk : Production-ready compiled Android Application
+   - app/                   : Android Jetpack Compose + Kotlin Application Source
+   - backend/               : FastAPI Python backend (Coercion AI + WebSockets)
+   - frontend/              : Security Operations Dashboard (Web UI)
+   - docs/                  : Complete architectural documentation and reports
+   - media/                 : Demo video and presentation graphics
+================================================================================

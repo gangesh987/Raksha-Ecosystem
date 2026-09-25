@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "779793034909",
+    "project_id": "rakshacall",
+    "storage_bucket": "rakshacall.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:779793034909:android:f95a56198e916578f66e74",
+        "android_client_info": {
+          "package_name": "com.example.rakshacall"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiJ5nB2kdxKbuHoXt2oydIqCcZYzdBbBs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,87 @@
+{
+  "evaluation_dataset": "RakshaCall-Test-Split-Untouched",
+  "sample_count": 9,
+  "binary_scam_classification": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1_score": 0.0,
+    "accuracy": 0.0,
+    "confusion_matrix": {
+      "TN": 0,
+      "FP": 0,
+      "FN": 9,
+      "TP": 0
+    }
+  },
+  "multilabel_tactics_classification": {
+    "macro_f1": 0.0,
+    "micro_f1": 0.0,
+    "per_class": {
+      "AUTHORITY_IMPERSONATION": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      },
+      "CRIMINAL_ALLEGATION_FEAR": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      },
+      "URGENCY": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 3
+      },
+      "ISOLATION": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "PAYMENT_DEMAND": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "CREDENTIAL_OTP_PRESSURE": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "REMOTE_ACCESS_PRESSURE": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "SUSPICIOUS_LINKS": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      "ESCALATION_COERCION": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      }
+    }
+  },
+  "safety_guardrails": {
+    "negative_control_samples": 0,
+    "false_alarms": 0,
+    "negative_control_fpr_pct": 0.0
+  },
+  "latency_profile_ms": {
+    "mean": 2.81,
+    "p50": 2.44,
+    "p95": 4.43,
+    "p99": 5.11
+  }
+}

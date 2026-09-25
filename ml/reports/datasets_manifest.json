@@ -1,0 +1,117 @@
+{
+  "indic_voices": {
+    "dataset_key": "indic_voices",
+    "name": "ai4bharat/IndicVoices",
+    "source": "https://huggingface.co/datasets/ai4bharat/IndicVoices",
+    "license": "CC-BY-4.0 / Research Use (Access approval required)",
+    "target_languages": [
+      "ta",
+      "hi",
+      "en"
+    ],
+    "purpose": "Multilingual Indian speech / ASR acoustic evaluation",
+    "download_mode": "streaming",
+    "sample_limit": 200,
+    "requires_auth": true,
+    "status": "configured",
+    "auth_status": "HF_TOKEN not set in environment; streaming/gated mode requires accepted license terms."
+  },
+  "scambench": {
+    "dataset_key": "scambench",
+    "name": "shaw/scambench-training",
+    "source": "https://huggingface.co/datasets/shaw/scambench-training",
+    "license": "Open Data Commons / Research",
+    "target_languages": [
+      "en",
+      "hi",
+      "multi"
+    ],
+    "purpose": "Multilingual multi-turn scam / social engineering conversation understanding",
+    "download_mode": "direct",
+    "sample_limit": 1000,
+    "requires_auth": false,
+    "status": "configured",
+    "auth_status": "READY"
+  },
+  "scam_dialogue": {
+    "dataset_key": "scam_dialogue",
+    "name": "BothBosu/scam-dialogue",
+    "source": "https://huggingface.co/datasets/BothBosu/scam-dialogue",
+    "license": "Research / Open",
+    "target_languages": [
+      "en",
+      "multi"
+    ],
+    "purpose": "Multi-turn scam dialogue structure (caller vs receiver dialogue boundaries)",
+    "download_mode": "direct",
+    "sample_limit": 500,
+    "requires_auth": false,
+    "status": "configured",
+    "auth_status": "READY"
+  },
+  "hinglish_scam": {
+    "dataset_key": "hinglish_scam",
+    "name": "bolewara/hinglish-scam-text-dataset",
+    "source": "https://huggingface.co/datasets/bolewara/hinglish-scam-text-dataset",
+    "license": "MIT / Open",
+    "target_languages": [
+      "hi-Latn",
+      "en-IN"
+    ],
+    "purpose": "Indian financial scam semantic adaptation (KYC, Aadhaar, UPI, OTP, loan scams)",
+    "download_mode": "direct",
+    "sample_limit": 1000,
+    "requires_auth": false,
+    "status": "configured",
+    "auth_status": "READY"
+  },
+  "phishing_supplement": {
+    "dataset_key": "phishing_supplement",
+    "name": "ealvaradob/phishing-dataset",
+    "source": "https://huggingface.co/datasets/ealvaradob/phishing-dataset",
+    "license": "Open / Educational",
+    "target_languages": [
+      "en"
+    ],
+    "purpose": "Supplementary phishing / smishing / malicious URL & suspicious link context",
+    "download_mode": "subset",
+    "sample_limit": 500,
+    "requires_auth": false,
+    "status": "configured",
+    "auth_status": "READY"
+  },
+  "indic_tts_tamil": {
+    "dataset_key": "indic_tts_tamil",
+    "name": "SPRINGLab/IndicTTS_Tamil",
+    "source": "https://huggingface.co/datasets/SPRINGLab/IndicTTS_Tamil",
+    "license": "Research / Non-Commercial",
+    "target_languages": [
+      "ta"
+    ],
+    "purpose": "Supplementary Tamil speech research & acoustic adaptation",
+    "download_mode": "streaming",
+    "sample_limit": 50,
+    "requires_auth": false,
+    "status": "configured",
+    "auth_status": "READY"
+  },
+  "rakshacall_domain_indian": {
+    "dataset_key": "rakshacall_domain_indian",
+    "name": "rakshacall_domain_indian",
+    "source": "local_authored_verified",
+    "license": "Proprietary RakshaCall Evaluation License",
+    "target_languages": [
+      "ta",
+      "ta-Latn",
+      "hi",
+      "hi-Latn",
+      "en"
+    ],
+    "purpose": "Targeted Indian Digital Arrest, ED/CBI Impersonation, TRAI, and Negative Control evaluation set",
+    "download_mode": "local",
+    "sample_limit": 500,
+    "requires_auth": false,
+    "status": "configured",
+    "auth_status": "READY"
+  }
+}

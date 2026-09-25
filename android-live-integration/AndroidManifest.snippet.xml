@@ -1,0 +1,5 @@
+<!-- Merge into the existing RakshaCall manifest. Request these at runtime only when the user starts the corresponding feature. -->
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />

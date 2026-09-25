@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "RakshaCall Sentinel Capture",
+  "version": "0.1.0",
+  "description": "User-initiated capture bridge for RakshaCall. Requires explicit browser permission.",
+  "permissions": [
+    "tabCapture",
+    "activeTab",
+    "storage"
+  ],
+  "action": {
+    "default_title": "Start RakshaCall protection"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

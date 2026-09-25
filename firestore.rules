@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Only users can read/write their own profiles
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Dynamic rule for protection_sessions, evidence_events, transcript_events, risk_events, scam_stage_events, trusted_contacts, alert_events, consent_records
+    match /{collectionName}/{docId} {
+      allow read, create: if request.auth != null && 
+        (resource == null ? request.resource.data.userId == request.auth.uid : resource.data.userId == request.auth.uid);
+        
+      // Block edits or deletions on historical audit trails (evidence & risk logs)
+      allow update, delete: if request.auth != null && 
+        resource.data.userId == request.auth.uid &&
+        !(collectionName in ['evidence_events', 'risk_events', 'consent_records']) &&
+        request.resource.data.previousHash == resource.data.previousHash &&
+        request.resource.data.currentHash == resource.data.currentHash;
+    }
+  }
+}

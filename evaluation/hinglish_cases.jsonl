@@ -1,0 +1,9 @@
+{"text": "Asli police kabhi bhi phone par paise transfer karne ko nahi bolti.", "is_scam": false, "tactics": [], "language": "hi-Latn"}
+{"text": "Bank wale bolte hain apna PIN aur OTP kisi ke sath share mat karo.", "is_scam": false, "tactics": [], "language": "hi-Latn"}
+{"text": "Ye digital arrest ek fraud hai, turant call cut kar do aur complaint karo.", "is_scam": false, "tactics": [], "language": "hi-Latn"}
+{"text": "Usne bola AnyDesk download karo, maine mana kar diya.", "is_scam": false, "tactics": [], "language": "hi-Latn"}
+{"text": "Electricity bill ka fake link aaya tha, maine click nahi kiya.", "is_scam": false, "tactics": [], "language": "hi-Latn"}
+{"text": "Customs air cargo terminal Mumbai se Chief Superintendent बोल रहा हूँ।", "is_scam": true, "tactics": ["AUTHORITY_IMPERSONATION"], "language": "hi-Latn"}
+{"text": "Aapke naam ka parcel mila hai jisme foreign currency aur synthetic narcotics hai, non-bailable FIR ban chuki hai.", "is_scam": true, "tactics": ["CRIMINAL_ALLEGATION_FEAR"], "language": "hi-Latn"}
+{"text": "Kisi ko call mat lagana, case confidential hai warna abhi special team bhejenge.", "is_scam": true, "tactics": ["ISOLATION", "ESCALATION_COERCION"], "language": "hi-Latn"}
+{"text": "Bail verification clearance ke liye court ke safe deposit account me turant transfer kijiye.", "is_scam": true, "tactics": ["PAYMENT_DEMAND"], "language": "hi-Latn"}

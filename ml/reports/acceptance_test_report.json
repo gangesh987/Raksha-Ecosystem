@@ -1,0 +1,380 @@
+{
+  "English": {
+    "session_id": "acceptance-english-1790317607",
+    "turns_processed": 6,
+    "safety_brake_triggered": true,
+    "final_stage": "PAYMENT_CREDENTIAL",
+    "chain_valid": true,
+    "blocks_recorded": 8,
+    "turn_details": [
+      {
+        "turn": 1,
+        "text": "I am calling from Delhi Police cyber headquarters.",
+        "lang_detected": "en-IN",
+        "tactics_detected": [
+          "AUTHORITY_IMPERSONATION"
+        ],
+        "stage": "AUTHORITY",
+        "velocity": 0.0,
+        "risk_score": 12,
+        "risk_level": "LOW",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 2,
+        "text": "Your Aadhaar is connected to a massive money laundering case.",
+        "lang_detected": "en-IN",
+        "tactics_detected": [
+          "AUTHORITY_IMPERSONATION",
+          "CRIMINAL_ALLEGATION_FEAR",
+          "URGENCY"
+        ],
+        "stage": "DEMAND",
+        "velocity": 520.89,
+        "risk_score": 61,
+        "risk_level": "HIGH",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 3,
+        "text": "Do not disconnect this call under any circumstances.",
+        "lang_detected": "en-IN",
+        "tactics_detected": [
+          "URGENCY",
+          "ISOLATION"
+        ],
+        "stage": "DEMAND",
+        "velocity": 656.74,
+        "risk_score": 45,
+        "risk_level": "MEDIUM",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 4,
+        "text": "Do not tell your family or anyone around you.",
+        "lang_detected": "en-IN",
+        "tactics_detected": [
+          "ISOLATION"
+        ],
+        "stage": "DEMAND",
+        "velocity": 738.37,
+        "risk_score": 39,
+        "risk_level": "MEDIUM",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 5,
+        "text": "You must transfer fifty thousand rupees immediately to RBI verification account.",
+        "lang_detected": "hi-Latn",
+        "tactics_detected": [
+          "AUTHORITY_IMPERSONATION",
+          "URGENCY",
+          "PAYMENT_DEMAND",
+          "SUSPICIOUS_LINKS"
+        ],
+        "stage": "PAYMENT_CREDENTIAL",
+        "velocity": 1140.11,
+        "risk_score": 78,
+        "risk_level": "HIGH",
+        "safety_brake_triggered": true,
+        "voice_alert": "STOP. DO NOT TRANSFER MONEY. CALL YOUR FAMILY."
+      },
+      {
+        "turn": 6,
+        "text": "Tell me the OTP sent to your phone right now.",
+        "lang_detected": "en-IN",
+        "tactics_detected": [
+          "URGENCY",
+          "ISOLATION",
+          "CREDENTIAL_OTP_PRESSURE"
+        ],
+        "stage": "PAYMENT_CREDENTIAL",
+        "velocity": 1417.96,
+        "risk_score": 70,
+        "risk_level": "HIGH",
+        "safety_brake_triggered": true,
+        "voice_alert": "STOP. DO NOT TRANSFER MONEY. CALL YOUR FAMILY."
+      }
+    ]
+  },
+  "Tamil": {
+    "session_id": "acceptance-tamil-1790317611",
+    "turns_processed": 6,
+    "safety_brake_triggered": false,
+    "final_stage": "PAYMENT_CREDENTIAL",
+    "chain_valid": true,
+    "blocks_recorded": 6,
+    "turn_details": [
+      {
+        "turn": 1,
+        "text": "வணக்கம், நான் டெல்லி போலீஸ் தலைமையகத்திலிருந்து அழைக்கிறேன்.",
+        "lang_detected": "ta-IN",
+        "tactics_detected": [],
+        "stage": "CONTACT",
+        "velocity": 0.0,
+        "risk_score": 0,
+        "risk_level": "LOW",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 2,
+        "text": "உங்கள் ஆதார் அட்டை பணமோசடி வழக்கில் பயன்படுத்தப்பட்டுள்ளது.",
+        "lang_detected": "ta-IN",
+        "tactics_detected": [
+          "AUTHORITY_IMPERSONATION",
+          "CRIMINAL_ALLEGATION_FEAR",
+          "URGENCY"
+        ],
+        "stage": "DEMAND",
+        "velocity": 220.8,
+        "risk_score": 61,
+        "risk_level": "HIGH",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 3,
+        "text": "எந்த காரணத்திற்காகவும் அழைப்பை துண்டிக்காதீர்கள்.",
+        "lang_detected": "ta-IN",
+        "tactics_detected": [
+          "ISOLATION"
+        ],
+        "stage": "DEMAND",
+        "velocity": 304.67,
+        "risk_score": 39,
+        "risk_level": "MEDIUM",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 4,
+        "text": "உங்கள் குடும்பத்தினரிடமோ வேறு யாரிடமோ இதை சொல்லக்கூடாது.",
+        "lang_detected": "ta-IN",
+        "tactics_detected": [],
+        "stage": "DEMAND",
+        "velocity": 304.03,
+        "risk_score": 29,
+        "risk_level": "LOW",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 5,
+        "text": "உடனடியாக சரிபார்ப்பு கணக்கிற்கு பணத்தை மாற்ற வேண்டும்.",
+        "lang_detected": "ta-IN",
+        "tactics_detected": [
+          "PAYMENT_DEMAND"
+        ],
+        "stage": "PAYMENT_CREDENTIAL",
+        "velocity": 523.64,
+        "risk_score": 47,
+        "risk_level": "MEDIUM",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 6,
+        "text": "உங்கள் மொபைலுக்கு வந்த ஓடிபி எண்ணை சொல்லுங்கள்.",
+        "lang_detected": "ta-IN",
+        "tactics_detected": [
+          "CREDENTIAL_OTP_PRESSURE"
+        ],
+        "stage": "PAYMENT_CREDENTIAL",
+        "velocity": 671.51,
+        "risk_score": 47,
+        "risk_level": "MEDIUM",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      }
+    ]
+  },
+  "Tanglish": {
+    "session_id": "acceptance-tanglish-1790317612",
+    "turns_processed": 6,
+    "safety_brake_triggered": true,
+    "final_stage": "PAYMENT_CREDENTIAL",
+    "chain_valid": true,
+    "blocks_recorded": 7,
+    "turn_details": [
+      {
+        "turn": 1,
+        "text": "Naan Delhi Police headquarters-la irundhu officer pesuren.",
+        "lang_detected": "ta-Latn",
+        "tactics_detected": [
+          "AUTHORITY_IMPERSONATION"
+        ],
+        "stage": "AUTHORITY",
+        "velocity": 0.0,
+        "risk_score": 12,
+        "risk_level": "LOW",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 2,
+        "text": "Ungal Aadhaar money laundering case-la link aagi irukku.",
+        "lang_detected": "ta-Latn",
+        "tactics_detected": [
+          "CRIMINAL_ALLEGATION_FEAR"
+        ],
+        "stage": "FEAR",
+        "velocity": 241.06,
+        "risk_score": 31,
+        "risk_level": "MEDIUM",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 3,
+        "text": "Call-a disconnect panna koodaadhu.",
+        "lang_detected": "en-IN",
+        "tactics_detected": [],
+        "stage": "FEAR",
+        "velocity": 240.79,
+        "risk_score": 21,
+        "risk_level": "LOW",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 4,
+        "text": "Ungal family-kitta yaar kittayum solla koodaadhu.",
+        "lang_detected": "en-IN",
+        "tactics_detected": [],
+        "stage": "FEAR",
+        "velocity": 240.54,
+        "risk_score": 21,
+        "risk_level": "LOW",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 5,
+        "text": "Panatha ippove verification account-ku transfer pannunga.",
+        "lang_detected": "hi-Latn",
+        "tactics_detected": [
+          "URGENCY",
+          "PAYMENT_DEMAND",
+          "CREDENTIAL_OTP_PRESSURE",
+          "SUSPICIOUS_LINKS"
+        ],
+        "stage": "PAYMENT_CREDENTIAL",
+        "velocity": 857.97,
+        "risk_score": 83,
+        "risk_level": "CRITICAL",
+        "safety_brake_triggered": true,
+        "voice_alert": "STOP. DO NOT TRANSFER MONEY. CALL YOUR FAMILY."
+      },
+      {
+        "turn": 6,
+        "text": "Phone-ku vandha OTP sollunga.",
+        "lang_detected": "ta-Latn",
+        "tactics_detected": [
+          "CREDENTIAL_OTP_PRESSURE"
+        ],
+        "stage": "PAYMENT_CREDENTIAL",
+        "velocity": 1005.56,
+        "risk_score": 47,
+        "risk_level": "MEDIUM",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      }
+    ]
+  },
+  "Hindi": {
+    "session_id": "acceptance-hindi-1790317613",
+    "turns_processed": 6,
+    "safety_brake_triggered": true,
+    "final_stage": "PAYMENT_CREDENTIAL",
+    "chain_valid": true,
+    "blocks_recorded": 7,
+    "turn_details": [
+      {
+        "turn": 1,
+        "text": "मैं दिल्ली पुलिस मुख्यालय से बात कर रहा हूँ।",
+        "lang_detected": "hi-IN",
+        "tactics_detected": [
+          "AUTHORITY_IMPERSONATION"
+        ],
+        "stage": "AUTHORITY",
+        "velocity": 0.0,
+        "risk_score": 12,
+        "risk_level": "LOW",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 2,
+        "text": "आपका आधार मनी लॉन्ड्रिंग केस से जुड़ा हुआ है।",
+        "lang_detected": "hi-IN",
+        "tactics_detected": [
+          "CRIMINAL_ALLEGATION_FEAR"
+        ],
+        "stage": "FEAR",
+        "velocity": 237.46,
+        "risk_score": 31,
+        "risk_level": "MEDIUM",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 3,
+        "text": "कॉल बिल्कुल डिस्कनेक्ट मत करना।",
+        "lang_detected": "hi-IN",
+        "tactics_detected": [],
+        "stage": "FEAR",
+        "velocity": 237.19,
+        "risk_score": 21,
+        "risk_level": "LOW",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 4,
+        "text": "अपने परिवार में किसी को मत बताना।",
+        "lang_detected": "hi-IN",
+        "tactics_detected": [],
+        "stage": "FEAR",
+        "velocity": 236.93,
+        "risk_score": 21,
+        "risk_level": "LOW",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      },
+      {
+        "turn": 5,
+        "text": "आपको तुरंत वेरिफिकेशन खाते में पैसे ट्रांसफर करने होंगे।",
+        "lang_detected": "hi-IN",
+        "tactics_detected": [
+          "URGENCY",
+          "PAYMENT_DEMAND"
+        ],
+        "stage": "PAYMENT_CREDENTIAL",
+        "velocity": 656.38,
+        "risk_score": 62,
+        "risk_level": "HIGH",
+        "safety_brake_triggered": true,
+        "voice_alert": "STOP. DO NOT TRANSFER MONEY. CALL YOUR FAMILY."
+      },
+      {
+        "turn": 6,
+        "text": "अपने फोन पर आया ओटीपी बताइए।",
+        "lang_detected": "hi-IN",
+        "tactics_detected": [
+          "CREDENTIAL_OTP_PRESSURE"
+        ],
+        "stage": "PAYMENT_CREDENTIAL",
+        "velocity": 804.05,
+        "risk_score": 47,
+        "risk_level": "MEDIUM",
+        "safety_brake_triggered": false,
+        "voice_alert": null
+      }
+    ]
+  }
+}

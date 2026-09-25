@@ -1,0 +1,10 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Title,Arial,82,&H00FFFFFF,&H00000000,&H00000000,&H78000000,1,0,5,60,60,60,1
+Style: Sub,Arial,40,&H00B9E9FF,&H00000000,&H00000000,&H00000000,0,0,5,70,70,60,1
+Style: Small,Arial,28,&H00D6E5EA,&H00000000,&H00000000,&H00000000,0,0,5,60,60,50,1

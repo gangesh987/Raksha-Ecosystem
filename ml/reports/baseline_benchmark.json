@@ -1,0 +1,15 @@
+{
+  "model": "N-gram + MLP Baseline",
+  "type": "Bag-of-Words / TF-IDF N-Gram MLP",
+  "parameters": 329418,
+  "train_samples": 4541,
+  "test_samples": 1292,
+  "scam_precision": 0.955,
+  "scam_recall": 0.9091,
+  "scam_f1": 0.9315,
+  "tactic_macro_f1": 0.399,
+  "tactic_micro_f1": 0.8492,
+  "fpr": 33.11,
+  "fnr": 9.09,
+  "latency_ms": 0.003
+}

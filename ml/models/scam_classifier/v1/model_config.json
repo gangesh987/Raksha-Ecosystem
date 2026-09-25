@@ -1,0 +1,25 @@
+{
+  "model_name": "RakshaCall-Multilingual-Tactic-v1",
+  "architecture": "MultiTaskNeuralEncoder",
+  "input_dim": 1207,
+  "hidden_dim": 128,
+  "num_tactics": 9,
+  "tactics": [
+    "AUTHORITY_IMPERSONATION",
+    "CRIMINAL_ALLEGATION_FEAR",
+    "URGENCY",
+    "ISOLATION",
+    "PAYMENT_DEMAND",
+    "CREDENTIAL_OTP_PRESSURE",
+    "REMOTE_ACCESS_PRESSURE",
+    "SUSPICIOUS_LINKS",
+    "ESCALATION_COERCION"
+  ],
+  "languages_supported": [
+    "ta",
+    "ta-Latn",
+    "hi",
+    "hi-Latn",
+    "en"
+  ]
+}

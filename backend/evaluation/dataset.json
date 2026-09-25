@@ -1,0 +1,282 @@
+[
+  {
+    "id": "EN-SCAM-01",
+    "language": "en-IN",
+    "scenario_type": "SCAM",
+    "primary_tactic": "AUTHORITY_PAYMENT",
+    "expected_safety_brake": true,
+    "expected_risk_level": "CRITICAL",
+    "dialogue": [
+      "Good morning, this is Senior Inspector Sharma from Mumbai Cyber Crime Branch.",
+      "Your Aadhaar number was found registered to 14 illegal SIM cards involved in bank fraud.",
+      "Do not hang up or tell your family. You are in digital custody.",
+      "You must immediately transfer 50,000 rupees to the RBI security escrow account for verification."
+    ]
+  },
+  {
+    "id": "EN-SCAM-02",
+    "language": "en-IN",
+    "scenario_type": "SCAM",
+    "primary_tactic": "CREDENTIAL_PRESSURE",
+    "expected_safety_brake": true,
+    "expected_risk_level": "HIGH",
+    "dialogue": [
+      "We are calling from your telecom regulatory authority.",
+      "Your mobile connection will be blocked within 2 hours due to an illegal harassment case.",
+      "To prevent disconnection, read out the 6 digit verification OTP sent to your phone right now."
+    ]
+  },
+  {
+    "id": "EN-SCAM-03",
+    "language": "en-IN",
+    "scenario_type": "SCAM",
+    "primary_tactic": "REMOTE_ACCESS",
+    "expected_safety_brake": true,
+    "expected_risk_level": "HIGH",
+    "dialogue": [
+      "Your bank account has detected suspicious international transactions.",
+      "Install AnyDesk app from play store immediately so our technical officer can secure your device.",
+      "Share the 9 digit access code displayed on your screen without delay."
+    ]
+  },
+  {
+    "id": "EN-SCAM-04",
+    "language": "en-IN",
+    "scenario_type": "SCAM",
+    "primary_tactic": "FEAR_ESCALATION",
+    "expected_safety_brake": true,
+    "expected_risk_level": "CRITICAL",
+    "dialogue": [
+      "This is Customs Department at Mumbai Airport.",
+      "A parcel sent in your name containing 250 grams of contraband MDMA has been seized.",
+      "A non-bailable arrest warrant has been registered under NDPS act.",
+      "Police patrol vehicle is dispatched to your residence. Transfer bail clearance deposit immediately."
+    ]
+  },
+  {
+    "id": "EN-SCAM-05",
+    "language": "en-IN",
+    "scenario_type": "SCAM",
+    "primary_tactic": "SUSPICIOUS_LINK_PAYMENT",
+    "expected_safety_brake": true,
+    "expected_risk_level": "HIGH",
+    "dialogue": [
+      "Your electricity bill is unpaid. Power will be disconnected tonight at 9 PM.",
+      "Click this verification link to update your bill payment details immediately."
+    ]
+  },
+  {
+    "id": "EN-BENIGN-01",
+    "language": "en-IN",
+    "scenario_type": "BENIGN",
+    "primary_tactic": "PROTECTIVE_CONTROL",
+    "expected_safety_brake": false,
+    "expected_risk_level": "LOW",
+    "dialogue": [
+      "Remember what the bank manager told us yesterday.",
+      "Never share your OTP or UPI PIN with anyone, even if they claim to be police.",
+      "Police will never ask for passwords or money transfers over phone."
+    ]
+  },
+  {
+    "id": "EN-BENIGN-02",
+    "language": "en-IN",
+    "scenario_type": "BENIGN",
+    "primary_tactic": "NORMAL_POLICE_INQUIRY",
+    "expected_safety_brake": false,
+    "expected_risk_level": "LOW",
+    "dialogue": [
+      "Good afternoon, I am calling regarding your passport address verification.",
+      "Please visit the local police station tomorrow between 10 AM and 2 PM with your original documents.",
+      "There is no fee for this verification."
+    ]
+  },
+  {
+    "id": "EN-BENIGN-03",
+    "language": "en-IN",
+    "scenario_type": "BENIGN",
+    "primary_tactic": "EVERYDAY_CONVERSATION",
+    "expected_safety_brake": false,
+    "expected_risk_level": "LOW",
+    "dialogue": [
+      "Hey Rahul, did you book the train tickets for Diwali?",
+      "Yes, I will transfer the money to your account this evening after office."
+    ]
+  },
+  {
+    "id": "TA-SCAM-01",
+    "language": "ta-IN",
+    "scenario_type": "SCAM",
+    "primary_tactic": "AUTHORITY_PAYMENT",
+    "expected_safety_brake": true,
+    "expected_risk_level": "CRITICAL",
+    "dialogue": [
+      "மும்பை காவல் துறை குற்றப்பிரிவு தலைமை அதிகாரி பேசுகிறேன்.",
+      "உங்கள் ஆதார் அட்டை மூலம் சட்டவிரோத பணப்பரிமாற்றம் மற்றும் போதைப்பொருள் கடத்தல் வழக்கு பதிவு செய்யப்பட்டுள்ளது.",
+      "யாரிடமும் பேசக்கூடாது, தனி அறையில் கதவை மூடி இருக்கவும்.",
+      "ஆர்பிஐ சரிபார்ப்பு கணக்கிற்கு பணம் உடனே மாற்றவும், தாமதிக்காதீர்கள்."
+    ]
+  },
+  {
+    "id": "TA-SCAM-02",
+    "language": "ta-IN",
+    "scenario_type": "SCAM",
+    "primary_tactic": "CREDENTIAL_PRESSURE",
+    "expected_safety_brake": true,
+    "expected_risk_level": "HIGH",
+    "dialogue": [
+      "உங்கள் வங்கி கணக்கு உடனே முடக்கப்படும் அபாயம் உள்ளது.",
+      "வந்த ஆறு இலக்க ஓடிபி எண்ணை உடனே சொல்லுங்கள், தாமதிக்காதீர்."
+    ]
+  },
+  {
+    "id": "TA-BENIGN-01",
+    "language": "ta-IN",
+    "scenario_type": "BENIGN",
+    "primary_tactic": "PROTECTIVE_CONTROL",
+    "expected_safety_brake": false,
+    "expected_risk_level": "LOW",
+    "dialogue": [
+      "வங்கியிலிருந்து எக்காரணம் கொண்டும் ஓடிபி கேட்க மாட்டார்கள்.",
+      "யாராவது போனில் பணம் கேட்டால் பணம் அனுப்பாதீர்கள். இது மோசடி."
+    ]
+  },
+  {
+    "id": "TA-BENIGN-02",
+    "language": "ta-IN",
+    "scenario_type": "BENIGN",
+    "primary_tactic": "EVERYDAY_CONVERSATION",
+    "expected_safety_brake": false,
+    "expected_risk_level": "LOW",
+    "dialogue": [
+      "அம்மா, நான் ஊருக்கு கிளம்பிட்டேன், ஈவினிங் வந்திடுவேன்.",
+      "சரிப்பா, பத்திரமா வா. வந்துட்டு போன் பண்ணு."
+    ]
+  },
+  {
+    "id": "TANGLISH-SCAM-01",
+    "language": "ta-Latn",
+    "scenario_type": "SCAM",
+    "primary_tactic": "AUTHORITY_PAYMENT",
+    "expected_safety_brake": true,
+    "expected_risk_level": "CRITICAL",
+    "dialogue": [
+      "Mumbai police station-la irunthu Cyber Crime officer pesuren.",
+      "Unga Aadhaar card-la narcotics courier parcel book aayirukku. Arrest warrant issue aayiruchu.",
+      "Call disconnect pannathinga, room door lock pannunga. Digital custody-la irukinga.",
+      "RBI verification account-ku 50,000 panam anuppunga, 10 minutes-kulla transfer pannanu."
+    ]
+  },
+  {
+    "id": "TANGLISH-SCAM-02",
+    "language": "ta-Latn",
+    "scenario_type": "SCAM",
+    "primary_tactic": "CREDENTIAL_PRESSURE",
+    "expected_safety_brake": true,
+    "expected_risk_level": "HIGH",
+    "dialogue": [
+      "TRAI telecom authority-la irunthu pesurom, unga sim block aagidum.",
+      "Mobile-ku vantha 6 digit OTP fast-ah sollunga verify panna."
+    ]
+  },
+  {
+    "id": "TANGLISH-SCAM-03",
+    "language": "ta-Latn",
+    "scenario_type": "SCAM",
+    "primary_tactic": "REMOTE_ACCESS",
+    "expected_safety_brake": true,
+    "expected_risk_level": "HIGH",
+    "dialogue": [
+      "Unga netbanking account hack aayirukku.",
+      "AnyDesk app download panni screen share access kudunga."
+    ]
+  },
+  {
+    "id": "TANGLISH-BENIGN-01",
+    "language": "ta-Latn",
+    "scenario_type": "BENIGN",
+    "primary_tactic": "PROTECTIVE_CONTROL",
+    "expected_safety_brake": false,
+    "expected_risk_level": "LOW",
+    "dialogue": [
+      "Thambi, bank-la irunthu yaaravathu OTP kettanga na eppovume sollatha.",
+      "Ithu fraud call maathiri irukku, disconnect pannidu."
+    ]
+  },
+  {
+    "id": "TANGLISH-BENIGN-02",
+    "language": "ta-Latn",
+    "scenario_type": "BENIGN",
+    "primary_tactic": "EVERYDAY_CONVERSATION",
+    "expected_safety_brake": false,
+    "expected_risk_level": "LOW",
+    "dialogue": [
+      "Machan, kadaikku poi fruits vaangittu varen.",
+      "Seri da, vanthu GPAY-la panam anuppu."
+    ]
+  },
+  {
+    "id": "HI-SCAM-01",
+    "language": "hi-IN",
+    "scenario_type": "SCAM",
+    "primary_tactic": "AUTHORITY_PAYMENT",
+    "expected_safety_brake": true,
+    "expected_risk_level": "CRITICAL",
+    "dialogue": [
+      "सीबीआई हेडक्वार्टर से अरेस्ट वारंट जारी हुआ है।",
+      "आपके आधार से मनी लॉन्ड्रिंग और गैरकानूनी पार्सल का केस दर्ज हुआ है।",
+      "किसी को मत बताना, कमरे का दरवाजा बंद रखो।",
+      "आरबीआई क्लीयरेंस खाते में पैसे जमा करें तुरंत।"
+    ]
+  },
+  {
+    "id": "HI-BENIGN-01",
+    "language": "hi-IN",
+    "scenario_type": "BENIGN",
+    "primary_tactic": "PROTECTIVE_CONTROL",
+    "expected_safety_brake": false,
+    "expected_risk_level": "LOW",
+    "dialogue": [
+      "सावधान रहें, बैंक कभी भी आपसे ओटीपी या पासवर्ड नहीं मांगता।",
+      "किसी भी अनजान व्यक्ति को पैसे ट्रांसफर न करें।"
+    ]
+  },
+  {
+    "id": "HINGLISH-SCAM-01",
+    "language": "hi-Latn",
+    "scenario_type": "SCAM",
+    "primary_tactic": "AUTHORITY_PAYMENT",
+    "expected_safety_brake": true,
+    "expected_risk_level": "CRITICAL",
+    "dialogue": [
+      "Mai CBI headquarters Mumbai se senior officer bol raha hu.",
+      "Aapke naam par illegal narcotics parcel aur money laundering ka case darj hua hai.",
+      "Phone cut mat karna, kisi ko mat batana.",
+      "RBI security account me turant 50,000 transfer karo verify karne ke liye."
+    ]
+  },
+  {
+    "id": "HINGLISH-SCAM-02",
+    "language": "hi-Latn",
+    "scenario_type": "SCAM",
+    "primary_tactic": "CREDENTIAL_PRESSURE",
+    "expected_safety_brake": true,
+    "expected_risk_level": "HIGH",
+    "dialogue": [
+      "Aapka bank account freeze hone wala hai.",
+      "Phone par aaya hua 6 digit OTP bataiye turant unfreeze karne ke liye."
+    ]
+  },
+  {
+    "id": "HINGLISH-BENIGN-01",
+    "language": "hi-Latn",
+    "scenario_type": "BENIGN",
+    "primary_tactic": "PROTECTIVE_CONTROL",
+    "expected_safety_brake": false,
+    "expected_risk_level": "LOW",
+    "dialogue": [
+      "Apna OTP kisi ko mat dena, bank kabhi phone par OTP nahi mangta.",
+      "Ye fraud call hai, phone disconnect kar do."
+    ]
+  }
+]

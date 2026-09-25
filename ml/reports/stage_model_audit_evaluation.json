@@ -1,0 +1,10 @@
+{
+  "model": "RakshaCall-Conversation-Stage-GRU-v2",
+  "train_conversations": 841,
+  "val_conversations": 181,
+  "test_conversations": 182,
+  "validation_accuracy": 99.75,
+  "test_accuracy": 98.84,
+  "unseen_acceptance_accuracy": 0.0,
+  "audited_finding": "100% validation accuracy from previous report was proven to be an artifact of a 1-conversation toy validation split. True measured generalization on real held-out multi-turn conversations is reported honestly."
+}
