@@ -21,15 +21,24 @@ import json
 import logging
 from typing import Dict, List, Optional, Any
 
-# Windows DLL directory fix for PyTorch if needed
-torch_lib = r"C:\Users\gangs\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\lib"
-if os.path.exists(torch_lib):
-    os.environ["PATH"] = torch_lib + os.pathsep + os.environ.get("PATH", "")
-    if hasattr(os, "add_dll_directory"):
-        try:
-            os.add_dll_directory(torch_lib)
-        except Exception:
-            pass
+# Portable Windows DLL directory fix for PyTorch if needed
+def _setup_torch_dll():
+    """Ensure PyTorch DLLs are discoverable on Windows without hardcoded paths."""
+    if os.name != 'nt':
+        return
+    try:
+        import importlib.util
+        spec = importlib.util.find_spec("torch")
+        if spec and spec.origin:
+            torch_lib = os.path.join(os.path.dirname(spec.origin), "lib")
+            if os.path.isdir(torch_lib):
+                os.environ["PATH"] = torch_lib + os.pathsep + os.environ.get("PATH", "")
+                if hasattr(os, "add_dll_directory"):
+                    os.add_dll_directory(torch_lib)
+    except Exception:
+        pass
+
+_setup_torch_dll()
 
 import torch
 import torch.nn as nn

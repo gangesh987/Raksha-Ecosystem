@@ -1,0 +1,39 @@
+# Render Blueprint Specification for RakshaCall Backend
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: rakshacall-backend
+    runtime: docker
+    dockerContext: backend
+    dockerfilePath: backend/Dockerfile
+    plan: free
+    region: oregon
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: "8000"
+      - key: DATABASE_URL
+        value: "sqlite:///./rakshacall.db"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: "HS256"
+      - key: ACCESS_TOKEN_MINUTES
+        value: "720"
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: MODEL_MODE
+        value: "gemini-live+groq+deterministic"
+      - key: GEMINI_LIVE_MODEL
+        value: "gemini-3.1-flash-live-preview"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_FROM_NUMBER
+        sync: false

@@ -1,0 +1,19 @@
+services:
+  signaling:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      RAKSHA_API_TOKEN: ${RAKSHA_API_TOKEN:?Set RAKSHA_API_TOKEN}
+      RAKSHA_PUBLIC_WS_BASE: ${RAKSHA_PUBLIC_WS_BASE:-}
+      RAKSHA_DB_PATH: /app/data/raksha.db
+      WEBRTC_STUN_URL: ${WEBRTC_STUN_URL:-stun:stun.l.google.com:19302}
+      WEBRTC_TURN_URL: ${WEBRTC_TURN_URL:-}
+      WEBRTC_TURN_USERNAME: ${WEBRTC_TURN_USERNAME:-}
+      WEBRTC_TURN_CREDENTIAL: ${WEBRTC_TURN_CREDENTIAL:-}
+      ALLOW_PROTECTION_TEST_EVENTS: "false"
+    volumes:
+      - raksha-data:/app/data
+
+volumes:
+  raksha-data:

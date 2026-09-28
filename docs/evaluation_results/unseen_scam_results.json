@@ -1,0 +1,438 @@
+{
+  "evaluation_name": "Unseen Scam Conversations Evaluation (Independent Multi-Turn)",
+  "dataset": "evaluation/unseen_scam_conversations.jsonl",
+  "conversation_count": 5,
+  "turn_count": 22,
+  "metrics": {
+    "sample_count": 22,
+    "true_positives": 19,
+    "true_negatives": 0,
+    "false_positives": 0,
+    "false_negatives": 3,
+    "accuracy": 0.8636,
+    "precision": 1.0,
+    "recall": 0.8636,
+    "f1": 0.9268,
+    "macro_f1": 0.4634,
+    "micro_f1": 0.8636,
+    "false_positive_rate": 0.0,
+    "false_negative_rate": 0.1364,
+    "specificity": 0.0
+  },
+  "false_negative_count": 3,
+  "false_negative_samples": [
+    {
+      "conversation_id": "unseen_scam_02_trai_tamil",
+      "turn_index": 0,
+      "scenario": "Telecom Authority Disconnection Tamil",
+      "language": "ta",
+      "speaker": "caller",
+      "text": "\u0ba4\u0bca\u0bb2\u0bc8\u0ba4\u0bcd\u0ba4\u0bca\u0b9f\u0bb0\u0bcd\u0baa\u0bc1 \u0b95\u0b9f\u0bcd\u0b9f\u0bc1\u0baa\u0bcd\u0baa\u0bbe\u0b9f\u0bcd\u0b9f\u0bc1 \u0b85\u0bb2\u0bc1\u0bb5\u0bb2\u0b95\u0ba4\u0bcd\u0ba4\u0bbf\u0bb2\u0bbf\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0bc1 \u0bae\u0bc2\u0ba4\u0bcd\u0ba4 \u0bae\u0bc7\u0bb1\u0bcd\u0baa\u0bbe\u0bb0\u0bcd\u0bb5\u0bc8\u0baf\u0bbe\u0bb3\u0bb0\u0bcd \u0baa\u0bc7\u0b9a\u0bc1\u0b95\u0bbf\u0bb1\u0bc7\u0ba9\u0bcd.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 0,
+      "scam_probability": 0.0488,
+      "top_tactic": "BENIGN_INQUIRY",
+      "tactics_detected": []
+    },
+    {
+      "conversation_id": "unseen_scam_02_trai_tamil",
+      "turn_index": 1,
+      "scenario": "Telecom Authority Disconnection Tamil",
+      "language": "ta",
+      "speaker": "receiver",
+      "text": "\u0b8e\u0ba9\u0bcd\u0ba9 \u0baa\u0bbf\u0bb0\u0b9a\u0bcd\u0b9a\u0ba9\u0bc8 \u0b9a\u0bbe\u0bb0\u0bcd?",
+      "ground_truth_scam": 1,
+      "predicted_scam": 0,
+      "scam_probability": 0.0077,
+      "top_tactic": "BENIGN_INQUIRY",
+      "tactics_detected": []
+    },
+    {
+      "conversation_id": "unseen_scam_03_tanglish_anydesk",
+      "turn_index": 0,
+      "scenario": "Netbanking Compromise AnyDesk Tanglish",
+      "language": "ta-Latn",
+      "speaker": "caller",
+      "text": "Naan state bank central security division-la irundhu call pandren sir.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 0,
+      "scam_probability": 0.0372,
+      "top_tactic": "BENIGN_INQUIRY",
+      "tactics_detected": []
+    }
+  ],
+  "all_turns": [
+    {
+      "conversation_id": "unseen_scam_01_digital_arrest",
+      "turn_index": 0,
+      "scenario": "National Cyber Crime Bureau Extortion",
+      "language": "en",
+      "speaker": "caller",
+      "text": "This is Inspector Deshmukh from the Cyber Crime Investigation Wing in New Delhi.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.9969,
+      "top_tactic": "AUTHORITY",
+      "tactics_detected": [
+        "AUTHORITY",
+        "FEAR",
+        "CREDENTIAL"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_01_digital_arrest",
+      "turn_index": 1,
+      "scenario": "National Cyber Crime Bureau Extortion",
+      "language": "en",
+      "speaker": "receiver",
+      "text": "Why are you calling my personal number?",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.9993,
+      "top_tactic": "AUTHORITY",
+      "tactics_detected": [
+        "AUTHORITY",
+        "FEAR",
+        "ISOLATION",
+        "CREDENTIAL"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_01_digital_arrest",
+      "turn_index": 2,
+      "scenario": "National Cyber Crime Bureau Extortion",
+      "language": "en",
+      "speaker": "caller",
+      "text": "A consignment sent under your identity was intercepted containing contraband narcotics and forged passports.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.96,
+      "top_tactic": "FEAR",
+      "tactics_detected": [
+        "AUTHORITY",
+        "FEAR"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_01_digital_arrest",
+      "turn_index": 3,
+      "scenario": "National Cyber Crime Bureau Extortion",
+      "language": "en",
+      "speaker": "receiver",
+      "text": "I never sent any parcel, this must be a mistake!",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.875,
+      "top_tactic": "FEAR",
+      "tactics_detected": [
+        "AUTHORITY",
+        "FEAR"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_01_digital_arrest",
+      "turn_index": 4,
+      "scenario": "National Cyber Crime Bureau Extortion",
+      "language": "en",
+      "speaker": "caller",
+      "text": "You are under virtual custody right now. Do not terminate this connection or discuss with anyone in your house.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.96,
+      "top_tactic": "ISOLATION",
+      "tactics_detected": [
+        "AUTHORITY",
+        "FEAR",
+        "URGENCY",
+        "ISOLATION"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_01_digital_arrest",
+      "turn_index": 5,
+      "scenario": "National Cyber Crime Bureau Extortion",
+      "language": "en",
+      "speaker": "caller",
+      "text": "To clear your name before immediate arrest, deposit forty thousand rupees into the judicial holding escrow.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.96,
+      "top_tactic": "ISOLATION",
+      "tactics_detected": [
+        "AUTHORITY",
+        "FEAR",
+        "URGENCY",
+        "ISOLATION",
+        "PAYMENT",
+        "ESCALATION"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_01_digital_arrest",
+      "turn_index": 6,
+      "scenario": "National Cyber Crime Bureau Extortion",
+      "language": "en",
+      "speaker": "caller",
+      "text": "Forward the bank transaction reference number within 5 minutes or a patrol car will arrive.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 1.0,
+      "top_tactic": "PAYMENT",
+      "tactics_detected": [
+        "AUTHORITY",
+        "FEAR",
+        "URGENCY",
+        "ISOLATION",
+        "PAYMENT",
+        "ESCALATION"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_02_trai_tamil",
+      "turn_index": 0,
+      "scenario": "Telecom Authority Disconnection Tamil",
+      "language": "ta",
+      "speaker": "caller",
+      "text": "\u0ba4\u0bca\u0bb2\u0bc8\u0ba4\u0bcd\u0ba4\u0bca\u0b9f\u0bb0\u0bcd\u0baa\u0bc1 \u0b95\u0b9f\u0bcd\u0b9f\u0bc1\u0baa\u0bcd\u0baa\u0bbe\u0b9f\u0bcd\u0b9f\u0bc1 \u0b85\u0bb2\u0bc1\u0bb5\u0bb2\u0b95\u0ba4\u0bcd\u0ba4\u0bbf\u0bb2\u0bbf\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0bc1 \u0bae\u0bc2\u0ba4\u0bcd\u0ba4 \u0bae\u0bc7\u0bb1\u0bcd\u0baa\u0bbe\u0bb0\u0bcd\u0bb5\u0bc8\u0baf\u0bbe\u0bb3\u0bb0\u0bcd \u0baa\u0bc7\u0b9a\u0bc1\u0b95\u0bbf\u0bb1\u0bc7\u0ba9\u0bcd.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 0,
+      "scam_probability": 0.0488,
+      "top_tactic": "BENIGN_INQUIRY",
+      "tactics_detected": []
+    },
+    {
+      "conversation_id": "unseen_scam_02_trai_tamil",
+      "turn_index": 1,
+      "scenario": "Telecom Authority Disconnection Tamil",
+      "language": "ta",
+      "speaker": "receiver",
+      "text": "\u0b8e\u0ba9\u0bcd\u0ba9 \u0baa\u0bbf\u0bb0\u0b9a\u0bcd\u0b9a\u0ba9\u0bc8 \u0b9a\u0bbe\u0bb0\u0bcd?",
+      "ground_truth_scam": 1,
+      "predicted_scam": 0,
+      "scam_probability": 0.0077,
+      "top_tactic": "BENIGN_INQUIRY",
+      "tactics_detected": []
+    },
+    {
+      "conversation_id": "unseen_scam_02_trai_tamil",
+      "turn_index": 2,
+      "scenario": "Telecom Authority Disconnection Tamil",
+      "language": "ta",
+      "speaker": "caller",
+      "text": "\u0b89\u0b99\u0bcd\u0b95\u0bb3\u0bcd \u0b8e\u0ba3\u0bcd\u0ba3\u0bbf\u0bb2\u0bbf\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0bc1 \u0b86\u0baf\u0bbf\u0bb0\u0b95\u0bcd\u0b95\u0ba3\u0b95\u0bcd\u0b95\u0bbe\u0ba9 \u0bae\u0bcb\u0b9a\u0b9f\u0bbf \u0b9a\u0bc6\u0baf\u0bcd\u0ba4\u0bbf\u0b95\u0bb3\u0bcd \u0b85\u0ba9\u0bc1\u0baa\u0bcd\u0baa\u0baa\u0bcd\u0baa\u0b9f\u0bcd\u0b9f\u0ba4\u0bbe\u0bb2\u0bcd \u0b89\u0b9f\u0ba9\u0bc7 \u0b89\u0b99\u0bcd\u0b95\u0bb3\u0bcd \u0b87\u0ba3\u0bc8\u0baa\u0bcd\u0baa\u0bc1 \u0bae\u0bc1\u0b9f\u0b95\u0bcd\u0b95\u0baa\u0bcd\u0baa\u0b9f\u0bc1\u0bae\u0bcd.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.0,
+      "top_tactic": "PROTECTIVE_ADVISORY",
+      "tactics_detected": [
+        "AUTHORITY",
+        "FEAR",
+        "URGENCY",
+        "ISOLATION",
+        "PAYMENT",
+        "CREDENTIAL",
+        "REMOTE_ACCESS",
+        "SUSPICIOUS_LINK",
+        "ESCALATION"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_02_trai_tamil",
+      "turn_index": 3,
+      "scenario": "Telecom Authority Disconnection Tamil",
+      "language": "ta",
+      "speaker": "caller",
+      "text": "\u0b87\u0ba3\u0bc8\u0baa\u0bcd\u0baa\u0bc8 \u0b89\u0b9f\u0ba9\u0b9f\u0bbf\u0baf\u0bbe\u0b95 \u0b95\u0bbe\u0baa\u0bcd\u0baa\u0bbe\u0bb1\u0bcd\u0bb1 \u0b89\u0b99\u0bcd\u0b95\u0bb3\u0bcd \u0ba4\u0bbf\u0bb0\u0bc8\u0baf\u0bbf\u0bb2\u0bcd \u0bb5\u0bb0\u0bc1\u0bae\u0bcd \u0b86\u0bb1\u0bc1 \u0b87\u0bb2\u0b95\u0bcd\u0b95 \u0b95\u0bc1\u0bb1\u0bbf\u0baf\u0bc0\u0b9f\u0bcd\u0b9f\u0bc8 \u0bb5\u0bbe\u0b9a\u0bbf\u0b95\u0bcd\u0b95\u0bb5\u0bc1\u0bae\u0bcd.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.96,
+      "top_tactic": "ESCALATION",
+      "tactics_detected": [
+        "FEAR",
+        "CREDENTIAL",
+        "ESCALATION"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_03_tanglish_anydesk",
+      "turn_index": 0,
+      "scenario": "Netbanking Compromise AnyDesk Tanglish",
+      "language": "ta-Latn",
+      "speaker": "caller",
+      "text": "Naan state bank central security division-la irundhu call pandren sir.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 0,
+      "scam_probability": 0.0372,
+      "top_tactic": "BENIGN_INQUIRY",
+      "tactics_detected": []
+    },
+    {
+      "conversation_id": "unseen_scam_03_tanglish_anydesk",
+      "turn_index": 1,
+      "scenario": "Netbanking Compromise AnyDesk Tanglish",
+      "language": "ta-Latn",
+      "speaker": "caller",
+      "text": "Unga account-la irundhu unauthorized transfer attempt nadanthurukku, card block aaga poguthu.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.96,
+      "top_tactic": "PAYMENT",
+      "tactics_detected": [
+        "PAYMENT"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_03_tanglish_anydesk",
+      "turn_index": 2,
+      "scenario": "Netbanking Compromise AnyDesk Tanglish",
+      "language": "ta-Latn",
+      "speaker": "caller",
+      "text": "Play store-la poitu TeamViewer QuickSupport app-a download panni 9 digit code-a enakku padichu kaatunga.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.9891,
+      "top_tactic": "SUSPICIOUS_LINK",
+      "tactics_detected": [
+        "PAYMENT",
+        "CREDENTIAL",
+        "REMOTE_ACCESS",
+        "SUSPICIOUS_LINK"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_03_tanglish_anydesk",
+      "turn_index": 3,
+      "scenario": "Netbanking Compromise AnyDesk Tanglish",
+      "language": "ta-Latn",
+      "speaker": "caller",
+      "text": "Security clear panna unga netbanking password-a screen-la type pannunga.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.96,
+      "top_tactic": "PAYMENT",
+      "tactics_detected": [
+        "URGENCY",
+        "ISOLATION",
+        "PAYMENT",
+        "CREDENTIAL",
+        "REMOTE_ACCESS",
+        "SUSPICIOUS_LINK"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_04_hindi_electricity",
+      "turn_index": 0,
+      "scenario": "Electricity Bill Threat Hindi",
+      "language": "hi",
+      "speaker": "caller",
+      "text": "\u092c\u093f\u091c\u0932\u0940 \u0935\u093f\u092d\u093e\u0917 \u0915\u0947 \u092e\u0941\u0916\u094d\u092f \u0915\u093e\u0930\u094d\u092f\u093e\u0932\u092f \u0938\u0947 \u092c\u093e\u0924 \u0915\u0930 \u0930\u0939\u093e \u0939\u0942\u0902\u0964",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.9993,
+      "top_tactic": "PAYMENT",
+      "tactics_detected": [
+        "PAYMENT"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_04_hindi_electricity",
+      "turn_index": 1,
+      "scenario": "Electricity Bill Threat Hindi",
+      "language": "hi",
+      "speaker": "caller",
+      "text": "\u092a\u093f\u091b\u0932\u0947 \u092e\u0939\u0940\u0928\u0947 \u0915\u093e \u092c\u093f\u0932 \u0905\u092a\u0921\u0947\u091f \u0928\u0939\u0940\u0902 \u0939\u0941\u0906 \u0939\u0948, \u0906\u091c \u0936\u093e\u092e \u0938\u093e\u0924 \u092c\u091c\u0947 \u0906\u092a\u0915\u0940 \u092c\u093f\u091c\u0932\u0940 \u0915\u093e\u091f \u0926\u0940 \u091c\u093e\u090f\u0917\u0940\u0964",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.9972,
+      "top_tactic": "PAYMENT",
+      "tactics_detected": [
+        "PAYMENT"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_04_hindi_electricity",
+      "turn_index": 2,
+      "scenario": "Electricity Bill Threat Hindi",
+      "language": "hi",
+      "speaker": "caller",
+      "text": "\u0935\u094d\u0939\u093e\u091f\u094d\u0938\u090f\u092a \u092a\u0930 \u092d\u0947\u091c\u0947 \u0917\u090f \u0905\u092a\u0921\u0947\u091f \u0932\u093f\u0902\u0915 \u0915\u094b \u0916\u094b\u0932\u0915\u0930 \u0924\u0941\u0930\u0902\u0924 \u092a\u0902\u0926\u094d\u0930\u0939 \u0930\u0941\u092a\u092f\u0947 \u0915\u093e \u092d\u0941\u0917\u0924\u093e\u0928 \u0915\u0930\u0947\u0902\u0964",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.9629,
+      "top_tactic": "URGENCY",
+      "tactics_detected": [
+        "URGENCY"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_05_hinglish_customs",
+      "turn_index": 0,
+      "scenario": "Customs Contraband Seizure Hinglish",
+      "language": "hi-Latn",
+      "speaker": "caller",
+      "text": "Customs air cargo terminal Mumbai se Chief Superintendent \u092c\u094b\u0932 \u0930\u0939\u093e \u0939\u0942\u0901\u0964",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.9996,
+      "top_tactic": "AUTHORITY",
+      "tactics_detected": [
+        "AUTHORITY",
+        "PAYMENT"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_05_hinglish_customs",
+      "turn_index": 1,
+      "scenario": "Customs Contraband Seizure Hinglish",
+      "language": "hi-Latn",
+      "speaker": "caller",
+      "text": "Aapke naam ka parcel mila hai jisme foreign currency aur synthetic narcotics hai, non-bailable FIR ban chuki hai.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.9902,
+      "top_tactic": "FEAR",
+      "tactics_detected": [
+        "FEAR",
+        "PAYMENT",
+        "ESCALATION"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_05_hinglish_customs",
+      "turn_index": 2,
+      "scenario": "Customs Contraband Seizure Hinglish",
+      "language": "hi-Latn",
+      "speaker": "caller",
+      "text": "Kisi ko call mat lagana, case confidential hai warna abhi special team bhejenge.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.96,
+      "top_tactic": "FEAR",
+      "tactics_detected": [
+        "FEAR",
+        "ISOLATION",
+        "ESCALATION"
+      ]
+    },
+    {
+      "conversation_id": "unseen_scam_05_hinglish_customs",
+      "turn_index": 3,
+      "scenario": "Customs Contraband Seizure Hinglish",
+      "language": "hi-Latn",
+      "speaker": "caller",
+      "text": "Bail verification clearance ke liye court ke safe deposit account me turant transfer kijiye.",
+      "ground_truth_scam": 1,
+      "predicted_scam": 1,
+      "scam_probability": 0.96,
+      "top_tactic": "URGENCY",
+      "tactics_detected": [
+        "AUTHORITY",
+        "FEAR",
+        "URGENCY",
+        "PAYMENT",
+        "CREDENTIAL",
+        "SUSPICIOUS_LINK"
+      ]
+    }
+  ]
+}

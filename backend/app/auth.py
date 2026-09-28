@@ -11,14 +11,26 @@ from .models import User
 pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
-def hash_password(x):
-    # Bcrypt has a hard 72-byte limit. Passwords exceeding 72 bytes are safely SHA-256 hashed.
+def hash_password(x: str) -> str:
+    """
+    Hashes a password with bcrypt.
+    
+    Design Decision (Bcrypt 72-byte limit handling):
+    Bcrypt has an architectural input limit of 72 bytes. When passwords exceed 72 bytes
+    (common with passphrases and multi-byte UTF-8 scripts such as Tamil/Hindi):
+    - Truncation is unsafe (passwords with identical prefixes collide).
+    - Hard 4xx rejection frustrates users with legitimate high-entropy passphrases.
+    - We adopt the Dropbox/OWASP standard: Passwords > 72 bytes are pre-hashed using
+      SHA-256 to a 64-character hexadecimal string, guaranteeing safe input <= 72 bytes
+      while preserving full 256-bit collision resistance and entropy.
+    """
     if isinstance(x, str) and len(x.encode("utf-8")) > 72:
         import hashlib
         x = hashlib.sha256(x.encode("utf-8")).hexdigest()[:72]
     return pwd.hash(x)
 
-def verify_password(x, h):
+def verify_password(x: str, h: str) -> bool:
+    """Verifies a password against a stored bcrypt hash using identical pre-hashing logic."""
     if isinstance(x, str) and len(x.encode("utf-8")) > 72:
         import hashlib
         x = hashlib.sha256(x.encode("utf-8")).hexdigest()[:72]

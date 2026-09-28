@@ -1,0 +1,31 @@
+# RakshaCall Production Deployment Dependencies
+# Generated strictly from runtime import graph of backend/app/main.py
+
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+sqlalchemy==2.0.36
+pydantic==2.10.4
+pydantic-settings==2.7.1
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+python-multipart==0.0.20
+
+# gRPC & Protobuf (pre-generated stubs in backend/app/grpc_gen)
+grpcio>=1.62.0
+protobuf>=4.25.0
+
+# Neural ML Inference (V2 Multilingual Semantic BiGRU Model)
+torch>=2.0.0
+numpy>=1.24.0
+
+# Cloud AI & Auth Providers (Optional fallbacks / Google ID token verification)
+google-genai>=1.40.0
+google-auth>=2.20.0
+
+# WebSocket & HTTP Client
+websockets>=12.0
+httpx>=0.27.0
+
+# Database driver for PostgreSQL (when configured in production)
+psycopg[binary]>=3.2.0

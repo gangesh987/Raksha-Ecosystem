@@ -11,8 +11,8 @@ RakshaCall is an ambient, real-time, multilingual, multimodal conversation safet
 
 ### What Evaluators Will Witness During This Demonstration:
 1. **Real-Time Bidirectional gRPC Streaming**: Sub-75ms end-to-end transport over HTTP/2 with Protocol Buffers.
-2. **Multilingual Speech & Code-Switching Intelligence**: Real-time phonetic ASR and language identification supporting **Tamil, Tanglish, Hindi, Hinglish, and English**.
-3. **Escalation Reasoning Over Multi-Turn Context**: Not keyword matching; an escalating sequence of 9 tactics moving across stages (`CONTACT` $\rightarrow$ `CRITICAL_BRAKE`).
+2. **Multilingual Speech & Code-Switching Intelligence**: Acoustic phonetic feature extraction and language identification supporting **Tamil, Tanglish, Hindi, Hinglish, and English** (Note: HuBERT acts as acoustic feature backbone; full live transcription requires downstream streaming ASR decoders or speech APIs).
+3. **Escalation Reasoning Over Multi-Turn Context**: Not simple keyword matching; an escalating sequence of 9 tactics moving across stages (`CONTACT` $\rightarrow$ `CRITICAL_BRAKE`).
 4. **Manipulation Velocity Engine**: Real-time temporal tracking of pressure acceleration.
 5. **Multimodal Fusion**: YOLO11 computer vision acting as a supporting contextual signal.
 6. **Safety Brake with Low-Literacy Voice Prompts**: Immediate intervention with high-contrast UI and localized voice alerts (*"STOP. PANAM ANUPPATHINGA"*).
@@ -79,35 +79,34 @@ To run the Android client's unit tests:
 
 ---
 
-### Step 3: Run the Multilingual Benchmark Evaluation (22 Scenarios)
-Execute the multi-turn evaluation benchmark on the 22 real-world scenarios:
+### Step 3: Run the Multilingual Functional Smoke Test (22 Scenarios)
+Execute the multi-turn functional verification benchmark on the 22 core demo scenarios:
 
 ```powershell
 python backend/evaluation/evaluate.py
 ```
-**Key Highlights for Judges:**
-- **Precision:** 100.0%
-- **Recall:** 100.0%
-- **F1 Score:** 1.000
-- **False Positive Rate (FPR):** 0.0% (Zero false alarms on negative controls like *"Never share your OTP"*).
+**Key Highlights for Evaluators (Functional Integration Suite):**
+- **Functional Scenario Pass Rate:** 22/22 (100% on authored validation set covering digital arrest, electricity bills, APK fraud, and negative controls).
+- **False Positive Rate on Explicit Negations:** 0.0% (Zero false alarms on protective advisories like *"Never share your OTP"*).
 - **Mean Pipeline Latency:** ~6.52 ms.
+- **Empirical Generalization Note:** On the held-out adversarial and multilingual benchmark (N = 1,292 turns across Tamil, Tanglish, Hindi, Hinglish, English), the neural classifier achieves **94.24% test F1** and **84.38% micro tactic F1** (see `docs/STEP3_HELD_OUT_EVALUATION_REPORT.md` for full ablation studies).
 
 ---
 
 ### Step 4: Run Real-Time Subsystem Latency Benchmarks
-Demonstrate the empirical latency measurement across all 15 pipeline stages:
+Demonstrate the empirical latency measurement across all pipeline stages:
 
 ```powershell
 python backend/evaluation/benchmark_latency.py
 ```
-**Key Highlights for Judges:**
-- **Acoustic HuBERT representation:** ~18.4 ms
-- **Multilingual ASR:** ~32.1 ms
+**Key Highlights for Evaluators:**
+- **Acoustic Feature Extraction / Embeddings:** ~18.4 ms
+- **ASR Acoustic Transcription Simulation:** Profile target ~32.1 ms (Real CPU-edge ASR typically ranges from 45ms to 120ms)
 - **Semantic Understanding & Tactic Classification:** ~7.6 ms
 - **Temporal Velocity & Stage Evaluation:** ~0.24 ms
 - **Multimodal Fusion & Risk Decision:** ~0.18 ms
 - **Safety Brake Evaluation & SHA-256 Vault Chaining:** ~0.21 ms
-- **Total Pipeline Latency:** **~70.42 ms** (Far below the 1,000ms human reaction budget).
+- **Total Decision Pipeline Latency:** **~70.42 ms** (Well below the 1,000ms human reaction budget).
 
 ---
 

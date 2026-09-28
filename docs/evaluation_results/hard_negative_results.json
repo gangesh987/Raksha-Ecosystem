@@ -1,0 +1,355 @@
+{
+  "evaluation_name": "Hard Negatives Evaluation (Adversarial Benign / Awareness Samples)",
+  "dataset": "evaluation/hard_negatives.jsonl",
+  "sample_count": 30,
+  "neural_only": {
+    "false_positives": 14,
+    "true_negatives": 16,
+    "specificity": 0.5333,
+    "fpr": 0.4667
+  },
+  "rule_only": {
+    "false_positives": 19,
+    "true_negatives": 11,
+    "specificity": 0.3667,
+    "fpr": 0.6333
+  },
+  "hybrid_system": {
+    "false_positives": 28,
+    "true_negatives": 2,
+    "specificity": 0.0667,
+    "fpr": 0.9333
+  },
+  "sample_results": [
+    {
+      "text": "Never share your OTP with anyone, even if they claim to be from the bank.",
+      "language": "en",
+      "category": "security_advisory",
+      "neural_predicted_scam": true,
+      "neural_scam_prob": 0.9992,
+      "rule_predicted_scam": false,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.0,
+      "hybrid_top_tactic": "PROTECTIVE_ADVISORY"
+    },
+    {
+      "text": "Police will never call you asking for money or digital custody transfer.",
+      "language": "en",
+      "category": "security_advisory",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.0085,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.95,
+      "hybrid_top_tactic": "PAYMENT"
+    },
+    {
+      "text": "Do not transfer money to unknown accounts for courier verification.",
+      "language": "en",
+      "category": "security_advisory",
+      "neural_predicted_scam": true,
+      "neural_scam_prob": 0.9734,
+      "rule_predicted_scam": false,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.0,
+      "hybrid_top_tactic": "PROTECTIVE_ADVISORY"
+    },
+    {
+      "text": "This sounds like a digital arrest scam, please disconnect immediately.",
+      "language": "en",
+      "category": "scam_discussion",
+      "neural_predicted_scam": true,
+      "neural_scam_prob": 0.9998,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.9998,
+      "hybrid_top_tactic": "URGENCY"
+    },
+    {
+      "text": "Bank officials told me never to share my PIN or CVV number.",
+      "language": "en",
+      "category": "personal_experience",
+      "neural_predicted_scam": true,
+      "neural_scam_prob": 0.9998,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.9998,
+      "hybrid_top_tactic": "CREDENTIAL"
+    },
+    {
+      "text": "The caller asked for OTP, but I refused and blocked the number.",
+      "language": "en",
+      "category": "refusal",
+      "neural_predicted_scam": true,
+      "neural_scam_prob": 0.969,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.969,
+      "hybrid_top_tactic": "CREDENTIAL"
+    },
+    {
+      "text": "RBI has repeatedly stated that there is no such thing as an RBI verification account.",
+      "language": "en",
+      "category": "official_warning",
+      "neural_predicted_scam": true,
+      "neural_scam_prob": 0.4352,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.95,
+      "hybrid_top_tactic": "AUTHORITY"
+    },
+    {
+      "text": "Cyber crime cell issues public warning against fake electricity bill SMS.",
+      "language": "en",
+      "category": "public_warning",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.0155,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.92,
+      "hybrid_top_tactic": "AUTHORITY"
+    },
+    {
+      "text": "I am lodging a complaint at the local police station regarding a fraud call.",
+      "language": "en",
+      "category": "complaint",
+      "neural_predicted_scam": true,
+      "neural_scam_prob": 0.9329,
+      "rule_predicted_scam": false,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.0,
+      "hybrid_top_tactic": "PROTECTIVE_ADVISORY"
+    },
+    {
+      "text": "Please be careful, scammers are sending APK links on WhatsApp.",
+      "language": "en",
+      "category": "advisory",
+      "neural_predicted_scam": true,
+      "neural_scam_prob": 0.9844,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.9844,
+      "hybrid_top_tactic": "SUSPICIOUS_LINK"
+    },
+    {
+      "text": "\u0bb5\u0b99\u0bcd\u0b95\u0bbf \u0b85\u0ba4\u0bbf\u0b95\u0bbe\u0bb0\u0bbf\u0b95\u0bb3\u0bcd \u0b92\u0bb0\u0bc1\u0baa\u0bcb\u0ba4\u0bc1\u0bae\u0bcd \u0b89\u0b99\u0bcd\u0b95\u0bb3\u0bcd \u0b95\u0b9f\u0bb5\u0bc1\u0b9a\u0bcd\u0b9a\u0bca\u0bb2\u0bcd \u0b85\u0bb2\u0bcd\u0bb2\u0ba4\u0bc1 \u0b93\u0b9f\u0bbf\u0baa\u0bbf\u0baf\u0bc8\u0b95\u0bcd \u0b95\u0bc7\u0b9f\u0bcd\u0b95 \u0bae\u0bbe\u0b9f\u0bcd\u0b9f\u0bbe\u0bb0\u0bcd\u0b95\u0bb3\u0bcd.",
+      "language": "ta",
+      "category": "security_advisory",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.0005,
+      "rule_predicted_scam": false,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.0,
+      "hybrid_top_tactic": "PROTECTIVE_ADVISORY"
+    },
+    {
+      "text": "\u0b95\u0bbe\u0bb5\u0bb2\u0bcd\u0ba4\u0bc1\u0bb1\u0bc8 \u0b85\u0ba4\u0bbf\u0b95\u0bbe\u0bb0\u0bbf\u0b95\u0bb3\u0bcd \u0baa\u0bcb\u0ba9\u0bbf\u0bb2\u0bcd \u0baa\u0ba3\u0bae\u0bcd \u0b95\u0bc7\u0b9f\u0bcd\u0b95 \u0bae\u0bbe\u0b9f\u0bcd\u0b9f\u0bbe\u0bb0\u0bcd\u0b95\u0bb3\u0bcd, \u0baa\u0baf\u0baa\u0bcd\u0baa\u0b9f \u0bb5\u0bc7\u0ba3\u0bcd\u0b9f\u0bbe\u0bae\u0bcd.",
+      "language": "ta",
+      "category": "security_advisory",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.0014,
+      "rule_predicted_scam": false,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.0,
+      "hybrid_top_tactic": "PROTECTIVE_ADVISORY"
+    },
+    {
+      "text": "\u0ba4\u0bc6\u0bb0\u0bbf\u0baf\u0bbe\u0ba4 \u0b8e\u0ba3\u0bcd\u0b95\u0bb3\u0bbf\u0bb2\u0bbf\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0bc1 \u0bb5\u0bb0\u0bc1\u0bae\u0bcd \u0b87\u0ba3\u0bc8\u0baa\u0bcd\u0baa\u0bc1\u0b95\u0bb3\u0bc8 \u0b95\u0bbf\u0bb3\u0bbf\u0b95\u0bcd \u0b9a\u0bc6\u0baf\u0bcd\u0baf\u0bbe\u0ba4\u0bc0\u0bb0\u0bcd\u0b95\u0bb3\u0bcd \u0b8e\u0ba9\u0bcd\u0bb1\u0bc1 \u0bb5\u0b99\u0bcd\u0b95\u0bbf \u0b95\u0bc2\u0bb1\u0bc1\u0b95\u0bbf\u0bb1\u0ba4\u0bc1.",
+      "language": "ta",
+      "category": "security_advisory",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.0044,
+      "rule_predicted_scam": false,
+      "hybrid_predicted_scam": false,
+      "hybrid_scam_prob": 0.0044,
+      "hybrid_top_tactic": "BENIGN_INQUIRY"
+    },
+    {
+      "text": "\u0baf\u0bbe\u0bb0\u0bbe\u0bb5\u0ba4\u0bc1 \u0b9f\u0bbf\u0b9c\u0bbf\u0b9f\u0bcd\u0b9f\u0bb2\u0bcd \u0b85\u0bb0\u0bc6\u0bb8\u0bcd\u0b9f\u0bcd \u0b8e\u0ba9\u0bcd\u0bb1\u0bc1 \u0bae\u0bbf\u0bb0\u0b9f\u0bcd\u0b9f\u0bbf\u0ba9\u0bbe\u0bb2\u0bcd \u0b89\u0b9f\u0ba9\u0bc7 1930 \u0b8e\u0ba3\u0bcd\u0ba3\u0bc8 \u0b85\u0bb4\u0bc8\u0b95\u0bcd\u0b95\u0bb5\u0bc1\u0bae\u0bcd.",
+      "language": "ta",
+      "category": "helpline",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.0005,
+      "rule_predicted_scam": false,
+      "hybrid_predicted_scam": false,
+      "hybrid_scam_prob": 0.0005,
+      "hybrid_top_tactic": "BENIGN_INQUIRY"
+    },
+    {
+      "text": "\u0b93\u0b9f\u0bbf\u0baa\u0bbf \u0b95\u0bc7\u0b9f\u0bcd\u0b9f\u0bbe\u0bb0\u0bcd\u0b95\u0bb3\u0bcd, \u0b86\u0ba9\u0bbe\u0bb2\u0bcd \u0ba8\u0bbe\u0ba9\u0bcd \u0b9a\u0bca\u0bb2\u0bcd\u0bb2\u0bbe\u0bae\u0bb2\u0bcd \u0b87\u0ba3\u0bc8\u0baa\u0bcd\u0baa\u0bc8 \u0ba4\u0bc1\u0ba3\u0bcd\u0b9f\u0bbf\u0ba4\u0bcd\u0ba4\u0bc1\u0bb5\u0bbf\u0b9f\u0bcd\u0b9f\u0bc7\u0ba9\u0bcd.",
+      "language": "ta",
+      "category": "refusal",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.0017,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.65,
+      "hybrid_top_tactic": "CREDENTIAL"
+    },
+    {
+      "text": "Bank-la irunthu eppovume OTP kekka maatanga, yarukkum sollathinga.",
+      "language": "ta-Latn",
+      "category": "security_advisory",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.0011,
+      "rule_predicted_scam": false,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.0,
+      "hybrid_top_tactic": "PROTECTIVE_ADVISORY"
+    },
+    {
+      "text": "Police phone panni panam transfer panna solla maatanga, ithu pure scam.",
+      "language": "ta-Latn",
+      "category": "security_advisory",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.0032,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.95,
+      "hybrid_top_tactic": "URGENCY"
+    },
+    {
+      "text": "AnyDesk app download panna sonnanga, naan panna maatten nu solliten.",
+      "language": "ta-Latn",
+      "category": "refusal",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.0149,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.92,
+      "hybrid_top_tactic": "REMOTE_ACCESS"
+    },
+    {
+      "text": "RBI verification account nu sonna nambathinga, call cut pannidunga.",
+      "language": "ta-Latn",
+      "category": "advisory",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.0018,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.95,
+      "hybrid_top_tactic": "ISOLATION"
+    },
+    {
+      "text": "Ungal Aadhaar number vera yarukkum share pannathinga nu solraanga.",
+      "language": "ta-Latn",
+      "category": "advisory",
+      "neural_predicted_scam": true,
+      "neural_scam_prob": 0.9956,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.9956,
+      "hybrid_top_tactic": "ISOLATION"
+    },
+    {
+      "text": "\u092c\u0948\u0902\u0915 \u0915\u092d\u0940 \u092d\u0940 \u0906\u092a\u0938\u0947 \u092b\u094b\u0928 \u092a\u0930 \u0913\u091f\u0940\u092a\u0940 \u092f\u093e \u092a\u093e\u0938\u0935\u0930\u094d\u0921 \u0928\u0939\u0940\u0902 \u092e\u093e\u0902\u0917\u0924\u093e \u0939\u0948\u0964",
+      "language": "hi",
+      "category": "security_advisory",
+      "neural_predicted_scam": true,
+      "neural_scam_prob": 0.9955,
+      "rule_predicted_scam": false,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.9955,
+      "hybrid_top_tactic": "BENIGN_INQUIRY"
+    },
+    {
+      "text": "\u092a\u0941\u0932\u093f\u0938 \u0915\u092d\u0940 \u092d\u0940 \u0935\u0940\u0921\u093f\u092f\u094b \u0915\u0949\u0932 \u092a\u0930 \u0921\u093f\u091c\u093f\u091f\u0932 \u0905\u0930\u0947\u0938\u094d\u091f \u092f\u093e \u092a\u0948\u0938\u0947 \u0915\u0940 \u092e\u093e\u0902\u0917 \u0928\u0939\u0940\u0902 \u0915\u0930\u0924\u0940\u0964",
+      "language": "hi",
+      "category": "security_advisory",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.0063,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.92,
+      "hybrid_top_tactic": "AUTHORITY"
+    },
+    {
+      "text": "\u0905\u091c\u094d\u091e\u093e\u0924 \u0916\u093e\u0924\u094b\u0902 \u092e\u0947\u0902 \u092a\u0948\u0938\u093e \u091f\u094d\u0930\u093e\u0902\u0938\u092b\u0930 \u0928 \u0915\u0930\u0947\u0902, \u092f\u0939 \u0938\u093e\u0907\u092c\u0930 \u0927\u094b\u0916\u093e\u0927\u0921\u093c\u0940 \u0939\u094b \u0938\u0915\u0924\u0940 \u0939\u0948\u0964",
+      "language": "hi",
+      "category": "security_advisory",
+      "neural_predicted_scam": true,
+      "neural_scam_prob": 1.0,
+      "rule_predicted_scam": false,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 1.0,
+      "hybrid_top_tactic": "BENIGN_INQUIRY"
+    },
+    {
+      "text": "\u0915\u0949\u0932\u0930 \u0928\u0947 \u092e\u0941\u091d\u0938\u0947 \u0913\u091f\u0940\u092a\u0940 \u092e\u093e\u0902\u0917\u093e \u0932\u0947\u0915\u093f\u0928 \u092e\u0948\u0902\u0928\u0947 \u092b\u094b\u0928 \u0915\u093e\u091f \u0926\u093f\u092f\u093e \u0914\u0930 \u092a\u0941\u0932\u093f\u0938 \u0915\u094b \u0938\u0942\u091a\u0928\u093e \u0926\u0940\u0964",
+      "language": "hi",
+      "category": "refusal",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.0008,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.92,
+      "hybrid_top_tactic": "AUTHORITY"
+    },
+    {
+      "text": "\u0938\u093e\u0907\u092c\u0930 \u0939\u0947\u0932\u094d\u092a\u0932\u093e\u0907\u0928 1930 \u092a\u0930 \u0924\u0941\u0930\u0902\u0924 \u092b\u094d\u0930\u0949\u0921 \u0915\u0940 \u0936\u093f\u0915\u093e\u092f\u0924 \u0926\u0930\u094d\u091c \u0915\u0930\u093e\u090f\u0902\u0964",
+      "language": "hi",
+      "category": "helpline",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.004,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.92,
+      "hybrid_top_tactic": "URGENCY"
+    },
+    {
+      "text": "Asli police kabhi bhi phone par paise transfer karne ko nahi bolti.",
+      "language": "hi-Latn",
+      "category": "security_advisory",
+      "neural_predicted_scam": true,
+      "neural_scam_prob": 0.8917,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.95,
+      "hybrid_top_tactic": "URGENCY"
+    },
+    {
+      "text": "Bank wale bolte hain apna PIN aur OTP kisi ke sath share mat karo.",
+      "language": "hi-Latn",
+      "category": "security_advisory",
+      "neural_predicted_scam": true,
+      "neural_scam_prob": 0.7591,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.96,
+      "hybrid_top_tactic": "CREDENTIAL"
+    },
+    {
+      "text": "Ye digital arrest ek fraud hai, turant call cut kar do aur complaint karo.",
+      "language": "hi-Latn",
+      "category": "scam_discussion",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.0594,
+      "rule_predicted_scam": false,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.0,
+      "hybrid_top_tactic": "PROTECTIVE_ADVISORY"
+    },
+    {
+      "text": "Usne bola AnyDesk download karo, maine mana kar diya.",
+      "language": "hi-Latn",
+      "category": "refusal",
+      "neural_predicted_scam": false,
+      "neural_scam_prob": 0.2795,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.95,
+      "hybrid_top_tactic": "SUSPICIOUS_LINK"
+    },
+    {
+      "text": "Electricity bill ka fake link aaya tha, maine click nahi kiya.",
+      "language": "hi-Latn",
+      "category": "refusal",
+      "neural_predicted_scam": true,
+      "neural_scam_prob": 0.9494,
+      "rule_predicted_scam": true,
+      "hybrid_predicted_scam": true,
+      "hybrid_scam_prob": 0.95,
+      "hybrid_top_tactic": "SUSPICIOUS_LINK"
+    }
+  ]
+}

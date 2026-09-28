@@ -1,0 +1,111 @@
+{
+  "evaluation_name": "Ablation B: Deterministic Rule Safety Floor Only",
+  "dataset": "ml/datasets/final/test_turns.jsonl",
+  "sample_count": 1292,
+  "latency_ms_per_sample": 29.42,
+  "scam_classification": {
+    "sample_count": 1292,
+    "true_positives": 266,
+    "true_negatives": 139,
+    "false_positives": 9,
+    "false_negatives": 878,
+    "accuracy": 0.3135,
+    "precision": 0.9673,
+    "recall": 0.2325,
+    "f1": 0.3749,
+    "macro_f1": 0.3068,
+    "micro_f1": 0.3135,
+    "false_positive_rate": 0.0608,
+    "false_negative_rate": 0.7675,
+    "specificity": 0.9392
+  },
+  "tactic_classification": {
+    "macro_f1": 0.1296,
+    "micro_f1": 0.1151,
+    "micro_precision": 0.2623,
+    "micro_recall": 0.0737,
+    "per_tactic": {
+      "AUTHORITY_IMPERSONATION": {
+        "true_positives": 15,
+        "false_positives": 7,
+        "false_negatives": 264,
+        "support": 279,
+        "precision": 0.6818,
+        "recall": 0.0538,
+        "f1": 0.0997
+      },
+      "CRIMINAL_ALLEGATION_FEAR": {
+        "true_positives": 5,
+        "false_positives": 3,
+        "false_negatives": 272,
+        "support": 277,
+        "precision": 0.625,
+        "recall": 0.0181,
+        "f1": 0.0351
+      },
+      "URGENCY": {
+        "true_positives": 3,
+        "false_positives": 63,
+        "false_negatives": 6,
+        "support": 9,
+        "precision": 0.0455,
+        "recall": 0.3333,
+        "f1": 0.08
+      },
+      "ISOLATION": {
+        "true_positives": 1,
+        "false_positives": 76,
+        "false_negatives": 0,
+        "support": 1,
+        "precision": 0.013,
+        "recall": 1.0,
+        "f1": 0.0256
+      },
+      "PAYMENT_DEMAND": {
+        "true_positives": 45,
+        "false_positives": 48,
+        "false_negatives": 261,
+        "support": 306,
+        "precision": 0.4839,
+        "recall": 0.1471,
+        "f1": 0.2256
+      },
+      "CREDENTIAL_OTP_PRESSURE": {
+        "true_positives": 13,
+        "false_positives": 28,
+        "false_negatives": 264,
+        "support": 277,
+        "precision": 0.3171,
+        "recall": 0.0469,
+        "f1": 0.0818
+      },
+      "REMOTE_ACCESS_PRESSURE": {
+        "true_positives": 2,
+        "false_positives": 10,
+        "false_negatives": 0,
+        "support": 2,
+        "precision": 0.1667,
+        "recall": 1.0,
+        "f1": 0.2857
+      },
+      "SUSPICIOUS_LINK": {
+        "true_positives": 0,
+        "false_positives": 0,
+        "false_negatives": 1,
+        "support": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ESCALATION_COERCION": {
+        "true_positives": 1,
+        "false_positives": 4,
+        "false_negatives": 0,
+        "support": 1,
+        "precision": 0.2,
+        "recall": 1.0,
+        "f1": 0.3333
+      }
+    }
+  }
+}

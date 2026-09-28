@@ -11,14 +11,22 @@ import json
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-torch_lib = r"C:\Users\gangs\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\lib"
-if os.path.exists(torch_lib):
-    os.environ["PATH"] = torch_lib + os.pathsep + os.environ.get("PATH", "")
-    if hasattr(os, "add_dll_directory"):
-        try:
-            os.add_dll_directory(torch_lib)
-        except Exception:
-            pass
+def _setup_torch_dll():
+    if os.name != "nt":
+        return
+    try:
+        import importlib.util
+        spec = importlib.util.find_spec("torch")
+        if spec and spec.origin:
+            torch_lib = os.path.join(os.path.dirname(spec.origin), "lib")
+            if os.path.isdir(torch_lib):
+                os.environ["PATH"] = torch_lib + os.pathsep + os.environ.get("PATH", "")
+                if hasattr(os, "add_dll_directory"):
+                    os.add_dll_directory(torch_lib)
+    except Exception:
+        pass
+
+_setup_torch_dll()
 
 import torch
 import numpy as np

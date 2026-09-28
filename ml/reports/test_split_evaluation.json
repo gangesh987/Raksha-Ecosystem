@@ -2,8 +2,8 @@
   "evaluation_dataset": "ml/datasets/final/test_conversations.jsonl",
   "total_conversations": 182,
   "total_turns": 1292,
-  "elapsed_seconds": 21.43,
-  "ms_per_conversation": 117.76,
+  "elapsed_seconds": 256.91,
+  "ms_per_conversation": 1411.57,
   "binary_scam_metrics": {
     "accuracy": 0.7582,
     "precision": 0.7339,

@@ -13,33 +13,23 @@ from typing import AsyncIterator
 
 from .grpc_gen import pb2, pb2_grpc
 from .ai.multilingual_asr import asr_engine
-from .ai.jev_provider import JEVProviderFactory
-from .ai.stage_machine import ScamStageMachine, STAGE_RANKS
-from .ai.manipulation_velocity import ManipulationVelocityEngine
 from .ai.yolo_vision import vision_engine, VisualContextSignal
-from .ai.multimodal_fusion import fusion_engine, TACTIC_LABELS
+from .ai.multimodal_fusion import TACTIC_LABELS
 from .ai.safety_brake import safety_brake_engine
 from .ai.evidence_vault import get_session_ledger
 from .ai.conversation_context import SessionRegistry
+from .ai.unified_pipeline import UnifiedAnalysisPipeline, get_pipeline
 
 
 class ProtectionServiceImpl(pb2_grpc.ProtectionServiceServicer):
-    """Production gRPC ProtectionService implementation."""
+    """
+    Production gRPC ProtectionService implementation.
+    Acts as a streaming Protobuf transport adapter to the canonical UnifiedAnalysisPipeline.
+    Ensures UnifiedAnalysisPipeline is the single source of truth across REST, WS, and gRPC.
+    """
 
-    def __init__(self):
-        self.jev_provider = JEVProviderFactory.get_provider()
-        self.stage_machines: dict[str, ScamStageMachine] = {}
-        self.velocity_engines: dict[str, ManipulationVelocityEngine] = {}
-
-    def _get_stage_machine(self, session_id: str) -> ScamStageMachine:
-        if session_id not in self.stage_machines:
-            self.stage_machines[session_id] = ScamStageMachine()
-        return self.stage_machines[session_id]
-
-    def _get_velocity_engine(self, session_id: str) -> ManipulationVelocityEngine:
-        if session_id not in self.velocity_engines:
-            self.velocity_engines[session_id] = ManipulationVelocityEngine()
-        return self.velocity_engines[session_id]
+    def __init__(self, pipeline: Optional[UnifiedAnalysisPipeline] = None):
+        self.pipeline = pipeline or get_pipeline()
 
     async def StreamProtection(
         self,
@@ -71,9 +61,6 @@ class ProtectionServiceImpl(pb2_grpc.ProtectionServiceServicer):
                 continue
 
             session_ctx = SessionRegistry.get_or_create(session_id)
-            stage_machine = self._get_stage_machine(session_id)
-            velocity_engine = self._get_velocity_engine(session_id)
-            ledger = get_session_ledger(session_id)
 
             # 2. Ingest Media Payload
             payload_type = frame.WhichOneof("media_payload")
@@ -93,90 +80,28 @@ class ProtectionServiceImpl(pb2_grpc.ProtectionServiceServicer):
                 # Supporting video frame received: analyze with YOLO11
                 visual_signal = vision_engine.analyze_frame(frame.video_frame_jpeg)
 
-            if transcript_text:
-                session_ctx.add_turn(
-                    speaker="CALLER",
-                    text=transcript_text,
-                    language=lang_code
-                )
-
-            # 3. Sliding Window Semantic Analysis via JEV Engine
-            window_context = session_ctx.get_sliding_window(k=5)
-            jev_result = self.jev_provider.analyze_window(
-                current_utterance=transcript_text,
-                conversation_context=window_context[:-1] if window_context else [],
-                detected_language=lang_code
-            )
-
-            # Record tactics in session
-            session_ctx.record_tactics(jev_result.tactic_probabilities)
-
-            # 4. Scam Stage Machine Evaluation
-            current_stage, stage_conf = stage_machine.update_stage(
-                tactic_probs=jev_result.tactic_probabilities,
-                timestamp=now_sec,
-                is_irreversible=jev_result.is_irreversible_action
-            )
-            stage_rank = STAGE_RANKS.get(current_stage, 0)
-
-            # 5. Manipulation Velocity Evaluation
-            velocity_calc = velocity_engine.record_event(
-                timestamp=now_sec,
-                tactic_probs=jev_result.tactic_probabilities,
-                current_stage_rank=stage_rank
-            )
-
-            # 6. Multimodal Risk Fusion
-            fused_decision = fusion_engine.fuse(
-                tactic_probs=jev_result.tactic_probabilities,
-                scam_stage=current_stage,
-                velocity=velocity_calc,
-                semantic_confidence=jev_result.confidence,
+            # 3. Run canonical UnifiedAnalysisPipeline
+            result = self.pipeline.analyze(
+                transcript=transcript_text,
+                session_id=session_id,
+                detected_language=lang_code,
                 visual_signal=visual_signal,
-                is_speakerphone_active=(frame.device_context.audio_route == pb2.DeviceContext.SPEAKERPHONE)
             )
 
-            # Track peaks in session
-            if fused_decision.risk_score > session_ctx.peak_risk_score:
-                session_ctx.peak_risk_score = fused_decision.risk_score
-            if fused_decision.safety_brake_triggered:
-                session_ctx.safety_brake_triggered = True
-
-            # 7. Append Event to Tamper-Evident Ledger
-            ledger_block = ledger.append_event(
-                event_id=f"evt-{frame.sequence_number}-{now_ms}",
-                event_type="RISK_EVALUATION",
-                payload={
-                    "seq": frame.sequence_number,
-                    "score": fused_decision.risk_score,
-                    "level": fused_decision.risk_level,
-                    "stage": current_stage,
-                    "velocity": velocity_calc.level,
-                    "tactics": jev_result.tactic_probabilities,
-                    "brake": fused_decision.safety_brake_triggered,
-                    "transcript": transcript_text,
-                    "model_version": jev_result.semantic_model.get("model_version", "RakshaCall-v2"),
-                    "neural_scam_prob": jev_result.scam_probability,
-                    "top_tactic": jev_result.top_tactic,
-                    "top_tactic_prob": jev_result.top_tactic_probability,
-                    "rule_floor_triggered": jev_result.rule_floor.get("triggered", False)
-                }
-            )
-
-            # 8. Map to Protobuf Protocol Structures
-            risk_level_proto = getattr(pb2, f"RISK_LEVEL_{fused_decision.risk_level}", pb2.RISK_LEVEL_LOW)
-            stage_proto = getattr(pb2, f"STAGE_{current_stage}", pb2.STAGE_CONTACT)
-            velocity_proto = getattr(pb2, f"VELOCITY_{velocity_calc.level}", pb2.VELOCITY_LOW)
+            # 4. Map to Protobuf Protocol Structures
+            risk_level_proto = getattr(pb2, f"RISK_LEVEL_{result.risk_level}", pb2.RISK_LEVEL_LOW)
+            stage_proto = getattr(pb2, f"STAGE_{result.stage}", pb2.STAGE_CONTACT)
+            velocity_proto = getattr(pb2, f"VELOCITY_{result.velocity_level}", pb2.VELOCITY_LOW)
 
             tactic_protos = []
-            for tid, prob in jev_result.tactic_probabilities.items():
+            for tid, prob in result.tactic_probabilities.items():
                 if prob >= 0.30:
                     tactic_protos.append(pb2.TacticEvidence(
                         tactic_id=tid,
                         display_name=TACTIC_LABELS.get(tid, tid),
                         probability=prob,
-                        confidence=jev_result.confidence,
-                        evidence_quote=jev_result.supporting_evidence.get(tid, transcript_text),
+                        confidence=prob,
+                        evidence_quote=transcript_text,
                         timestamp_ms=now_ms,
                         language=lang_code,
                         source="SPEECH",
@@ -185,17 +110,16 @@ class ProtectionServiceImpl(pb2_grpc.ProtectionServiceServicer):
                     ))
 
             # Select localized intervention
-            audio_alert = safety_brake_engine.select_audio_alert(jev_result.tactic_probabilities, lang_code)
             intervention_proto = pb2.InterventionPlan(
                 primary_action=(
-                    pb2.InterventionPlan.ENGAGE_SAFETY_BRAKE if fused_decision.safety_brake_triggered
-                    else pb2.InterventionPlan.SHOW_WARNING if fused_decision.risk_level in ("HIGH", "MEDIUM")
+                    pb2.InterventionPlan.ENGAGE_SAFETY_BRAKE if result.safety_brake_triggered
+                    else pb2.InterventionPlan.SHOW_WARNING if result.risk_level in ("HIGH", "MEDIUM")
                     else pb2.InterventionPlan.NONE
                 ),
-                localized_audio_alert_key=audio_alert.audio_key,
-                display_headline=audio_alert.phonetic_romanized if fused_decision.safety_brake_triggered else "Live Call Protection Active",
-                display_subtext=audio_alert.english_translation,
-                guidance_steps=[s.instruction_english for s in safety_brake_engine.VERIFICATION_STEPS[:4]]
+                localized_audio_alert_key=result.localized_audio_alert_key,
+                display_headline=result.intervention_headline if result.safety_brake_triggered else "Live Call Protection Active",
+                display_subtext=result.intervention_subtext,
+                guidance_steps=result.verification_steps[:4] if result.verification_steps else [s.instruction_english for s in safety_brake_engine.VERIFICATION_STEPS[:4]]
             )
 
             visual_proto = pb2.VisualPerceptionContext(
@@ -206,24 +130,24 @@ class ProtectionServiceImpl(pb2_grpc.ProtectionServiceServicer):
                 contextual_note=visual_signal.contextual_note if visual_signal else "Standard 1-on-1 video interaction"
             )
 
-            # 9. Yield Real-Time Response Update
+            # 5. Yield Real-Time Response Update
             yield pb2.RiskUpdate(
                 session_id=session_id,
                 ack_sequence_number=frame.sequence_number,
                 server_timestamp_ms=now_ms,
-                risk_score=fused_decision.risk_score,
+                risk_score=result.risk_score,
                 risk_level=risk_level_proto,
                 scam_stage=stage_proto,
                 manipulation_velocity=velocity_proto,
                 detected_tactics=tactic_protos,
-                safety_brake_triggered=fused_decision.safety_brake_triggered,
+                safety_brake_triggered=result.safety_brake_triggered,
                 intervention=intervention_proto,
-                primary_explanation=fused_decision.primary_explanation,
-                contributing_factors=fused_decision.contributing_factors,
+                primary_explanation=result.primary_explanation,
+                contributing_factors=result.contributing_factors,
                 visual_context=visual_proto,
-                model_disagreement=fused_decision.model_disagreement,
-                disagreement_reason=fused_decision.disagreement_explanation or "",
-                current_block_hash=ledger_block.current_hash
+                model_disagreement=result.model_disagreement,
+                disagreement_reason=result.disagreement_explanation or "",
+                current_block_hash=result.evidence_hash
             )
 
     async def CheckLiveness(
@@ -233,7 +157,7 @@ class ProtectionServiceImpl(pb2_grpc.ProtectionServiceServicer):
     ) -> pb2.LivenessResponse:
         return pb2.LivenessResponse(
             is_ready=True,
-            active_model_mode="grpc.aio+multilingual-indic-asr+hubert+jev+yolo11+sha256-vault",
+            active_model_mode="grpc.aio+canonical-unified-pipeline+multilingual-indic-asr+hubert+jev+yolo11+sha256-vault",
             supported_languages=["ta-IN", "en-IN", "hi-IN", "ta-Latn", "hi-Latn"],
             server_time_ms=int(time.time() * 1000)
         )
@@ -244,20 +168,15 @@ class ProtectionServiceImpl(pb2_grpc.ProtectionServiceServicer):
         context: grpc.aio.ServicerContext
     ) -> pb2.EndSessionResponse:
         session_id = request.session_id
-        session_ctx = SessionRegistry.get_or_create(session_id)
-        ledger = get_session_ledger(session_id)
-
-        peak = session_ctx.peak_risk_score
-        final_level = "CRITICAL" if peak >= 81 else "HIGH" if peak >= 61 else "MEDIUM" if peak >= 31 else "LOW"
-        total_tactics = len(session_ctx.cumulative_tactics)
+        summary = self.pipeline.end_session(session_id)
 
         return pb2.EndSessionResponse(
             session_id=session_id,
-            peak_risk_score=peak,
-            final_risk_level=final_level,
-            total_tactics_detected=total_tactics,
-            head_evidence_hash=ledger.head_hash,
-            duration_seconds=int(session_ctx.elapsed_seconds())
+            peak_risk_score=summary["peak_risk_score"],
+            final_risk_level=summary["final_risk_level"],
+            total_tactics_detected=summary["total_tactics_detected"],
+            head_evidence_hash=summary["head_evidence_hash"],
+            duration_seconds=summary["duration_seconds"]
         )
 
 

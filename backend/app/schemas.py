@@ -9,6 +9,9 @@ class Login(BaseModel):
     email: str
     password: str
 
+class GoogleAuth(BaseModel):
+    id_token: str
+
 class SessionCreate(BaseModel):
     source: str="simulated"
 

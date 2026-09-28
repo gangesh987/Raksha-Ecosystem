@@ -8,7 +8,7 @@
 
 Digital-arrest scams and coercive extortion calls have emerged as one of the fastest-growing cybersecurity threats globally, particularly across India and Southeast Asia. Fraudsters impersonate senior law enforcement officials (CBI, State Police, Cyber Crime Units, Supreme Court, TRAI, Customs, Enforcement Directorate) over voice and video calls. They allege that the victim's identity or Aadhaar has been implicated in contraband seizures, money laundering, or illegal parcels, and intimidate victims into 24/7 "digital custody" in isolated rooms before extorting lakhs of rupees under the guise of "RBI verification deposits" or "clearing penalty fees."
 
-**RakshaCall** is a production-quality native Android application designed to serve as an on-device, real-time safety layer. It continuously analyzes conversational tactics, calculates manipulation velocity, tracks scam stage progression, maintains an append-only cryptographic SHA-256 evidence chain, and immediately intervenes with a **Safety Brake** before victims can execute irreversible financial transfers or disclose credentials.
+**RakshaCall** is a production-grade prototype native Android application and distributed conversational safety backend designed to serve as an on-device, real-time safety layer (full production deployment requires external cloud SMS gateway provisioning, dedicated streaming ASR decoders, and cloud container orchestration). It continuously analyzes conversational tactics, calculates manipulation velocity, tracks scam stage progression, maintains an append-only cryptographic SHA-256 evidence chain, and immediately intervenes with a **Safety Brake** before victims can execute irreversible financial transfers or disclose credentials.
 
 ---
 

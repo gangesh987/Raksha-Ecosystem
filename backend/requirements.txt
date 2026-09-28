@@ -6,6 +6,7 @@ pydantic==2.10.4
 pydantic-settings==2.7.1
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
 python-multipart==0.0.20
 
 # gRPC & Protobuf (required by protection_service_pb2_grpc)
@@ -16,6 +17,7 @@ protobuf>=4.25.0
 # Cloud LLM & AI Providers
 google-genai>=1.40.0
 groq>=0.11.0
+google-auth>=2.20.0
 
 # Neural ML Inference & Evaluation
 torch>=2.0.0
@@ -26,6 +28,7 @@ transformers>=4.40.0
 
 # Vision context
 ultralytics>=8.3.0
+pillow>=10.0.0
 
 # Testing & Client
 pytest>=8.0.0

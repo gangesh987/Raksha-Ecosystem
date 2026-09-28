@@ -1,0 +1,8 @@
+{
+  "epoch": 25,
+  "train_loss": 0.2594670355319977,
+  "val_loss": 1.5075364112854004,
+  "scam_f1": 0.0,
+  "tactic_macro_f1": 0.0,
+  "tactic_micro_f1": 0.0
+}

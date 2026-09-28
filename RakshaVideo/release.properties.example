@@ -1,0 +1,4 @@
+# Supply these through Gradle properties (-P...) or environment variables.
+RAKSHA_BACKEND_URL=https://api.example.com
+RAKSHA_SIGNALING_WS_URL=wss://api.example.com/ws/call
+RAKSHA_API_TOKEN=REPLACE_WITH_DEPLOYMENT_SECRET

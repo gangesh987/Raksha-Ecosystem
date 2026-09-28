@@ -1,0 +1,30 @@
+{
+  "model_name": "RakshaCall-Multilingual-Semantic-v2",
+  "architecture": "MultilingualSubwordEncoder-DualHead",
+  "representation_dim": 768,
+  "encoder_params": 6187520,
+  "total_params": 6435850,
+  "num_tactics": 9,
+  "tactics": [
+    "AUTHORITY_IMPERSONATION",
+    "CRIMINAL_ALLEGATION_FEAR",
+    "URGENCY",
+    "ISOLATION",
+    "PAYMENT_DEMAND",
+    "CREDENTIAL_OTP_PRESSURE",
+    "REMOTE_ACCESS_PRESSURE",
+    "SUSPICIOUS_LINKS",
+    "ESCALATION_COERCION"
+  ],
+  "languages": [
+    "ta",
+    "ta-Latn",
+    "hi",
+    "hi-Latn",
+    "en"
+  ],
+  "training_samples": 4541,
+  "validation_samples": 1042,
+  "test_samples": 1292,
+  "export_date": "2026-09-25"
+}

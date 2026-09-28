@@ -1,25 +1,49 @@
+# Android & Gradle
 *.iml
+**/*.iml
 .gradle
+**/.gradle/
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+local.properties
+.idea/
+**/.idea/
 .DS_Store
-/build
+build/
+**/build/
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+
+# Secrets and environment files — NEVER commit real credentials
 .env
 *.env
-.venv
-__pycache__/
+**/.env
+backend/.env
+server/.env
+
+# Firebase configuration (contains API keys)
+app/google-services.json
+google-services.json
+
+# Python Virtual Environments & Caches
+.venv/
+**/.venv/
+test_clean_venv/
+**/__pycache__/
 *.pyc
+.pytest_cache/
+scratch/
+
+# Build artifacts & packages (>100MB blocks GitHub push)
 *.zip
+**/*.zip
 *.apk
+**/*.apk
 node_modules/
 dist/
-.pytest_cache/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+data/*.db

@@ -1,8 +1,12 @@
 import os
 from PIL import Image, ImageDraw
 
-SRC_IMAGE = r"C:\Users\gangs\.gemini\antigravity-ide\brain\212b0a25-e17b-46c0-ba0d-1604a64a484c\rakshacall_icon_pure_1789310287734.jpg"
-BRAIN_DIR = r"C:\Users\gangs\.gemini\antigravity-ide\brain\212b0a25-e17b-46c0-ba0d-1604a64a484c"
+SRC_IMAGE = os.environ.get("SRC_IMAGE", os.path.join("media", "app_logo.png"))
+BRAIN_DIR = os.environ.get("BRAIN_DIR", "media")
+
+if not os.path.exists(SRC_IMAGE):
+    print(f"[Info] Source image {SRC_IMAGE} not found. Skipping logo generation.")
+    exit(0)
 
 im = Image.open(SRC_IMAGE).convert("RGBA")
 

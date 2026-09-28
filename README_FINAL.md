@@ -166,7 +166,7 @@ FIREBASE_PROJECT_ID=your_firebase_project_id
 # Run all unit tests
 ./gradlew testDebugUnitTest
 
-# Assemble production-ready debug APK
+# Assemble debug build APK
 ./gradlew assembleDebug
 
 # Install on connected device/emulator

@@ -1,0 +1,17 @@
+{
+  "model_name": "RakshaCall-Conversation-Stage-GRU-v1",
+  "architecture": "Bidirectional-GRU",
+  "input_dim": 12,
+  "hidden_dim": 64,
+  "stages": [
+    "CONTACT",
+    "AUTHORITY",
+    "FEAR",
+    "ISOLATION",
+    "DEMAND",
+    "PAYMENT_CREDENTIAL",
+    "CRITICAL_BRAKE"
+  ],
+  "num_stages": 7,
+  "validation_accuracy": 1.0
+}

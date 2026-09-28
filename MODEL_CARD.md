@@ -60,16 +60,19 @@ RakshaCall models are lightweight, high-speed neural networks designed for ambie
 
 ## 5. Quantitative Evaluation Metrics
 
-Tested on the untouched 15% evaluation split (`ml/reports/tactic_evaluation.json`):
-- **Binary Scam Classification**:
-  - Precision: **100.0%**
-  - Recall: **100.0%**
-  - F1-Score: **1.000**
-- **Multi-Label Tactic Classification**:
-  - Micro F1: **0.784**
-  - Macro F1: **0.720**
-- **Negative Control False Alarm Rate**: **0.0%** (Zero false alarms on protective advisories like *"Never share your OTP"*).
-- **Temporal Stage Accuracy**: **100.0%** on validation sequences.
+### A. Functional Smoke Test Split (`ml/reports/tactic_evaluation.json`, N = 22 scenarios):
+- **Binary Scam Classification**: Functional Scenario Pass Rate: **100.0%**
+- **Multi-Label Tactic Classification**: Micro F1: **0.784** | Macro F1: **0.720**
+- **Negative Control False Alarm Rate**: **0.0%** (Zero false alarms on explicit protective advisories like *"Never share your OTP"*).
+- **Temporal Stage Accuracy**: **100.0%** on synthetic validation sequences.
+
+### B. Empirical Held-Out Generalization Benchmark (N = 1,292 turns across 5 languages):
+*(Source: `docs/STEP3_HELD_OUT_EVALUATION_REPORT.md` - rigorously evaluates against unseen adversarial paraphrases and hard negatives)*
+- **Held-Out Test Macro F1**: **94.24%**
+- **Held-Out Micro Tactic F1**: **84.38%**
+- **Adversarial Paraphrase Robustness**: **87.5%**
+- **Known Limitation**: Extreme colloquial code-mixing and unpunctuated native Indic scripts without transliteration achieve lower baseline performance without hybrid phonetic buffering.
+
 
 ---
 

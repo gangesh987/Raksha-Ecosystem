@@ -44,6 +44,7 @@ EXCLUDE_FILES = {
     "RakshaCall-Full-Project.zip",
     "RakshaCall_FINAL_REALTIME_PROTOTYPE.zip",
     "RakshaCall_FINAL_OVERALL_PROJECT.zip",
+    "RakshaCall_Overall_Project_Step3.zip",
     "FINAL ONE.docx",
     "ppp.docx"
 }

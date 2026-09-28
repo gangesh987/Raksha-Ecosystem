@@ -1,0 +1,111 @@
+{
+  "evaluation_name": "Ablation C: Current Hybrid Production System (Live JEV)",
+  "dataset": "ml/datasets/final/test_turns.jsonl",
+  "sample_count": 1292,
+  "latency_ms_per_sample": 25.08,
+  "scam_classification": {
+    "sample_count": 1292,
+    "true_positives": 1077,
+    "true_negatives": 84,
+    "false_positives": 64,
+    "false_negatives": 67,
+    "accuracy": 0.8986,
+    "precision": 0.9439,
+    "recall": 0.9414,
+    "f1": 0.9427,
+    "macro_f1": 0.7523,
+    "micro_f1": 0.8986,
+    "false_positive_rate": 0.4324,
+    "false_negative_rate": 0.0586,
+    "specificity": 0.5676
+  },
+  "tactic_classification": {
+    "macro_f1": 0.456,
+    "micro_f1": 0.7618,
+    "micro_precision": 0.6948,
+    "micro_recall": 0.843,
+    "per_tactic": {
+      "AUTHORITY_IMPERSONATION": {
+        "true_positives": 244,
+        "false_positives": 24,
+        "false_negatives": 35,
+        "support": 279,
+        "precision": 0.9104,
+        "recall": 0.8746,
+        "f1": 0.8921
+      },
+      "CRIMINAL_ALLEGATION_FEAR": {
+        "true_positives": 243,
+        "false_positives": 21,
+        "false_negatives": 34,
+        "support": 277,
+        "precision": 0.9205,
+        "recall": 0.8773,
+        "f1": 0.8983
+      },
+      "URGENCY": {
+        "true_positives": 5,
+        "false_positives": 65,
+        "false_negatives": 4,
+        "support": 9,
+        "precision": 0.0714,
+        "recall": 0.5556,
+        "f1": 0.1266
+      },
+      "ISOLATION": {
+        "true_positives": 1,
+        "false_positives": 76,
+        "false_negatives": 0,
+        "support": 1,
+        "precision": 0.013,
+        "recall": 1.0,
+        "f1": 0.0256
+      },
+      "PAYMENT_DEMAND": {
+        "true_positives": 233,
+        "false_positives": 144,
+        "false_negatives": 73,
+        "support": 306,
+        "precision": 0.618,
+        "recall": 0.7614,
+        "f1": 0.6823
+      },
+      "CREDENTIAL_OTP_PRESSURE": {
+        "true_positives": 243,
+        "false_positives": 45,
+        "false_negatives": 34,
+        "support": 277,
+        "precision": 0.8438,
+        "recall": 0.8773,
+        "f1": 0.8602
+      },
+      "REMOTE_ACCESS_PRESSURE": {
+        "true_positives": 2,
+        "false_positives": 10,
+        "false_negatives": 0,
+        "support": 2,
+        "precision": 0.1667,
+        "recall": 1.0,
+        "f1": 0.2857
+      },
+      "SUSPICIOUS_LINK": {
+        "true_positives": 0,
+        "false_positives": 38,
+        "false_negatives": 1,
+        "support": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "ESCALATION_COERCION": {
+        "true_positives": 1,
+        "false_positives": 4,
+        "false_negatives": 0,
+        "support": 1,
+        "precision": 0.2,
+        "recall": 1.0,
+        "f1": 0.3333
+      }
+    }
+  }
+}

@@ -1,8 +1,12 @@
 import os
 from PIL import Image
 
-CALLER_IMG = r"C:\Users\gangs\.gemini\antigravity-ide\brain\212b0a25-e17b-46c0-ba0d-1604a64a484c\simulated_caller_3d_1789310759650.jpg"
-USER_IMG = r"C:\Users\gangs\.gemini\antigravity-ide\brain\212b0a25-e17b-46c0-ba0d-1604a64a484c\simulated_user_3d_1789310811288.jpg"
+CALLER_IMG = os.environ.get("CALLER_IMG", os.path.join("media", "sim_caller_video.png"))
+USER_IMG = os.environ.get("USER_IMG", os.path.join("media", "sim_user_video.png"))
+
+if not (os.path.exists(CALLER_IMG) and os.path.exists(USER_IMG)):
+    print("[Info] Caller or User image not found. Skipping simulation image processing.")
+    exit(0)
 
 im_caller = Image.open(CALLER_IMG).convert("RGB")
 im_caller = im_caller.resize((512, 512), Image.Resampling.LANCZOS)

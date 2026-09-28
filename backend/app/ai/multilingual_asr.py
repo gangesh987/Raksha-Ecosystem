@@ -1,7 +1,15 @@
 """
-RakshaCall Multilingual Speech Recognition & HuBERT Representation Pipeline
-Provides acoustic representation extraction, Language Identification (LID),
-and ASR decoding across Tamil, Tanglish, Hindi, Hinglish, and English.
+RakshaCall Acoustic Preprocessing & Multilingual Speech Interface Pipeline.
+Provides acoustic representation extraction (HuBERT 768-dim feature contract),
+lexical Language Identification (LID), and vernacular normalization across
+Tamil, Tanglish, Hindi, Hinglish, and English.
+
+Architecture Note:
+This module extracts acoustic energy, spectral centroid, and frequency modulation
+from raw 16kHz PCM audio frames. Full speech-to-text decoding is provided by
+connected client edge STT or cloud models (e.g. Gemini Live); this pipeline
+normalizes transcripts, detects script/language, and maps representations
+into the downstream semantic security engines.
 """
 
 from __future__ import annotations

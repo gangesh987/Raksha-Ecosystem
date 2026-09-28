@@ -87,13 +87,38 @@ class RuleBasedSafetyFloor:
     """
 
     PROTECTIVE_PATTERNS = [
-        r'(never share|do not share|don\'t share|never send|do not transfer|don\'t transfer|never transfer)',
-        r'(eppovume sollatha|sollathinga|anuppathinga|panam kudukathinga|அனுப்பாதீர்கள்|கேட்க மாட்டார்கள்)',
-        r'(kisi ko mat dena|mat batao|mat bhejo|kabhi mat do)',
-        r'(is a scam|this is fraud|will never ask|மோசடி)',
-        r'(sounds like a scam|like a scam|scam call|scam warning|scam aayirukku|fraud call|fraud hai)',
-        r'(i am disconnecting|disconnecting this call|ithu fraud|polise-kitta complaint pannunga)',
-        r'(there is no fee|no fee for this|free of cost|no charge)'
+        # 1. Explicit protective negation of credential/money sharing
+        r'\b(never share|do not share|don\'t share|never send|do not transfer|don\'t transfer|never transfer)\b',
+        r'\b(never give|do not give|don\'t give|did not give|refused to give|refuse and disconnect)\b',
+        r'\b(never install|do not install|don\'t install|never download|do not download|don\'t download|never use)\b',
+        r'\b(never pay|do not pay|don\'t pay|not to pay)\b',
+        # 2. Legitimate organizations never ask/request
+        r'\b(never asks?|will never ask|do not ask|don\'t ask|does not ask|doesn\'t ask|did not ask|not asking for)\b',
+        r'\b(never requests?|do not request|does not request|will not ask)\b',
+        r'\b(no legitimate .* (will ask|requires? you to share))\b',
+        r'\b(never conducts?|does not conduct|never issues?)\b',
+        r'\b(does not call citizens|our bank never|not resolved through)\b',
+        # 3. Indic protective phrases (Hindi, Tamil, Tanglish, Hinglish)
+        r'(eppovume sollatha|sollathinga|anuppathinga|panam kudukathinga|அனுப்பாதீர்கள்|கேட்க மாட்டார்கள்|பதிவிறக்கம் செய்யச் சொல்ல மாட்டார்கள்|சொல்ல மாட்டார்கள்)',
+        r'(kisi ko mat dena|mat batao|mat bhejo|kabhi mat do|kabhi .*nahi maang|kabhi .*mat do|never transfer karo|nahi maangti|nahi maangte|nahi maangta|नहीं माँगती|नहीं माँगता|नहीं करती)',
+        r'(ஒருபோதும் .*கேட்காது|solla vendam|solla koodathu|கேட்காது)',
+        r'(जागरूकता अभियान|விழிப்புணர்வு)',
+        # 4. Meta / Educational / Training / Scam awareness context
+        r'\b(is a scam|this is fraud|sounds like a scam|like a scam|scam call|scam warning|scam aayirukku|fraud call|fraud hai|மோசடி)\b',
+        r'\b(is a hoax|attempting fraud|known fraud|scam alert|fraud alert)\b',
+        r'\b(an example of|example of a|example of an|demonstrate how|scam[- ]awareness|awareness (session|training|campaign|drill)|role[- ]play|security drill|in this exercise|practice saying|learn how to identify|how to identify scams?|identifying scams?)\b',
+        r'\b(legal notices arrive by post|arrive by post|claims? we do|anyone claiming .* is a scammer)\b',
+        # 5. Fraud reporting by victims & legitimate complaint follow-ups
+        r'\b(report a scam|report this fraud|reporting a|reporting this|want to report|called to report|calling to report|i refused and hung up|did not comply|reporting the fraudulent number)\b',
+        r'\b(helpline\? i got a call|1930 helpline|polise-kitta complaint pannunga)\b',
+        r'\b(complaint .* (registered|forwarded)|complaint number is)\b',
+        # 6. Non-coercive bank confirmations & status updates
+        r'\b(refunded my money|has been refunded|was refunded|refund has been processed|amount has been reversed|transaction .* has been reversed|settlement .* has been processed)\b',
+        r'\b(fixed deposit is maturing|account statement is ready|transaction limit has been updated|minimum amount due|nomination update has been recorded|address update request was processed)\b',
+        r'\b(asked me to verify a transaction|verify a transaction)\b',
+        r'\b(no action needed|no action required|no further action required|there is no fee|no fee for this|free of cost|no charge)\b',
+        r'\b(please visit the branch|visit us|visit the lot with your documents|visit our website|on our website|official portal|final paperwork)\b',
+        r'\b(i am disconnecting|disconnecting this call|ithu fraud)\b'
     ]
 
     INTENT_PROTOTYPES = {

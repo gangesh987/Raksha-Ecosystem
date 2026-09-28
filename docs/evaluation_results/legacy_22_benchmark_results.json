@@ -1,0 +1,185 @@
+{
+  "evaluation_name": "Legacy 22-Scenario Functional Smoke Test",
+  "description": "Legacy rule-oriented smoke test \u2014 NOT independent ML validation.",
+  "sample_count": 22,
+  "scenarios_passed": 21,
+  "pass_rate": 0.9545,
+  "results": [
+    {
+      "id": "EN-SCAM-01",
+      "scenario_type": "SCAM",
+      "expected_brake": true,
+      "safety_brake_triggered": true,
+      "peak_risk_score": 100,
+      "passed": true
+    },
+    {
+      "id": "EN-SCAM-02",
+      "scenario_type": "SCAM",
+      "expected_brake": true,
+      "safety_brake_triggered": true,
+      "peak_risk_score": 84,
+      "passed": true
+    },
+    {
+      "id": "EN-SCAM-03",
+      "scenario_type": "SCAM",
+      "expected_brake": true,
+      "safety_brake_triggered": true,
+      "peak_risk_score": 86,
+      "passed": true
+    },
+    {
+      "id": "EN-SCAM-04",
+      "scenario_type": "SCAM",
+      "expected_brake": true,
+      "safety_brake_triggered": true,
+      "peak_risk_score": 90,
+      "passed": true
+    },
+    {
+      "id": "EN-SCAM-05",
+      "scenario_type": "SCAM",
+      "expected_brake": true,
+      "safety_brake_triggered": true,
+      "peak_risk_score": 67,
+      "passed": true
+    },
+    {
+      "id": "EN-BENIGN-01",
+      "scenario_type": "BENIGN",
+      "expected_brake": false,
+      "safety_brake_triggered": false,
+      "peak_risk_score": 0.0,
+      "passed": true
+    },
+    {
+      "id": "EN-BENIGN-02",
+      "scenario_type": "BENIGN",
+      "expected_brake": false,
+      "safety_brake_triggered": true,
+      "peak_risk_score": 62,
+      "passed": false
+    },
+    {
+      "id": "EN-BENIGN-03",
+      "scenario_type": "BENIGN",
+      "expected_brake": false,
+      "safety_brake_triggered": false,
+      "peak_risk_score": 30,
+      "passed": true
+    },
+    {
+      "id": "TA-SCAM-01",
+      "scenario_type": "SCAM",
+      "expected_brake": true,
+      "safety_brake_triggered": true,
+      "peak_risk_score": 68,
+      "passed": true
+    },
+    {
+      "id": "TA-SCAM-02",
+      "scenario_type": "SCAM",
+      "expected_brake": true,
+      "safety_brake_triggered": true,
+      "peak_risk_score": 69,
+      "passed": true
+    },
+    {
+      "id": "TA-BENIGN-01",
+      "scenario_type": "BENIGN",
+      "expected_brake": false,
+      "safety_brake_triggered": false,
+      "peak_risk_score": 0.0,
+      "passed": true
+    },
+    {
+      "id": "TA-BENIGN-02",
+      "scenario_type": "BENIGN",
+      "expected_brake": false,
+      "safety_brake_triggered": false,
+      "peak_risk_score": 27,
+      "passed": true
+    },
+    {
+      "id": "TANGLISH-SCAM-01",
+      "scenario_type": "SCAM",
+      "expected_brake": true,
+      "safety_brake_triggered": true,
+      "peak_risk_score": 100,
+      "passed": true
+    },
+    {
+      "id": "TANGLISH-SCAM-02",
+      "scenario_type": "SCAM",
+      "expected_brake": true,
+      "safety_brake_triggered": true,
+      "peak_risk_score": 72,
+      "passed": true
+    },
+    {
+      "id": "TANGLISH-SCAM-03",
+      "scenario_type": "SCAM",
+      "expected_brake": true,
+      "safety_brake_triggered": true,
+      "peak_risk_score": 75,
+      "passed": true
+    },
+    {
+      "id": "TANGLISH-BENIGN-01",
+      "scenario_type": "BENIGN",
+      "expected_brake": false,
+      "safety_brake_triggered": false,
+      "peak_risk_score": 0.0,
+      "passed": true
+    },
+    {
+      "id": "TANGLISH-BENIGN-02",
+      "scenario_type": "BENIGN",
+      "expected_brake": false,
+      "safety_brake_triggered": false,
+      "peak_risk_score": 0.0,
+      "passed": true
+    },
+    {
+      "id": "HI-SCAM-01",
+      "scenario_type": "SCAM",
+      "expected_brake": true,
+      "safety_brake_triggered": true,
+      "peak_risk_score": 82,
+      "passed": true
+    },
+    {
+      "id": "HI-BENIGN-01",
+      "scenario_type": "BENIGN",
+      "expected_brake": false,
+      "safety_brake_triggered": false,
+      "peak_risk_score": 0.0,
+      "passed": true
+    },
+    {
+      "id": "HINGLISH-SCAM-01",
+      "scenario_type": "SCAM",
+      "expected_brake": true,
+      "safety_brake_triggered": true,
+      "peak_risk_score": 100,
+      "passed": true
+    },
+    {
+      "id": "HINGLISH-SCAM-02",
+      "scenario_type": "SCAM",
+      "expected_brake": true,
+      "safety_brake_triggered": true,
+      "peak_risk_score": 84,
+      "passed": true
+    },
+    {
+      "id": "HINGLISH-BENIGN-01",
+      "scenario_type": "BENIGN",
+      "expected_brake": false,
+      "safety_brake_triggered": false,
+      "peak_risk_score": 0.0,
+      "passed": true
+    }
+  ]
+}

@@ -363,13 +363,13 @@ $$\mathcal{H}_n = \text{SHA-256}\left(\mathcal{H}_{n-1} \,\|\, \text{EventID} \,
 
 | Category | Component | Status | Classification |
 |:---|:---|:---:|:---:|
-| **Client** | Android Jetpack Compose UI (108 Tests Passing) | Active & Production-Ready | **`GREEN`** |
-| **Database** | Room SQLite 19 Entities + DataStore + Keystore | Active & Production-Ready | **`GREEN`** |
-| **Evidence Vault** | SHA-256 Append-Only Cryptographic Chain | Active & Production-Ready | **`GREEN`** |
-| **Safety Brake** | Full-Screen Intervention + Low-Literacy Tamil/English | Active & Production-Ready | **`GREEN`** |
+| **Client** | Android Jetpack Compose UI (Unit Tests Passing) | Active & Test-Verified Prototype | **`GREEN`** |
+| **Database** | Room SQLite 19 Entities + DataStore + Keystore | Active & Test-Verified Prototype | **`GREEN`** |
+| **Evidence Vault** | SHA-256 Append-Only Cryptographic Chain | Active & Test-Verified Prototype | **`GREEN`** |
+| **Safety Brake** | Full-Screen Intervention + Low-Literacy Tamil/English | Active & Test-Verified Prototype | **`GREEN`** |
 | **Transport** | gRPC Bidirectional Streaming (`ProtectionService`) | Implemented & Schema-Bound | **`GREEN`** |
 | **NLP Engine** | Windowed Context + Semantic 9-Tactic Intent Pipeline | Implemented & Evaluated | **`GREEN`** |
-| **Speech** | Multilingual Indic ASR + HuBERT Feature Interface | Implemented & Benchmarked | **`GREEN`** |
+| **Speech** | Multilingual Indic ASR + HuBERT Feature Interface | Acoustic Feature Extraction Benchmarked | **`YELLOW`** |
 | **Vision** | YOLO11 Contextual Perception (Supporting Signal) | Implemented & Calibrated | **`GREEN`** |
 | **Cloud AI** | Groq / Gemini Providers | Operational with API Key | **`YELLOW`** |
 | **External SMS** | Twilio SMS Provider | Operational with Credentials | **`YELLOW`** |

@@ -80,3 +80,19 @@ def test_evidence_ledger_tamper_detection_on_block_deletion():
     assert is_valid is False
     assert broken_idx == 1
     assert "Hash break at block 1" in msg
+
+
+def test_evidence_ledger_tamper_detection_on_event_reordering():
+    """Swapping or reordering events MUST invalidate the cryptographic hash chain."""
+    ledger = TamperEvidentEvidenceLedger(session_id="session-test-reorder-04")
+    ledger.append_event("evt-1", "EVENT", {"step": 1})
+    ledger.append_event("evt-2", "EVENT", {"step": 2})
+    ledger.append_event("evt-3", "EVENT", {"step": 3})
+
+    # Swap block 1 and block 2
+    ledger.blocks[1], ledger.blocks[2] = ledger.blocks[2], ledger.blocks[1]
+
+    is_valid, broken_idx, msg = ledger.verify_integrity()
+    assert is_valid is False
+    assert broken_idx == 1
+    assert "Hash break at block 1" in msg or "Tamper detected at block 1" in msg
