@@ -47,3 +47,6 @@ dist/
 *.sqlite
 *.sqlite3
 data/*.db
+
+# Separate Releases Repo
+Raksha-Releases/
