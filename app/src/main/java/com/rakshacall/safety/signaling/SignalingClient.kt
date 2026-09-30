@@ -94,6 +94,12 @@ class SignalingClient(
         socket?.send(envelope.toString())
     }
 
+    fun sendRaw(json: JSONObject) {
+        socket?.send(json.toString())
+    }
+
+    fun isSocketConnected(): Boolean = isConnected.get()
+
     fun sendCallInvite(callId: String, callerName: String) {
         send("call_invite", JSONObject().apply {
             put("call_id", callId)

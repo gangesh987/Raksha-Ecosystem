@@ -27,6 +27,8 @@ import com.rakshacall.safety.intelligence.risk.VisualRisk
 import com.rakshacall.safety.intelligence.router.ModelRouter
 import com.rakshacall.safety.intelligence.router.RoutingDecision
 import com.rakshacall.safety.protection.EvidenceStrength
+import com.rakshacall.safety.intelligence.audio.AcousticMetrics
+import com.rakshacall.safety.intelligence.visual.VisualThreatSignal
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -91,9 +93,36 @@ class RakshaAIOrchestrator(
     val latestDecision: StateFlow<ProtectionDecision?> = _latestDecision.asStateFlow()
 
     private var executionMode: AIExecutionMode = AIExecutionMode.HYBRID
+    @Volatile private var latestAcousticMetrics: AcousticMetrics? = null
 
     fun setExecutionMode(mode: AIExecutionMode) {
         this.executionMode = mode
+    }
+
+    fun updateAcousticMetrics(metrics: AcousticMetrics) {
+        this.latestAcousticMetrics = metrics
+    }
+
+    fun getLatestAcousticMetrics(): AcousticMetrics? = latestAcousticMetrics
+
+    fun processVisualThreat(threat: VisualThreatSignal, sessionId: String): ProtectionDecision? {
+        evidenceGraph.addNode(
+            EvidenceNodeType.VISUAL_EVENT,
+            threat.description,
+            weight = 1.2f
+        )
+        val current = _latestDecision.value
+        if (current != null) {
+            val updatedScore = (current.riskScore + threat.riskScoreBonus).coerceIn(0, 100)
+            val updated = current.copy(
+                riskScore = updatedScore,
+                riskLevel = RiskLevel.fromScore(updatedScore),
+                explanations = (current.explanations + "Visual threat detected: ${threat.description}").distinct()
+            )
+            _latestDecision.value = updated
+            return updated
+        }
+        return null
     }
 
     /**
@@ -197,7 +226,12 @@ class RakshaAIOrchestrator(
         )
 
         val audioRisk = AudioRisk(
-            score = if (behaviourMetrics.urgencyPressure > 0.5f) 40 else 10
+            score = when {
+                latestAcousticMetrics != null && latestAcousticMetrics!!.isSpeech && latestAcousticMetrics!!.speechActivityRate > 0.65f && latestAcousticMetrics!!.spectralCentroid > 2200f -> 45
+                latestAcousticMetrics != null && latestAcousticMetrics!!.isSpeech && latestAcousticMetrics!!.speechActivityRate > 0.4f -> 25
+                behaviourMetrics.urgencyPressure > 0.5f -> 35
+                else -> 10
+            }
         )
 
         val contextRisk = ContextRisk(

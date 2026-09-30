@@ -39,13 +39,16 @@ class MultilingualSemanticEngine {
 
     // Hard negative suppressor patterns (0% false alarms on advisories, educational statements, benign notifications)
     private val hardNegativePatterns = listOf(
-        Regex("""(?i)\b(do not|never|don't|mat|koodadhu|cheyyavadhu|beda|padilla|korben na|nako)\s+(share|give|batao)\s+(your\s+)?(otp|pin|password|cvv|code)\b"""),
-        Regex("""(?i)\bnever\s+share\s+(your\s+)?(otp|pin|password|cvv)\b"""),
-        Regex("""(?i)\b(do not|never|don't)\s+(install|download|click)\s+(anydesk|teamviewer|link|apk|software)\b"""),
+        Regex("""(?i)\b(do not|never|don't|mat|koodadhu|cheyyavadhu|beda|padilla|korben na|nako)\s+(share|give|batao|provide|send)\s+(your\s+)?(otp|pin|password|cvv|code|details)\b"""),
+        Regex("""(?i)\bnever\s+share\s+(your\s+)?(otp|pin|password|cvv|credentials)\b"""),
+        Regex("""(?i)\b(do not|never|don't|mat)\s+(install|download|click|open)\s+(anydesk|teamviewer|rustdesk|link|apk|software|attachment)\b"""),
         Regex("""(?i)\bbank\s+(employees|never\s+asks|never\s+calls|officials\s+never)\b"""),
-        Regex("""(?i)\b(example\s+of|learn\s+how|awareness|scam\s+alert|be\s+aware)\b"""),
-        Regex("""(?i)\b(bank\s+refunded|received\s+my\s+refund|money\s+refunded)\b"""),
+        Regex("""(?i)\b(rbi|police|cbi|bank)\s+(never|officials\s+do\s+not)\s+(calls?|asks?|demands?)\b"""),
+        Regex("""(?i)\b(example\s+of|learn\s+how|awareness|scam\s+alert|be\s+aware|beware\s+of)\b"""),
+        Regex("""(?i)\b(digital\s+arrest\s+scam\s+awareness|how\s+to\s+identify\s+scams?)\b"""),
+        Regex("""(?i)\b(bank\s+refunded|received\s+my\s+refund|money\s+refunded|refund\s+processed)\b"""),
         Regex("""(?i)\bmy\s+bank\s+sent\s+me\s+an?\s+otp\s+for\s+login\b"""),
+        Regex("""(?i)\b(bank\s+asked\s+me\s+to\s+verify|verify\s+a\s+legitimate\s+transaction)\b"""),
         Regex("""(?i)\bwhy\s+are\s+you\s+shouting\s+at\s+me\b"""),
         Regex("""(?i)\b(good\s+morning|good\s+evening|how\s+are\s+you|happy\s+birthday)\b""")
     )
@@ -150,6 +153,17 @@ class MultilingualSemanticEngine {
             Regex("""(?i)(എനിഡെസ്ക്|ടീംവ്യൂവർ|സ്ക്രീൻ ഷെയർ|ആപ്പ് ഇൻസ്റ്റാൾ)"""),
             Regex("""(?i)(এনিডেস্ক|টিমভিউয়ার|স্ক্রিন শেয়ার|অ্যাপ ইনস্টল)"""),
             Regex("""(?i)(अ‍ॅनीडेस्क|टीमव्ह्यूअर|स्क्रीन शेअर|अ‍ॅप इन्स्टॉल)""")
+        ),
+
+        ScamTactic.SUSPICIOUS_LINK to listOf(
+            Regex("""(?i)\b(click\s*on\s*the\s*link|open\s*this\s*link|verification\s*link|download\s*apk|tinyurl|bit\.ly|apk\s*file|click\s*here)\b"""),
+            Regex("""(?i)(லிங்க் கிளிக் செய்|இணைப்பை திற|ஆப்கே பைல்)"""),
+            Regex("""(?i)(लिंक पर क्लिक करें|यह लिंक खोलो|एपीके फाइल)"""),
+            Regex("""(?i)(లింక్ క్లిక్ చేయండి|ఈ లింక్ ఓపెన్ చేయండి)"""),
+            Regex("""(?i)(ಲಿಂಕ್ ಕ್ಲಿಕ್ ಮಾಡಿ|ಈ ಲಿಂಕ್ ತೆರೆಯಿರಿ)"""),
+            Regex("""(?i)(ലിങ്ക് ക്ലിക്ക് ചെയ്യുക|ഈ ലിങ്ക് തുറക്കുക)"""),
+            Regex("""(?i)(লিঙ্কে ক্লিক করুন|এই লিঙ্ক খুলুন)"""),
+            Regex("""(?i)(लिंकवर क्लिक करा|ही लिंक उघडा)""")
         ),
 
         ScamTactic.ESCALATION to listOf(

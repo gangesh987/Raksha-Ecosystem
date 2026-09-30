@@ -474,6 +474,20 @@ async def ws_session(websocket: WebSocket, sid: int):
                         await live_session.send_realtime_input(
                             audio=types.Blob(data=data, mime_type="audio/pcm;rate=16000")
                         )
+                    elif data:
+                        try:
+                            from ..ai.multilingual_asr import HuBERTAcousticBackbone
+                            hubert = HuBERTAcousticBackbone()
+                            feat = hubert.extract_features(data)
+                            if feat.is_voiced and feat.mean_energy > 0.001:
+                                await websocket.send_json({
+                                    "type": "acoustic_telemetry",
+                                    "energy": round(feat.mean_energy, 4),
+                                    "centroid": round(feat.spectral_centroid, 1),
+                                    "is_voiced": feat.is_voiced,
+                                })
+                        except Exception:
+                            pass
 
                 elif typ == "video_jpeg":
                     data = base64.b64decode(raw.get("data", ""))
@@ -482,6 +496,38 @@ async def ws_session(websocket: WebSocket, sid: int):
                         await live_session.send_realtime_input(
                             video=types.Blob(data=data, mime_type="image/jpeg")
                         )
+                    elif data:
+                        try:
+                            from ..ai.yolo_vision import YOLO11VisionEngine
+                            vision_engine = YOLO11VisionEngine()
+                            vis_signal = vision_engine.analyze_frame(data)
+                            visual_score = 0.15
+                            if vis_signal.secondary_phone_detected or vis_signal.document_detected:
+                                visual_score = 0.35
+                            elif vis_signal.screen_or_laptop_detected:
+                                visual_score = 0.25
+
+                            result = pipeline.analyze(
+                                transcript=last_transcript,
+                                session_id=str(sid),
+                                visual_score=visual_score,
+                                visual_signal=vis_signal,
+                            )
+                            api_result = result.to_api_dict()
+                            await websocket.send_json({
+                                "type": "risk_update",
+                                "event_id": None,
+                                "visual_context": {
+                                    "persons": vis_signal.person_count,
+                                    "phone": vis_signal.secondary_phone_detected,
+                                    "document": vis_signal.document_detected,
+                                    "screen": vis_signal.screen_or_laptop_detected,
+                                    "note": vis_signal.contextual_note,
+                                },
+                                **api_result
+                            })
+                        except Exception:
+                            pass
 
                 elif typ == "ping":
                     await websocket.send_json({"type": "pong"})

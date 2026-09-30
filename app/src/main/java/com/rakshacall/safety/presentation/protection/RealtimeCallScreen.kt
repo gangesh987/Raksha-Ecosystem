@@ -54,6 +54,10 @@ import com.rakshacall.safety.webrtc.WebRtcConfig
 import com.rakshacall.safety.webrtc.WebRtcEngine
 import com.rakshacall.safety.webrtc.WebRtcState
 import com.rakshacall.safety.signaling.SignalingClient
+import com.rakshacall.safety.intelligence.audio.RealtimeAudioPipeline
+import com.rakshacall.safety.intelligence.events.MultimodalEventBus
+import com.rakshacall.safety.intelligence.events.EventSource
+import com.rakshacall.safety.intelligence.events.EventType
 import com.rakshacall.safety.intelligence.telemetry.PerformanceTelemetry
 import com.rakshacall.safety.intelligence.action.UserActionTracker
 import com.rakshacall.safety.intelligence.action.SafetyUserActionType
@@ -94,9 +98,15 @@ fun RealtimeCallScreen(
     // 1. Audio & Media Managers (safe — no native lib needed)
     val audioHelper = remember { runCatching { AudioManagerHelper(context) }.getOrNull() }
     val speechManager = remember { runCatching { SpeechRecognitionManager(context) }.getOrNull() }
+    val realtimeAudioPipeline = remember { runCatching { RealtimeAudioPipeline(callId) }.getOrNull() }
+    val multimodalEventBus = remember { MultimodalEventBus(callId) }
     val aiOrchestrator = remember { RakshaAIOrchestrator() }
     val evidenceVault = remember { EvidenceVault() }
     val visualThreatDetector = remember { VisualThreatDetector() }
+    var currentAudioRms by remember { mutableFloatStateOf(0.0f) }
+    var isUserSpeaking by remember { mutableStateOf(false) }
+    var videoScansCount by remember { mutableIntStateOf(0) }
+    var riskHistory by remember { mutableStateOf<List<Int>>(listOf(0)) }
 
     // 2. Protection Controller
     val protectionController = remember {
@@ -202,7 +212,10 @@ fun RealtimeCallScreen(
         }
 
         try {
-            if (hasMicPermission) speechManager?.startListening()
+            if (hasMicPermission) {
+                speechManager?.startListening()
+                realtimeAudioPipeline?.startCapture()
+            }
         } catch (_: Exception) {}
 
         // Signaling Client Setup (safe connect with runCatching)
@@ -290,6 +303,7 @@ fun RealtimeCallScreen(
 
         onDispose {
             timerJob.cancel()
+            try { realtimeAudioPipeline?.stopCapture() } catch (_: Exception) {}
             runCatching { speechManager?.stopListening() }
             runCatching { signalingClient?.sendCallEnd(callId) }
             runCatching { signalingClient?.close() }
@@ -308,11 +322,12 @@ fun RealtimeCallScreen(
         }
     }
 
-    // 7. Video Frame Sampling
-    val frameSampler = remember { FrameSampler("remote_video", 1500L) }
-    DisposableEffect(remoteVideoTrack) {
-        remoteVideoTrack?.addSink(frameSampler)
-        onDispose { remoteVideoTrack?.removeSink(frameSampler) }
+    // 7. Adaptive Video Frame Sampling (samples remote track or active local preview)
+    val frameSampler = remember { FrameSampler("video_stream", 1500L) }
+    val activeSamplingTrack = remoteVideoTrack ?: if (!isCameraOff) localVideoTrack else null
+    DisposableEffect(activeSamplingTrack) {
+        activeSamplingTrack?.addSink(frameSampler)
+        onDispose { activeSamplingTrack?.removeSink(frameSampler) }
     }
 
     // 8. Speech Transcript Processing
@@ -345,7 +360,20 @@ fun RealtimeCallScreen(
                 telemetry.recordAiCompleted()
 
                 latestDecision = decision
+                riskHistory = (riskHistory + decision.riskScore).takeLast(25)
                 protectionController.evaluate(decision, visualThreatCount)
+
+                multimodalEventBus.emitEvent(
+                    source = EventSource.SPEECH_RECOGNITION,
+                    eventType = EventType.TRANSCRIPT_CHUNK,
+                    payload = mapOf(
+                        "speaker" to speakerLabel,
+                        "text" to transcript.text,
+                        "isFinal" to transcript.isFinal,
+                        "riskScore" to decision.riskScore,
+                        "stage" to decision.currentStage.name
+                    )
+                )
 
                 val score = decision.riskScore
                 val adaptiveInterval = when {
@@ -382,9 +410,26 @@ fun RealtimeCallScreen(
     // 9. Visual Threat Processing
     LaunchedEffect(frameSampler) {
         frameSampler.samples.collectLatest { sample ->
+            videoScansCount++
             val threat = visualThreatDetector.analyzeFrame(sample)
             if (threat != null) {
                 visualThreatCount++
+                val decision = aiOrchestrator.processVisualThreat(threat, callId)
+                if (decision != null) {
+                    latestDecision = decision
+                    riskHistory = (riskHistory + decision.riskScore).takeLast(25)
+                    protectionController.evaluate(decision, visualThreatCount)
+                }
+                multimodalEventBus.emitEvent(
+                    source = EventSource.CAMERA_X,
+                    eventType = EventType.VISUAL_CONTEXT_SIGNAL,
+                    payload = mapOf(
+                        "threatType" to threat.type.name,
+                        "confidence" to threat.confidence,
+                        "bonus" to threat.riskScoreBonus,
+                        "desc" to threat.description
+                    )
+                )
                 evidenceVault.recordEvent(
                     sessionId = callId,
                     eventType = "VISUAL_THREAT_DETECTED",
@@ -392,7 +437,45 @@ fun RealtimeCallScreen(
                     riskScore = threat.riskScoreBonus,
                     description = threat.description
                 )
-                latestDecision?.let { protectionController.evaluate(it, visualThreatCount) }
+            }
+        }
+    }
+
+    // 10. Live 16kHz PCM Audio Pipeline & Acoustic Telemetry
+    if (realtimeAudioPipeline != null) {
+        LaunchedEffect(realtimeAudioPipeline) {
+            launch {
+                realtimeAudioPipeline.acousticMetrics.collectLatest { metrics ->
+                    currentAudioRms = metrics.rmsEnergy
+                    isUserSpeaking = metrics.isSpeech
+                    aiOrchestrator.updateAcousticMetrics(metrics)
+                    multimodalEventBus.emitEvent(
+                        source = EventSource.AUDIO_CAPTURE,
+                        eventType = EventType.AUDIO_METRICS_UPDATE,
+                        payload = mapOf(
+                            "rms" to metrics.rmsEnergy,
+                            "isSpeech" to metrics.isSpeech,
+                            "speechRate" to metrics.speechActivityRate,
+                            "centroid" to metrics.spectralCentroid,
+                            "flux" to metrics.spectralFlux
+                        )
+                    )
+                }
+            }
+            launch {
+                realtimeAudioPipeline.audioChunks.collect { chunk ->
+                    signalingClient?.let { sc ->
+                        if (sc.isSocketConnected()) {
+                            val b64 = android.util.Base64.encodeToString(chunk.pcmData, android.util.Base64.NO_WRAP)
+                            val json = JSONObject().apply {
+                                put("type", "audio_pcm16")
+                                put("data", b64)
+                                put("sample_rate", chunk.sampleRate)
+                            }
+                            sc.sendRaw(json)
+                        }
+                    }
+                }
             }
         }
     }
@@ -442,6 +525,13 @@ fun RealtimeCallScreen(
         if (webRtcEngine != null && remoteVideoTrack != null) {
             WebRtcVideoView(
                 videoTrack = remoteVideoTrack!!,
+                eglContext = webRtcEngine?.getEglBaseContext(),
+                modifier = Modifier.fillMaxSize()
+            )
+        } else if (webRtcEngine != null && localVideoTrack != null && !isCameraOff) {
+            // Live local camera feed rendered full-screen until remote peer connects
+            WebRtcVideoView(
+                videoTrack = localVideoTrack!!,
                 eglContext = webRtcEngine?.getEglBaseContext(),
                 modifier = Modifier.fillMaxSize()
             )
@@ -631,15 +721,72 @@ fun RealtimeCallScreen(
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                // ── LIVE MULTIMODAL TELEMETRY ROW ──
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Audio live indicator
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = if (isUserSpeaking) Color(0xFF1B5E20).copy(alpha = 0.9f) else Color.Black.copy(alpha = 0.65f)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Surface(
+                                shape = CircleShape,
+                                color = if (isUserSpeaking) Color(0xFF00E676) else Color.Gray,
+                                modifier = Modifier.size(6.dp)
+                            ) {}
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(
+                                if (isUserSpeaking) "AUDIO: SPEECH (${(currentAudioRms * 100).toInt()})" else "AUDIO: MONITORING",
+                                color = Color.White,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    // Vision scanning badge
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = if (visualThreatCount > 0) Color(0xFFB71C1C).copy(alpha = 0.9f) else Color.Black.copy(alpha = 0.65f)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Surface(
+                                shape = CircleShape,
+                                color = if (visualThreatCount > 0) Color(0xFFFF5252) else TealPrimary,
+                                modifier = Modifier.size(6.dp)
+                            ) {}
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(
+                                "VISION: $videoScansCount FRAMES" + if (visualThreatCount > 0) " (THREAT: $visualThreatCount)" else "",
+                                color = Color.White,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
             }
         }
 
         // ── LAYER 4: LOCAL PIP VIDEO ──
-        if (localVideoTrack != null && !isCameraOff && webRtcEngine != null) {
+        if (remoteVideoTrack != null && localVideoTrack != null && !isCameraOff && webRtcEngine != null) {
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(top = if (policy.uiMode == UIMode.ADVANCED) 140.dp else 80.dp, end = 16.dp)
+                    .padding(top = if (policy.uiMode == UIMode.ADVANCED) 180.dp else 80.dp, end = 16.dp)
                     .size(width = 100.dp, height = 140.dp)
                     .clip(RoundedCornerShape(14.dp))
                     .border(2.dp, TealPrimary.copy(alpha = 0.6f), RoundedCornerShape(14.dp))
