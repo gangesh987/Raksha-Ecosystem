@@ -19,6 +19,12 @@ class Analyze(BaseModel):
     transcript: str
     visual_score: float=Field(default=.2,ge=0,le=1)
     liveness_score: float=Field(default=.8,ge=0,le=1)
+    language: str = "auto"
+
+class RiskAnalysisRequest(BaseModel):
+    transcript: str
+    session_id: str = "default"
+    language: str = "auto"
 
 class ContactCreate(BaseModel):
     name: str

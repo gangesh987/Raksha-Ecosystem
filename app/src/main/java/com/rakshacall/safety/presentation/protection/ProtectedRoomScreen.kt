@@ -1,6 +1,5 @@
 package com.rakshacall.safety.presentation.protection
 
-<<<<<<< HEAD
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -41,6 +40,7 @@ import java.util.*
  * ProtectedRoomScreen provides genuine WebRTC calling with live speech streaming,
  * multilingual semantic intelligence, real-time risk overlay, and safety brake.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProtectedRoomScreen(
     onNavigateBack: () -> Unit,

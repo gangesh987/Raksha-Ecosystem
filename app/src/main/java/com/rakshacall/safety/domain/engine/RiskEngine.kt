@@ -1,5 +1,6 @@
 package com.rakshacall.safety.domain.engine
 
+import com.rakshacall.safety.core.speech.LanguageAwareTacticEngine
 import com.rakshacall.safety.domain.model.RiskLevel
 import com.rakshacall.safety.domain.model.RiskSignal
 import com.rakshacall.safety.domain.model.ScamTactic
@@ -14,7 +15,8 @@ import java.util.UUID
 class RiskEngine(
     var lowThreshold: Int = 30,
     var highThreshold: Int = 60,
-    var criticalThreshold: Int = 80
+    var criticalThreshold: Int = 80,
+    val tacticEngine: LanguageAwareTacticEngine = LanguageAwareTacticEngine()
 ) {
 
     private val tacticPatterns = mapOf(
@@ -83,11 +85,34 @@ class RiskEngine(
         pastSignals: List<RiskSignal>
     ): List<RiskSignal> {
 
-        val detected = mutableListOf<RiskSignal>()
         val text = event.text.trim()
         if (text.isEmpty()) return emptyList()
 
+        // 1. Strict Benign Suppression: Never score everyday non-coercive mentions
+        if (tacticEngine.isBenign(text)) {
+            return emptyList()
+        }
+
+        val detected = mutableListOf<RiskSignal>()
+
+        // 2. Multilingual Tactic Detection (Tamil, Tanglish, Hindi, Hinglish, Telugu, etc.)
+        val mlSignals = tacticEngine.analyze(event)
+        for (sig in mlSignals) {
+            val recentSame = pastSignals.filter {
+                it.tactic == sig.tactic && (event.timestamp - it.timestamp) < 45_000L
+            }
+            val factor = when {
+                recentSame.isEmpty() -> 1.0f
+                recentSame.size == 1 -> 0.4f
+                else -> 0.15f
+            }
+            val weighted = (sig.riskContribution * factor).toInt().coerceAtLeast(2)
+            detected.add(sig.copy(riskContribution = weighted))
+        }
+
+        // 3. Fallback English patterns
         for ((tactic, patterns) in tacticPatterns) {
+            if (detected.any { it.tactic == tactic }) continue
             for (pattern in patterns) {
                 val match = pattern.find(text)
                 if (match != null) {

@@ -8,9 +8,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,7 +16,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,32 +23,32 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CallEnd
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.MicOff
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.VerifiedUser
-import androidx.compose.material.icons.filled.Videocam
+import androidx.compose.material.icons.filled.VolumeOff
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -71,25 +67,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.rakshacall.R
-import com.rakshacall.safety.core.export.IncidentReportExporter
-import com.rakshacall.safety.core.security.EvidenceHasher
-import com.rakshacall.safety.core.security.IntegrityResult
 import com.rakshacall.safety.di.ServiceLocator
-import com.rakshacall.safety.domain.model.EvidenceEvent
-import com.rakshacall.safety.domain.model.ProtectionSession
 import com.rakshacall.safety.domain.model.RiskLevel
 import com.rakshacall.safety.domain.model.RiskSignal
 import com.rakshacall.safety.domain.model.ScamStage
-import com.rakshacall.safety.domain.model.SessionStatus
 import com.rakshacall.safety.domain.model.TranscriptEvent
-import com.rakshacall.safety.domain.model.VelocityLevel
 import com.rakshacall.safety.presentation.theme.Navy900
 import com.rakshacall.safety.presentation.theme.RiskCritical
 import com.rakshacall.safety.presentation.theme.RiskCriticalBg
@@ -110,67 +96,143 @@ import java.util.Locale
 import java.util.UUID
 
 /**
- * Data structure representing an authentic simulated digital-arrest dialogue step.
+ * Prototype demo scenario definition for evaluators and judges.
  */
-data class SimulationStep(
-    val phaseNumber: Int,
-    val phaseTitle: String,
-    val speaker: String,
-    val text: String,
-    val expectedTactic: String,
-    val delayMs: Long = 3500L
+data class DemoScenario(
+    val id: String,
+    val title: String,
+    val language: String,
+    val turns: List<String>
 )
 
-val SIMULATED_SCAM_PROGRESSION = listOf(
-    SimulationStep(
-        phaseNumber = 1,
-        phaseTitle = "CONTACT",
-        speaker = "CALLER",
-        text = "Hello, this is Officer Vikram from the Central Cyber Crime Investigation Cell. Am I speaking with the registered account holder?",
-        expectedTactic = "Contact Initialized"
+val PROTOTYPE_SCENARIOS = listOf(
+    DemoScenario(
+        id = "police_money",
+        title = "1. Police + Money Scam",
+        language = "English",
+        turns = listOf(
+            "Hello, this is Inspector Vikram from Central Cyber Crime Cell.",
+            "Your Aadhaar is involved in international money laundering and drugs parcel.",
+            "This is urgent! Transfer ₹50,000 immediately to verify your clean account."
+        )
     ),
-    SimulationStep(
-        phaseNumber = 2,
-        phaseTitle = "AUTHORITY",
-        speaker = "CALLER",
-        text = "We have intercepted 24 fraudulent international transactions registered under your Aadhaar and passport number. I am conducting an official CBI inquiry.",
-        expectedTactic = "Authority Impersonation"
+    DemoScenario(
+        id = "bank_otp",
+        title = "2. Bank + OTP Scam",
+        language = "English",
+        turns = listOf(
+            "Good afternoon, I am calling from RBI security division.",
+            "Suspicious debit of ₹75,000 detected on your account right now.",
+            "Tell me OTP right now to unfreeze your bank account!"
+        )
     ),
-    SimulationStep(
-        phaseNumber = 3,
-        phaseTitle = "FEAR",
-        speaker = "CALLER",
-        text = "A non-bailable arrest warrant has been sanctioned against you under money laundering and anti-national funding sections. Police custody is immediate unless cleared.",
-        expectedTactic = "Criminal Allegation / Fear"
+    DemoScenario(
+        id = "courier_payment",
+        title = "3. Courier + Payment Scam",
+        language = "English",
+        turns = listOf(
+            "FedEx Customs delivery cell here. A contraband parcel in your name was seized.",
+            "Customs clearance fee of ₹25,000 is required right now to avoid police detention."
+        )
     ),
-    SimulationStep(
-        phaseNumber = 4,
-        phaseTitle = "ISOLATION",
-        speaker = "CALLER",
-        text = "This is a secret investigation under national security secrecy laws. Lock your room doors, do not inform family, lawyers or friends. Keep video active continuously.",
-        expectedTactic = "Isolation"
+    DemoScenario(
+        id = "govt_threat",
+        title = "4. Government + Threat Scam",
+        language = "English",
+        turns = listOf(
+            "This is Enforcement Directorate officer calling regarding non-bailable warrant.",
+            "You are under digital arrest. Police team is being dispatched to your house."
+        )
     ),
-    SimulationStep(
-        phaseNumber = 5,
-        phaseTitle = "PAYMENT DEMAND",
-        speaker = "CALLER",
-        text = "To verify non-proceeds of crime, transfer 50,000 rupees to the designated Supreme Court verification security escrow account immediately.",
-        expectedTactic = "Payment Demand"
+    DemoScenario(
+        id = "remote_access",
+        title = "5. Remote Access Scam",
+        language = "English",
+        turns = listOf(
+            "Technical support executive calling. Your device has been compromised.",
+            "Please install AnyDesk immediately and share your screen to secure your funds."
+        )
     ),
-    SimulationStep(
-        phaseNumber = 6,
-        phaseTitle = "OTP / CREDENTIAL PRESSURE",
-        speaker = "CALLER",
-        text = "Read out the six-digit verification OTP and bank PIN sent to your phone right now to authorize the court clearance, or your bank accounts will be seized!",
-        expectedTactic = "Credential / OTP Pressure"
+    DemoScenario(
+        id = "investment_scam",
+        title = "6. Investment Scam",
+        language = "English",
+        turns = listOf(
+            "Exclusive wealth opportunity! Double your money in 7 days guaranteed.",
+            "Guaranteed profit 100% risk free. Deposit ₹10,000 right now to claim reward."
+        )
+    ),
+    DemoScenario(
+        id = "benign_conv",
+        title = "7. Benign Conversation",
+        language = "English",
+        turns = listOf(
+            "Hey, I am near the police station right now.",
+            "Can you transfer money to my mother for groceries?",
+            "Also my college assignment is urgent, need to submit today."
+        )
+    ),
+    DemoScenario(
+        id = "tamil_scam",
+        title = "8. Tamil Scam",
+        language = "Tamil",
+        turns = listOf(
+            "நான் போலீஸ்ல இருந்து பேசுறேன்.",
+            "உங்க ஆதார் மேல கேஸ் இருக்கு. இது அவசரம்.",
+            "உடனே பணம் அனுப்புங்க இல்லன்னா கைது செய்வோம்."
+        )
+    ),
+    DemoScenario(
+        id = "tanglish_scam",
+        title = "9. Tanglish Scam",
+        language = "Tanglish",
+        turns = listOf(
+            "Naan police la irundhu pesuren. Idhu romba urgent.",
+            "Unga account suspend aaga pogudhu. Udane money send pannunga."
+        )
+    ),
+    DemoScenario(
+        id = "hindi_scam",
+        title = "10. Hindi Scam",
+        language = "Hindi",
+        turns = listOf(
+            "Main police se bol raha hoon. Yeh bahut urgent hai.",
+            "Aapke naam par arrest warrant nikla hai. Abhi paise bhejo."
+        )
+    ),
+    DemoScenario(
+        id = "hinglish_scam",
+        title = "11. Hinglish Scam",
+        language = "Hinglish",
+        turns = listOf(
+            "Main police department se bol raha hoon, bahut urgent hai.",
+            "Account block ho jayega, so immediately money send karo."
+        )
+    ),
+    DemoScenario(
+        id = "telugu_scam",
+        title = "12. Telugu Scam",
+        language = "Telugu",
+        turns = listOf(
+            "Nenu police nundi matladutunnanu. Idi urgent.",
+            "Ventane dabbu pampinchandi lekapothe arrest chestham."
+        )
+    ),
+    DemoScenario(
+        id = "code_switch_scam",
+        title = "13. Multilingual Code-Switch Scam",
+        language = "Code-Switch",
+        turns = listOf(
+            "Sir naan police department la irundhu pesuren, this is urgent.",
+            "Main cyber cell se bol raha hoon, account suspend ho jayega.",
+            "Immediately money transfer pannunga to clearance escrow account."
+        )
     )
 )
 
 /**
- * Video Call Simulation Lab.
- * An interactive, controlled demonstration environment for judges and evaluators.
- * Runs simulated dialogue through the real RakshaCall RiskEngine, ScamStageMachine,
- * ManipulationVelocityEngine, and SHA-256 Evidence Chain while strictly isolating data from production.
+ * Video Call Simulation Screen.
+ * Demonstrates the RakshaCall real-time multilingual risk engine and protection actions.
  */
 @Composable
 fun VideoCallSimulationScreen(
@@ -183,20 +245,26 @@ fun VideoCallSimulationScreen(
     var sessionId by remember { mutableStateOf("DEMO-SIM-" + UUID.randomUUID().toString().take(8)) }
     val sessionStartTime = remember { System.currentTimeMillis() }
 
+    var selectedScenarioIndex by remember { mutableIntStateOf(0) }
     var currentStepIndex by remember { mutableIntStateOf(-1) }
     var isAutoPlaying by remember { mutableStateOf(false) }
     var callDurationSeconds by remember { mutableIntStateOf(0) }
 
+    // Risk State
     var currentRiskScore by remember { mutableIntStateOf(0) }
-    var currentStage by remember { mutableStateOf(ScamStage.CONTACT) }
+    var previousRiskScore by remember { mutableIntStateOf(0) }
+    var riskTrend by remember { mutableStateOf("→ Stable") }
+    var currentLanguage by remember { mutableStateOf("English") }
+    var languageConfidence by remember { mutableStateOf(0.92f) }
+
     val detectedSignals = remember { mutableStateListOf<RiskSignal>() }
     val transcriptList = remember { mutableStateListOf<TranscriptEvent>() }
-    val evidenceEvents = remember { mutableStateListOf<EvidenceEvent>() }
-    var showSafetyBrake by remember { mutableStateOf(false) }
-    var integrityVerifiedMsg by remember { mutableStateOf<String?>(null) }
 
-    val velocityEngine = ServiceLocator.velocityEngine
-    var currentVelocity by remember { mutableStateOf(velocityEngine.calculateVelocity(emptyList())) }
+    // Audio & Protection Controls
+    var isMuted by remember { mutableStateOf(false) }
+    var isSpeakerOn by remember { mutableStateOf(true) }
+    var isCallPaused by remember { mutableStateOf(false) }
+    var showProtectionDialog by remember { mutableStateOf(false) }
 
     val listState = rememberLazyListState()
 
@@ -210,453 +278,240 @@ fun VideoCallSimulationScreen(
         }
     }
 
-    fun injectDialogueStep(step: SimulationStep) {
+    fun injectDialogueTurn(turnText: String) {
         coroutineScope.launch {
             val event = TranscriptEvent(
                 id = UUID.randomUUID().toString(),
                 sessionId = sessionId,
                 timestamp = System.currentTimeMillis(),
-                speaker = step.speaker,
-                text = step.text
+                speaker = "CALLER",
+                text = turnText
             )
             transcriptList.add(event)
 
-            // 1. Run real deterministic Risk Engine
+            // Detect language & confidence
+            val (lang, conf) = ServiceLocator.languageAwareTacticEngine.detectLanguage(turnText)
+            currentLanguage = lang
+            languageConfidence = conf
+
+            // Run production Risk Engine
             val newSignals = ServiceLocator.riskEngine.analyzeTranscript(event, detectedSignals)
             for (sig in newSignals) {
-                detectedSignals.add(sig)
-
-                // 2. Scam stage machine transition
-                val transition = ServiceLocator.scamStageMachine.processSignal(sig)
-                if (transition != null) {
-                    currentStage = transition.toStage
+                if (detectedSignals.none { it.tactic == sig.tactic && it.evidenceText == sig.evidenceText }) {
+                    detectedSignals.add(sig)
                 }
-
-                // 3. Append SHA-256 cryptographic evidence block
-                val lastHash = ServiceLocator.evidenceRepository.getLastEvidenceHash(sessionId)
-                val ev = EvidenceHasher.createEvent(
-                    eventId = UUID.randomUUID().toString(),
-                    sessionId = sessionId,
-                    timestamp = sig.timestamp,
-                    eventType = "DEMO_TACTIC_DETECTED",
-                    payloadJson = "{\"tactic\":\"${sig.tactic.name}\",\"weight\":${sig.riskContribution},\"snippet\":\"${sig.evidenceText}\"}",
-                    lastKnownHash = lastHash
-                )
-                ServiceLocator.evidenceRepository.appendEvidence(ev)
-                evidenceEvents.add(ev)
             }
 
-            // 4. Calculate explainable risk score
+            // Calculate transparent score
+            previousRiskScore = currentRiskScore
             val newScore = ServiceLocator.riskEngine.calculateCurrentScore(
                 allSignals = detectedSignals,
                 sessionStartTime = sessionStartTime
             )
             currentRiskScore = newScore
 
-            // 5. Update manipulation velocity
-            currentVelocity = velocityEngine.calculateVelocity(detectedSignals)
+            // Compute Trend
+            riskTrend = when {
+                newScore > previousRiskScore -> "↑ Increasing"
+                newScore < previousRiskScore -> "↓ Decreasing"
+                else -> "→ Stable"
+            }
 
-            // 6. Check Safety Brake condition (Risk >= 60 + Irreversible action)
-            if (ServiceLocator.riskEngine.isSafetyBrakeTriggered(newScore, detectedSignals)) {
-                showSafetyBrake = true
+            // Check if intervention threshold crossed
+            if (newScore >= 60 && !isCallPaused) {
+                showProtectionDialog = true
                 isAutoPlaying = false
             }
 
-            // Scroll down
             if (transcriptList.isNotEmpty()) {
-                listState.animateScrollToItem(transcriptList.size)
+                listState.animateScrollToItem(transcriptList.size - 1)
             }
         }
     }
 
-    // Auto-play loop
+    fun resetScenario(newIndex: Int) {
+        selectedScenarioIndex = newIndex
+        currentStepIndex = -1
+        isAutoPlaying = false
+        callDurationSeconds = 0
+        currentRiskScore = 0
+        previousRiskScore = 0
+        riskTrend = "→ Stable"
+        detectedSignals.clear()
+        transcriptList.clear()
+        showProtectionDialog = false
+        isCallPaused = false
+        sessionId = "DEMO-SIM-" + UUID.randomUUID().toString().take(8)
+    }
+
+    // Auto-play loop for current scenario
+    val activeScenario = PROTOTYPE_SCENARIOS[selectedScenarioIndex]
     LaunchedEffect(isAutoPlaying, currentStepIndex) {
-        if (isAutoPlaying && currentStepIndex < SIMULATED_SCAM_PROGRESSION.size - 1) {
-            delay(3500L)
+        if (isAutoPlaying && currentStepIndex < activeScenario.turns.size - 1) {
+            delay(3200L)
             currentStepIndex++
-            injectDialogueStep(SIMULATED_SCAM_PROGRESSION[currentStepIndex])
-        } else if (currentStepIndex >= SIMULATED_SCAM_PROGRESSION.size - 1) {
+            injectDialogueTurn(activeScenario.turns[currentStepIndex])
+        } else if (currentStepIndex >= activeScenario.turns.size - 1) {
             isAutoPlaying = false
         }
     }
 
-    // Sound wave animation values for active speaker
-    val infiniteTransition = rememberInfiniteTransition(label = "audio_wave")
-    val wave1 by infiniteTransition.animateFloat(
-        initialValue = 0.3f, targetValue = 1.0f,
-        animationSpec = infiniteRepeatable(tween(350, easing = FastOutSlowInEasing), RepeatMode.Reverse),
-        label = "w1"
-    )
-    val wave2 by infiniteTransition.animateFloat(
-        initialValue = 0.8f, targetValue = 0.2f,
-        animationSpec = infiniteRepeatable(tween(450, easing = FastOutSlowInEasing), RepeatMode.Reverse),
-        label = "w2"
-    )
-    val wave3 by infiniteTransition.animateFloat(
+    // Remote video pulse animation
+    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+    val pulseAlpha by infiniteTransition.animateFloat(
         initialValue = 0.4f, targetValue = 0.9f,
-        animationSpec = infiniteRepeatable(tween(300, easing = FastOutSlowInEasing), RepeatMode.Reverse),
-        label = "w3"
+        animationSpec = infiniteRepeatable(tween(1000, easing = FastOutSlowInEasing), RepeatMode.Reverse),
+        label = "alpha"
     )
+
+    val currentRiskLevel = RiskLevel.fromScore(currentRiskScore)
+    val riskColor = when (currentRiskLevel) {
+        RiskLevel.CRITICAL -> RiskCritical
+        RiskLevel.HIGH -> RiskHigh
+        RiskLevel.MEDIUM -> RiskMedium
+        RiskLevel.LOW -> RiskLow
+    }
+    val riskBg = when (currentRiskLevel) {
+        RiskLevel.CRITICAL -> RiskCriticalBg
+        RiskLevel.HIGH -> RiskHighBg
+        RiskLevel.MEDIUM -> RiskMediumBg
+        RiskLevel.LOW -> RiskLowBg
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color(0xFF0F172A))
     ) {
-        // Top Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-                }
-                Spacer(modifier = Modifier.width(4.dp))
-                Column {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "SIMULATION LAB",
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 15.sp,
-                            letterSpacing = 1.sp,
-                            color = TealPrimary
-                        )
-                    }
-                    Text(
-                        text = "DEMO MODE — SYNTHETIC CONVERSATION",
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = RiskHigh
-                    )
-                }
-            }
-
-            IconButton(onClick = {
-                // Reset Simulation
-                sessionId = "DEMO-SIM-" + UUID.randomUUID().toString().take(8)
-                currentStepIndex = -1
-                isAutoPlaying = false
-                callDurationSeconds = 0
-                currentRiskScore = 0
-                currentStage = ScamStage.CONTACT
-                detectedSignals.clear()
-                transcriptList.clear()
-                evidenceEvents.clear()
-                integrityVerifiedMsg = null
-                ServiceLocator.scamStageMachine.reset()
-                currentVelocity = velocityEngine.calculateVelocity(emptyList())
-                showSafetyBrake = false
-            }) {
-                Icon(imageVector = Icons.Default.Refresh, contentDescription = "Reset Simulation", tint = Slate500)
-            }
-        }
-
-        // Prominent Disclaimer Banner: Honest Boundary
+        // ─── TOP BANNER: CLEARLY LABELED DEMO / SIMULATED CALL ───
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 4.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(RiskMediumBg)
-                .border(1.dp, RiskMedium.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
-                .padding(horizontal = 12.dp, vertical = 6.dp)
+                .background(Color(0xFF1E293B))
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            Text(
-                text = "Controlled demonstration environment. Simulates a digital-arrest coercion sequence through the real AI safety engine. Never claims WhatsApp/VoIP call interception.",
-                fontSize = 11.sp,
-                lineHeight = 15.sp,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        // Dual 3D Video Call Tiles Presentation
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            // Simulated Caller Video Tile
-            Card(
-                modifier = Modifier
-                    .weight(1f)
-                    .aspectRatio(0.85f),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Navy900)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Image(
-                        painter = painterResource(id = R.drawable.sim_caller_video),
-                        contentDescription = "Simulated Caller 3D Stream",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-
-                    // Overlay Badges
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(6.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .clip(CircleShape)
-                                    .background(RiskCritical)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "CALLER",
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        }
-
-                        // Call timer
-                        val formattedDuration = String.format(
-                            Locale.getDefault(),
-                            "%02d:%02d",
-                            callDurationSeconds / 60,
-                            callDurationSeconds % 60
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Column {
+                        Text(
+                            text = "RAKSHACALL",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = TealPrimary,
+                            letterSpacing = 1.sp
                         )
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(Color.Black.copy(alpha = 0.65f))
-                                .padding(horizontal = 5.dp, vertical = 2.dp)
-                        ) {
-                            Text(formattedDuration, fontSize = 9.sp, color = Color.White, fontWeight = FontWeight.Bold)
-                        }
-                    }
-
-                    // Live sound wave bars when caller is speaking
-                    if (isAutoPlaying || (currentStepIndex >= 0 && currentStepIndex < SIMULATED_SCAM_PROGRESSION.size)) {
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .padding(end = 8.dp)
-                                .height(22.dp),
-                            horizontalArrangement = Arrangement.spacedBy(2.dp),
-                            verticalAlignment = Alignment.Bottom
-                        ) {
-                            Box(modifier = Modifier.width(3.dp).height((18 * wave1).dp).clip(RoundedCornerShape(1.dp)).background(RiskHigh))
-                            Box(modifier = Modifier.width(3.dp).height((22 * wave2).dp).clip(RoundedCornerShape(1.dp)).background(RiskHigh))
-                            Box(modifier = Modifier.width(3.dp).height((16 * wave3).dp).clip(RoundedCornerShape(1.dp)).background(RiskHigh))
-                        }
-                    }
-
-                    // Bottom caller label
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .fillMaxWidth()
-                            .background(Color.Black.copy(alpha = 0.6f))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Alleged \"CBI Official\"",
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color.White
-                            )
-                            Text(
-                                text = "HD 720p",
-                                fontSize = 8.sp,
-                                color = Slate500
-                            )
-                        }
+                        Text(
+                            text = "DEMO VIDEO CALL",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color.White
+                        )
                     }
                 }
-            }
 
-            // User Self-View Video Tile
-            Card(
-                modifier = Modifier
-                    .weight(1f)
-                    .aspectRatio(0.85f),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Navy900)
-            ) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Image(
-                        painter = painterResource(id = R.drawable.sim_user_video),
-                        contentDescription = "Simulated User Self View",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-
-                    // Overlay Badges
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(6.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .clip(CircleShape)
-                                    .background(TealPrimary)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "TARGET USER",
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(Color.Black.copy(alpha = 0.6f))
-                                .padding(horizontal = 5.dp, vertical = 2.dp)
-                        ) {
-                            Text("PROTECTED", fontSize = 8.sp, color = TealPrimary, fontWeight = FontWeight.Bold)
-                        }
-                    }
-
-                    // Bottom self view label
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .fillMaxWidth()
-                            .background(Color.Black.copy(alpha = 0.6f))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Protected Endpoint",
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color.White
-                            )
-                            Text(
-                                text = "MIC: ON",
-                                fontSize = 8.sp,
-                                color = TealPrimary,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Horizontal Scam Stage Progression (Section 6)
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(10.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f))
-        ) {
-            Column(modifier = Modifier.padding(8.dp)) {
-                Text(
-                    text = "SCAM STAGE PROGRESSION",
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = 1.sp,
-                    color = Slate500
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(Color(0xFF334155))
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
-                    val allStages = listOf(
-                        ScamStage.CONTACT to "CONTACT",
-                        ScamStage.AUTHORITY to "AUTH",
-                        ScamStage.FEAR to "FEAR",
-                        ScamStage.ISOLATION to "ISOL",
-                        ScamStage.DEMAND to "DEMAND",
-                        ScamStage.PAYMENT_CREDENTIAL to "PAY/OTP",
-                        ScamStage.ESCALATION to "ESCAL"
+                    Text(
+                        text = "SIMULATED CALL",
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFF59E0B)
                     )
-
-                    allStages.forEachIndexed { idx, (st, label) ->
-                        val isCurrent = currentStage == st
-                        val isPassed = currentStage.ordinal > st.ordinal
-
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(
-                                    when {
-                                        isCurrent -> TealPrimary
-                                        isPassed -> TealPrimary.copy(alpha = 0.25f)
-                                        else -> Slate500.copy(alpha = 0.12f)
-                                    }
-                                )
-                                .border(
-                                    width = if (isCurrent) 1.5.dp else 0.dp,
-                                    color = if (isCurrent) Color.White.copy(alpha = 0.8f) else Color.Transparent,
-                                    shape = RoundedCornerShape(6.dp)
-                                )
-                                .padding(horizontal = 5.dp, vertical = 3.dp)
-                        ) {
-                            Text(
-                                text = if (isPassed) "✓ $label" else label,
-                                fontSize = 8.sp,
-                                fontWeight = if (isCurrent) FontWeight.ExtraBold else FontWeight.Medium,
-                                color = when {
-                                    isCurrent -> Color.White
-                                    isPassed -> TealPrimary
-                                    else -> Slate500
-                                }
-                            )
-                        }
-
-                        if (idx < allStages.size - 1) {
-                            Text("›", fontSize = 10.sp, color = Slate500)
-                        }
-                    }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        // ─── SCENARIO SELECTOR ───
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF131D33))
+                .padding(horizontal = 12.dp, vertical = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            itemsIndexed(PROTOTYPE_SCENARIOS) { index, scenario ->
+                val isSelected = selectedScenarioIndex == index
+                FilterChip(
+                    selected = isSelected,
+                    onClick = { resetScenario(index) },
+                    label = {
+                        Text(
+                            text = scenario.title,
+                            fontSize = 11.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                        )
+                    },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = TealPrimary,
+                        selectedLabelColor = Color.Black,
+                        containerColor = Color(0xFF1E293B),
+                        labelColor = Color(0xFF94A3B8)
+                    )
+                )
+            }
+        }
 
-        // Real-Time Risk Intelligence Dashboard (Section 5)
-        val level = RiskLevel.fromScore(currentRiskScore)
+        // ─── REMOTE VIDEO: SIMULATED CALLER ───
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(130.dp)
+                .background(Color(0xFF1E293B))
+                .padding(12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(54.dp)
+                        .clip(CircleShape)
+                        .background(if (isCallPaused) Color(0xFF64748B) else Color(0xFFDC2626).copy(alpha = pulseAlpha)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Security,
+                        contentDescription = "Caller",
+                        tint = Color.White,
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "Unknown Caller",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+                Text(
+                    text = if (isCallPaused) "CALL PAUSED FOR SAFETY" else "Connected • 00:${callDurationSeconds.toString().padStart(2, '0')}",
+                    fontSize = 11.sp,
+                    color = if (isCallPaused) Color(0xFFF59E0B) else Color(0xFF94A3B8)
+                )
+            }
+        }
+
+        // ─── LIVE PROTECTION HUD ───
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = when (level) {
-                    RiskLevel.CRITICAL -> RiskCriticalBg
-                    RiskLevel.HIGH -> RiskHighBg
-                    RiskLevel.MEDIUM -> RiskMediumBg
-                    RiskLevel.LOW -> RiskLowBg
-                }
-            )
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+            shape = RoundedCornerShape(12.dp)
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Row(
@@ -664,380 +519,410 @@ fun VideoCallSimulationScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = "REAL-TIME RISK: ${level.label}",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                letterSpacing = 1.sp,
-                                color = when (level) {
-                                    RiskLevel.CRITICAL -> RiskCritical
-                                    RiskLevel.HIGH -> RiskHigh
-                                    RiskLevel.MEDIUM -> RiskMedium
-                                    RiskLevel.LOW -> RiskLow
-                                }
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "• 98% Confidence",
-                                fontSize = 10.sp,
-                                color = Slate500
-                            )
-                        }
-                        Text(
-                            text = "$currentRiskScore / 100",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                    Text(
+                        text = "LIVE PROTECTION",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = TealPrimary,
+                        letterSpacing = 1.sp
+                    )
 
-                    Column(horizontalAlignment = Alignment.End) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "VELOCITY: ${currentVelocity.level.name}",
+                            text = "Language: $currentLanguage",
                             fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = when (currentVelocity.level) {
-                                VelocityLevel.HIGH -> RiskCritical
-                                VelocityLevel.MODERATE -> RiskMedium
-                                VelocityLevel.LOW -> RiskLow
-                            }
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFFCBD5E1)
                         )
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "${detectedSignals.size} tactics in 90s window",
-                            fontSize = 10.sp,
-                            color = Slate500
+                            text = "• ${(languageConfidence * 100).toInt()}%",
+                            fontSize = 11.sp,
+                            color = Color(0xFF94A3B8)
                         )
                     }
                 }
 
-                // AI Explanation Cards (Section 8)
-                Spacer(modifier = Modifier.height(6.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f))
-                        .padding(8.dp)
-                ) {
-                    Column {
-                        Text(
-                            text = "WHY IS RISK INCREASING?",
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = TealPrimary
-                        )
-                        val explanation = when {
-                            currentRiskScore >= 60 -> "Risk increased because the conversation escalated from authority impersonation to fear, isolation, and irreversible payment/OTP demands."
-                            currentRiskScore >= 35 -> "Risk increased as caller introduced criminal arrest threats and strict room secrecy."
-                            currentRiskScore > 0 -> "Risk initiated by unverified authority claims under cybercrime cell pretext."
-                            else -> "Awaiting conversation signals to initiate risk analysis."
-                        }
-                        Text(text = explanation, fontSize = 11.sp, lineHeight = 14.sp)
+                Spacer(modifier = Modifier.height(10.dp))
 
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "WHAT WOULD REDUCE RISK?",
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = TealPrimary
-                        )
-                        Text(
-                            text = "Pause conversation immediately. Disconnect and independently contact official authorities (1930 / cybercrime.gov.in).",
-                            fontSize = 11.sp,
-                            lineHeight = 14.sp
-                        )
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Simulation Controller Buttons
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Button(
-                onClick = {
-                    if (currentStepIndex < SIMULATED_SCAM_PROGRESSION.size - 1) {
-                        currentStepIndex++
-                        injectDialogueStep(SIMULATED_SCAM_PROGRESSION[currentStepIndex])
-                    }
-                },
-                enabled = currentStepIndex < SIMULATED_SCAM_PROGRESSION.size - 1 && !isAutoPlaying,
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(containerColor = TealPrimary),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(
-                    text = if (currentStepIndex == -1) "Start Phase 1" else "Next Step (${currentStepIndex + 2}/6)",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Button(
-                onClick = {
-                    if (!isAutoPlaying) {
-                        if (currentStepIndex == -1) {
-                            currentStepIndex = 0
-                            injectDialogueStep(SIMULATED_SCAM_PROGRESSION[0])
-                        }
-                        isAutoPlaying = true
-                    } else {
-                        isAutoPlaying = false
-                    }
-                },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isAutoPlaying) RiskHigh else Slate700
-                ),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Icon(
-                    imageVector = if (isAutoPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(if (isAutoPlaying) "Pause Auto" else "Auto-Play (3.5s)", fontSize = 11.sp)
-            }
-        }
-
-        // Live Transcript & Incident Timeline
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 16.dp, vertical = 6.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Real-Time AI Transcript & Signal Stream", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Slate500)
-                    if (transcriptList.isNotEmpty()) {
-                        Text(text = "${transcriptList.size} lines", fontSize = 10.sp, color = Slate500)
-                    }
-                }
-            }
-
-            if (transcriptList.isEmpty()) {
-                item {
-                    Text(
-                        text = "Simulation ready. Tap \"Start Phase 1\" or \"Auto-Play\" to begin the interactive coercion sequence.",
-                        fontSize = 12.sp,
-                        color = Slate500
-                    )
-                }
-            } else {
-                items(transcriptList) { t ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f))
-                            .padding(8.dp)
-                    ) {
+                    // Risk Score Box
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "${t.speaker}: ",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 12.sp,
-                            color = RiskHigh
+                            text = "Risk Score: ",
+                            fontSize = 14.sp,
+                            color = Color(0xFFCBD5E1)
                         )
-                        Text(text = t.text, fontSize = 12.sp, lineHeight = 16.sp)
+                        Text(
+                            text = "$currentRiskScore/100",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Black,
+                            color = riskColor
+                        )
                     }
-                }
-            }
 
-            // Tactic accumulation delta breakdown
-            if (detectedSignals.isNotEmpty()) {
-                item {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Tactic Accumulation (${detectedSignals.size} Signals)",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Slate500
-                    )
-                }
-
-                items(detectedSignals) { sig ->
-                    Row(
+                    // Risk Level Badge
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
                             .clip(RoundedCornerShape(6.dp))
-                            .background(if (sig.tactic.isIrreversibleAction) RiskHighBg else RiskMediumBg)
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                            .background(riskBg)
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = "⚠ +${sig.riskContribution} ${sig.tactic.displayName}",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (sig.tactic.isIrreversibleAction) RiskHigh else RiskMedium
-                        )
-                        Text(
-                            text = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(sig.timestamp)),
-                            fontSize = 10.sp,
-                            color = Slate500
+                            text = currentRiskLevel.label,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Black,
+                            color = riskColor
                         )
                     }
+
+                    // Trend Indicator
+                    Text(
+                        text = riskTrend,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = when {
+                            riskTrend.contains("↑") -> RiskCritical
+                            riskTrend.contains("↓") -> RiskLow
+                            else -> Color(0xFF94A3B8)
+                        }
+                    )
+                }
+
+                // Detected Tactics and Evidence
+                if (detectedSignals.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Detected Tactics & Evidence:",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF94A3B8)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    detectedSignals.takeLast(3).forEach { sig ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = "⚠ ", fontSize = 12.sp, color = RiskHigh)
+                            Text(
+                                text = sig.tactic.displayName,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "\"${sig.evidenceText}\"",
+                                fontSize = 11.sp,
+                                color = Color(0xFF94A3B8),
+                                maxLines = 1
+                            )
+                        }
+                    }
+                } else {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "No coercion tactics detected in speech.",
+                        fontSize = 11.sp,
+                        color = Color(0xFF64748B)
+                    )
                 }
             }
+        }
 
-            // Incident Timeline & Cryptographic Evidence Section (Section 12)
-            if (currentStepIndex >= 3 || currentRiskScore >= 60) {
-                item {
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
+        // ─── LIVE TRANSCRIPT ───
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color(0xFF1E293B))
+                .padding(10.dp)
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "LIVE TRANSCRIPT",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF94A3B8),
+                        letterSpacing = 1.sp
+                    )
+
+                    // Step Controller / Auto-play
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Button(
+                            onClick = {
+                                if (currentStepIndex < activeScenario.turns.size - 1) {
+                                    currentStepIndex++
+                                    injectDialogueTurn(activeScenario.turns[currentStepIndex])
+                                }
+                            },
+                            enabled = currentStepIndex < activeScenario.turns.size - 1,
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF334155)),
+                            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 10.dp, vertical = 2.dp),
+                            modifier = Modifier.height(28.dp)
+                        ) {
+                            Text(text = "Next Turn", fontSize = 11.sp, color = Color.White)
+                        }
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Button(
+                            onClick = { isAutoPlaying = !isAutoPlaying },
+                            colors = ButtonDefaults.buttonColors(containerColor = if (isAutoPlaying) Color(0xFFDC2626) else TealPrimary),
+                            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 10.dp, vertical = 2.dp),
+                            modifier = Modifier.height(28.dp)
+                        ) {
+                            Text(
+                                text = if (isAutoPlaying) "Pause Auto" else "Auto Play",
+                                fontSize = 11.sp,
+                                color = if (isAutoPlaying) Color.White else Color.Black
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                if (transcriptList.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "Tap 'Next Turn' or 'Auto Play' to stream transcript into Risk Engine",
+                            fontSize = 12.sp,
+                            color = Color(0xFF64748B)
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                        items(transcriptList) { turn ->
+                            Card(
+                                colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+                                shape = RoundedCornerShape(8.dp)
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(imageVector = Icons.Default.Security, contentDescription = null, tint = TealPrimary, modifier = Modifier.size(18.dp))
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = "INCIDENT TIMELINE & EVIDENCE",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 12.sp,
-                                        letterSpacing = 0.5.sp,
-                                        color = TealPrimary
-                                    )
-                                }
-
-                                Text(
-                                    text = "${evidenceEvents.size} SHA-256 Blocks",
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Slate500
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            // Verification confirmation
-                            if (integrityVerifiedMsg != null) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .background(TealPrimary.copy(alpha = 0.15f))
-                                        .padding(8.dp)
-                                ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = TealPrimary, modifier = Modifier.size(16.dp))
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text(text = integrityVerifiedMsg ?: "", fontSize = 11.sp, color = TealPrimary, fontWeight = FontWeight.Bold)
+                                Column(modifier = Modifier.padding(8.dp)) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "CALLER",
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = TealPrimary
+                                        )
+                                        Text(
+                                            text = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(turn.timestamp)),
+                                            fontSize = 9.sp,
+                                            color = Color(0xFF64748B)
+                                        )
                                     }
-                                }
-                                Spacer(modifier = Modifier.height(8.dp))
-                            }
-
-                            // Actions
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Button(
-                                    onClick = {
-                                        coroutineScope.launch {
-                                            val chain = ServiceLocator.evidenceRepository.getEvidenceForSession(sessionId)
-                                            val result = EvidenceHasher.verifyChain(chain)
-                                            integrityVerifiedMsg = if (result is IntegrityResult.Valid) {
-                                                "Chain Verified: ${chain.size} Tamper-Evident Blocks Secured"
-                                            } else {
-                                                "Integrity Error: Hash Mismatch Detected"
-                                            }
-                                        }
-                                    },
-                                    modifier = Modifier.weight(1f),
-                                    colors = ButtonDefaults.buttonColors(containerColor = TealPrimary),
-                                    shape = RoundedCornerShape(8.dp)
-                                ) {
-                                    Icon(imageVector = Icons.Default.VerifiedUser, contentDescription = null, modifier = Modifier.size(14.dp))
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text("Verify Integrity", fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                                }
-
-                                OutlinedButton(
-                                    onClick = {
-                                        coroutineScope.launch {
-                                            val session = ProtectionSession(
-                                                id = sessionId,
-                                                startTime = sessionStartTime,
-                                                endTime = System.currentTimeMillis(),
-                                                status = SessionStatus.COMPLETED,
-                                                peakRisk = currentRiskScore,
-                                                finalRisk = currentRiskScore,
-                                                highestStage = currentStage,
-                                                inputSource = "SIMULATED_VIDEO_CALL"
-                                            )
-                                            val chain = ServiceLocator.evidenceRepository.getEvidenceForSession(sessionId)
-                                            val report = IncidentReportExporter.generateReport(
-                                                rakshaCallId = "DEMO-USER-001",
-                                                session = session,
-                                                transcripts = transcriptList,
-                                                riskSignals = detectedSignals,
-                                                evidenceChain = chain
-                                            )
-                                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                                                type = "text/plain"
-                                                putExtra(Intent.EXTRA_SUBJECT, "RakshaCall Incident Report: $sessionId")
-                                                putExtra(Intent.EXTRA_TEXT, report.formattedText)
-                                            }
-                                            context.startActivity(Intent.createChooser(shareIntent, "Export Incident Report"))
-                                        }
-                                    },
-                                    modifier = Modifier.weight(1f),
-                                    shape = RoundedCornerShape(8.dp)
-                                ) {
-                                    Icon(imageVector = Icons.Default.Share, contentDescription = null, modifier = Modifier.size(14.dp))
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text("Export Report", fontSize = 10.sp)
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(
+                                        text = turn.text,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color(0xFFE2E8F0)
+                                    )
                                 }
                             }
                         }
                     }
                 }
             }
+        }
 
-            item { Spacer(modifier = Modifier.height(16.dp)) }
+        // ─── CALL CONTROLS: [ MUTE ], [ SPEAKER ], [ END CALL ], [ PROTECT ] ───
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF0B1120))
+                .padding(vertical = 12.dp, horizontal = 16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Mute
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    IconButton(
+                        onClick = { isMuted = !isMuted },
+                        modifier = Modifier
+                            .size(46.dp)
+                            .clip(CircleShape)
+                            .background(if (isMuted) Color(0xFFDC2626) else Color(0xFF334155))
+                    ) {
+                        Icon(
+                            imageVector = if (isMuted) Icons.Default.MicOff else Icons.Default.Mic,
+                            contentDescription = "Mute",
+                            tint = Color.White
+                        )
+                    }
+                    Text(text = "MUTE", fontSize = 10.sp, color = Color(0xFF94A3B8), fontWeight = FontWeight.Bold)
+                }
+
+                // Speaker
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    IconButton(
+                        onClick = { isSpeakerOn = !isSpeakerOn },
+                        modifier = Modifier
+                            .size(46.dp)
+                            .clip(CircleShape)
+                            .background(if (isSpeakerOn) TealPrimary else Color(0xFF334155))
+                    ) {
+                        Icon(
+                            imageVector = if (isSpeakerOn) Icons.Default.VolumeUp else Icons.Default.VolumeOff,
+                            contentDescription = "Speaker",
+                            tint = if (isSpeakerOn) Color.Black else Color.White
+                        )
+                    }
+                    Text(text = "SPEAKER", fontSize = 10.sp, color = Color(0xFF94A3B8), fontWeight = FontWeight.Bold)
+                }
+
+                // End Call
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    IconButton(
+                        onClick = onNavigateBack,
+                        modifier = Modifier
+                            .size(46.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFFEF4444))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CallEnd,
+                            contentDescription = "End Call",
+                            tint = Color.White
+                        )
+                    }
+                    Text(text = "END CALL", fontSize = 10.sp, color = Color(0xFFEF4444), fontWeight = FontWeight.Bold)
+                }
+
+                // Protect Action
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    IconButton(
+                        onClick = { showProtectionDialog = true },
+                        modifier = Modifier
+                            .size(46.dp)
+                            .clip(CircleShape)
+                            .background(if (currentRiskScore >= 60) RiskCritical else TealPrimary)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Shield,
+                            contentDescription = "Protect",
+                            tint = if (currentRiskScore >= 60) Color.White else Color.Black
+                        )
+                    }
+                    Text(text = "PROTECT", fontSize = 10.sp, color = TealPrimary, fontWeight = FontWeight.Bold)
+                }
+            }
         }
     }
 
-    // Safety Brake Simulation Dialog (Section 9)
-    if (showSafetyBrake) {
-        SafetyBrakeDialog(
-            riskScore = currentRiskScore,
-            detectedTactics = detectedSignals.map { it.tactic.displayName }.distinct(),
-            onPauseAndVerify = {
-                showSafetyBrake = false
-                onOpenVerificationCoach()
-            },
-            onContactTrustedPerson = {
-                val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                    type = "text/plain"
-                    putExtra(Intent.EXTRA_TEXT, "RakshaCall Demo Simulation Alert: Coercive scam sequence reached critical threshold. Verifying Safety Brake.")
+    // ─── PROTECTION ACTION DIALOG ───
+    if (showProtectionDialog) {
+        AlertDialog(
+            onDismissRequest = { showProtectionDialog = false },
+            containerColor = Color(0xFF1E293B),
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = "Alert",
+                        tint = RiskCritical,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "POTENTIAL SCAM DETECTED",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
                 }
-                context.startActivity(Intent.createChooser(shareIntent, "Alert Trusted Person"))
             },
-            onDismiss = { showSafetyBrake = false }
+            text = {
+                Column {
+                    Text(
+                        text = "Multiple manipulation tactics detected in caller's speech.",
+                        fontSize = 13.sp,
+                        color = Color(0xFFE2E8F0)
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = "Risk Level: ${currentRiskLevel.label} (${currentRiskScore}/100)",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = riskColor
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Choose a protection action. The call will NOT be disconnected automatically.",
+                        fontSize = 11.sp,
+                        color = Color(0xFF94A3B8)
+                    )
+                }
+            },
+            confirmButton = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            isCallPaused = !isCallPaused
+                            showProtectionDialog = false
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF59E0B)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = if (isCallPaused) "RESUME CALL" else "PAUSE CALL", fontWeight = FontWeight.Bold, color = Color.Black)
+                    }
+
+                    Button(
+                        onClick = {
+                            showProtectionDialog = false
+                            onOpenVerificationCoach()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = TealPrimary),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = "VERIFY CALLER", fontWeight = FontWeight.Bold, color = Color.Black)
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            showProtectionDialog = false
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = "ALERT TRUSTED CONTACT", color = Color(0xFF38BDF8), fontWeight = FontWeight.Bold)
+                    }
+
+                    Button(
+                        onClick = { showProtectionDialog = false },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF334155)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = "CONTINUE", color = Color.White)
+                    }
+                }
+            },
+            dismissButton = null
         )
     }
 }

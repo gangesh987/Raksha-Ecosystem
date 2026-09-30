@@ -28,6 +28,7 @@ from .multimodal_fusion import MultimodalRiskFusionEngine, FusedRiskDecision, TA
 from .safety_brake import safety_brake_engine
 from .evidence_vault import get_session_ledger
 from .conversation_context import SessionConversationContext, SessionRegistry
+from .multilingual_tactic_engine import multilingual_risk_engine
 
 logger = logging.getLogger("rakshacall.pipeline")
 
@@ -83,9 +84,12 @@ class PipelineResult:
     # Evidence
     evidence_hash: str
 
+    # Multilingual Tactic Engine Fields
+    multilingual_analysis: Dict[str, Any] = field(default_factory=dict)
+
     def to_api_dict(self) -> Dict[str, Any]:
-        """Convert to REST API response format (backward compatible)."""
-        return {
+        """Convert to REST API response format (backward compatible with structured multilingual tactics)."""
+        d = {
             "risk_score": self.risk_score,
             "risk_level": self.risk_level,
             "fused_score": self.fused_score,
@@ -117,6 +121,18 @@ class PipelineResult:
             "disagreement_explanation": self.disagreement_explanation,
             "evidence_hash": self.evidence_hash,
         }
+        if self.multilingual_analysis:
+            d["confidence"] = self.multilingual_analysis.get("confidence", 0.85)
+            d["language"] = self.multilingual_analysis.get("language", "auto")
+            d["code_switch"] = self.multilingual_analysis.get("code_switch", False)
+            d["detected_tactics"] = self.multilingual_analysis.get("tactics", [])
+            d["explanation"] = self.multilingual_analysis.get("explanation", self.primary_explanation)
+            d["escalation"] = self.multilingual_analysis.get("escalation", "STABLE")
+            d["timestamp"] = self.multilingual_analysis.get("timestamp", "")
+            d["is_suppressed_as_benign"] = self.multilingual_analysis.get("is_suppressed_as_benign", False)
+            d["benign_reason"] = self.multilingual_analysis.get("benign_reason", None)
+            d["tactics_detail"] = self.multilingual_analysis.get("tactics", [])
+        return d
 
 
 class UnifiedAnalysisPipeline:
@@ -285,12 +301,41 @@ class UnifiedAnalysisPipeline:
         if not reasons:
             reasons = ["No strong coercion pattern detected"]
 
+        # ─── STAGE 7: Multilingual Tactic Engine Evaluation ──────────
+        ml_state = multilingual_risk_engine.evaluate_turn(
+            utterance=transcript,
+            session_id=session_id,
+            detected_language=detected_language if detected_language != "auto" else None
+        )
+        ml_dict = ml_state.to_dict()
+
+        effective_risk_score = fused_decision.risk_score
+        effective_risk_level = fused_decision.risk_level
+
+        if ml_state.is_suppressed_as_benign:
+            effective_risk_score = min(effective_risk_score, 15)
+            effective_risk_level = "LOW"
+        elif ml_state.current_score > 0:
+            effective_risk_score = max(effective_risk_score, ml_state.current_score)
+            if effective_risk_score >= 80:
+                effective_risk_level = "CRITICAL"
+            elif effective_risk_score >= 60:
+                effective_risk_level = "HIGH"
+            elif effective_risk_score >= 35:
+                effective_risk_level = "MEDIUM"
+            else:
+                effective_risk_level = "LOW"
+
+        # Prepend tactic evidence to reasons
+        for dt in ml_state.detected_tactics:
+            reasons.insert(0, f"{dt.display_name}: \"{dt.evidence}\"")
+
         # Compute legacy fused_score (0.0-1.0 range) for backward compatibility
-        fused_score_legacy = round(fused_decision.risk_score / 100.0, 3)
+        fused_score_legacy = round(effective_risk_score / 100.0, 3)
 
         result = PipelineResult(
-            risk_score=fused_decision.risk_score,
-            risk_level=fused_decision.risk_level,
+            risk_score=effective_risk_score,
+            risk_level=effective_risk_level,
             fused_score=fused_score_legacy,
             conversation_score=round(jev_result.scam_probability, 3),
             visual_score=round(visual_score, 3),
@@ -302,21 +347,22 @@ class UnifiedAnalysisPipeline:
             tactics=active_tactics,
             tactic_probabilities=jev_result.tactic_probabilities,
             reasons=reasons,
-            safety_brake_triggered=fused_decision.safety_brake_triggered,
-            is_irreversible_action=fused_decision.is_irreversible_action,
+            safety_brake_triggered=fused_decision.safety_brake_triggered or (effective_risk_score >= 80),
+            is_irreversible_action=fused_decision.is_irreversible_action or any(t.is_irreversible for t in ml_state.detected_tactics),
             intervention_headline=headline,
             intervention_subtext=subtext,
             verification_steps=verification_steps,
             localized_audio_alert_key=audio_alert.audio_key,
-            primary_explanation=fused_decision.primary_explanation,
+            primary_explanation=ml_state.explanation or fused_decision.primary_explanation,
             contributing_factors=fused_decision.contributing_factors,
-            model_mode=f"neural-v2+safety-floor",
+            model_mode=f"neural-v2+safety-floor+multilingual-tactics",
             model_provider=self.jev_provider.provider_name,
             scam_probability=jev_result.scam_probability,
             latency_ms=elapsed_ms,
             model_disagreement=fused_decision.model_disagreement,
             disagreement_explanation=fused_decision.disagreement_explanation,
             evidence_hash=ledger_block.current_hash,
+            multilingual_analysis=ml_dict,
         )
 
         logger.debug(

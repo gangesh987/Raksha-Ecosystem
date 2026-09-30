@@ -14,8 +14,9 @@ from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisco
 from sqlalchemy.orm import Session as DBSession
 from ..auth import db, current_user
 from ..models import User, Session, RiskEvent, TrustedContact, EvidenceReport, AuditEvent
-from ..schemas import SessionCreate, Analyze, ContactCreate
+from ..schemas import SessionCreate, Analyze, ContactCreate, RiskAnalysisRequest
 from ..ai.unified_pipeline import get_pipeline
+from ..ai.multilingual_tactic_engine import multilingual_risk_engine
 from ..ai.gemini_live import connect as gemini_connect, GeminiLiveUnavailable, parse_json, MODEL
 
 logger = logging.getLogger("rakshacall.api.sessions")
@@ -101,6 +102,7 @@ async def analyze(sid: int, p: Analyze, u=Depends(current_user), d: DBSession = 
         session_id=str(sid),
         visual_score=p.visual_score,
         liveness_score=p.liveness_score,
+        detected_language=p.language if p.language != "auto" else "en-IN",
     )
 
     api_result = result.to_api_dict()
@@ -127,6 +129,21 @@ async def analyze(sid: int, p: Analyze, u=Depends(current_user), d: DBSession = 
     audit_log(d, u.id, "risk.analyzed", {"session_id": sid, "risk": result.risk_level, "score": result.risk_score})
 
     return {**api_result, "event_id": e.id}
+
+
+@router.post("/sessions/risk-analysis")
+def risk_analysis(p: RiskAnalysisRequest):
+    """
+    Canonical multilingual contextual risk analysis endpoint.
+    Exposes transparent 0-100 risk score, level, confidence, language, code-switch flag,
+    and detected tactics with exact transcript evidence spans.
+    """
+    state = multilingual_risk_engine.evaluate_turn(
+        utterance=p.transcript,
+        session_id=p.session_id,
+        detected_language=p.language if p.language != "auto" else None
+    )
+    return state.to_dict()
 
 
 # ─── Risk & Timeline ────────────────────────────────────────────
