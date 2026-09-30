@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -316,9 +317,9 @@ fun HomeScreen(
                                 modifier = Modifier.weight(1f),
                                 shape = RoundedCornerShape(10.dp)
                             ) {
-                                Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp), tint = TealPrimary)
+                                Icon(imageVector = Icons.Default.Videocam, contentDescription = null, modifier = Modifier.size(18.dp), tint = TealPrimary)
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("RUN SIMULATION", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text("PROTECTED CALL", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -326,7 +327,7 @@ fun HomeScreen(
             }
         }
 
-        // Video Call Simulation Lab (Controlled 3D Demo Experience)
+        // Real-Time WebRTC Protected Call Room
         item {
             Card(
                 modifier = Modifier
@@ -357,7 +358,7 @@ fun HomeScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.PlayArrow,
+                                imageVector = Icons.Default.Videocam,
                                 contentDescription = null,
                                 tint = Color.White,
                                 modifier = Modifier.size(24.dp)
@@ -367,7 +368,7 @@ fun HomeScreen(
                         Column {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = "Video Call Simulation Lab",
+                                    text = "Real-Time WebRTC Safety Call",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 14.sp
                                 )

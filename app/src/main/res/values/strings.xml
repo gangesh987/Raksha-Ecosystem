@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">RakshaCall</string>
+    <string name="call_title">Protected WebRTC Call</string>
+    <string name="live_protection">Live AI Safety Guard</string>
+    <string name="safe_risk">Safe</string>
+    <string name="low_risk">Low Risk</string>
+    <string name="medium_risk">Medium Risk</string>
+    <string name="high_risk">High Risk</string>
+    <string name="critical_risk">Critical Threat</string>
+    <string name="safety_brake_title">Raksha Safety Brake</string>
+    <string name="safety_brake_desc">High-risk conversational coercion detected. Do not share OTPs, PINs, or transfer funds.</string>
+    <string name="btn_pause">Pause &amp; Reflect</string>
+    <string name="btn_resume">Resume Protection</string>
+    <string name="btn_verify">Verify Caller</string>
+    <string name="btn_end_call">End Call</string>
+    <string name="btn_contact_family">Alert Trusted Contact</string>
+    <string name="evidence_vault">Tamper-Evident Evidence Vault</string>
 </resources>

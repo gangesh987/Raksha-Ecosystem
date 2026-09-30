@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">രക്ഷാകോൾ</string>
+    <string name="call_title">സുരക്ഷിത വെബ്ആർടിസി കോൾ</string>
+    <string name="live_protection">തത്സമയ AI സുരക്ഷാ ഗാർഡ്</string>
+    <string name="safe_risk">സുരക്ഷിതം</string>
+    <string name="low_risk">കുറഞ്ഞ അപകടസാധ്യത</string>
+    <string name="medium_risk">ഇടത്തരം അപകടസാധ്യത</string>
+    <string name="high_risk">ഉയർന്ന അപകടസാധ്യത</string>
+    <string name="critical_risk">ഗുരുതരമായ ഭീഷണി</string>
+    <string name="safety_brake_title">രക്ഷാ സേഫ്റ്റി ബ്രേക്ക്</string>
+    <string name="safety_brake_desc">വഞ്ചനാപരമായ സമ്മർദ്ദം കണ്ടെത്തി. ഒടിപിയോ പിൻ നമ്പറോ പണമോ കൈമാറരുത്.</string>
+    <string name="btn_pause">താൽക്കാലികമായി നിർത്തി ചിന്തിക്കുക</string>
+    <string name="btn_resume">സംരക്ഷണം തുടരുക</string>
+    <string name="btn_verify">വിളിക്കുന്നയാളെ പരിശോധിക്കുക</string>
+    <string name="btn_end_call">കോൾ അവസാനിപ്പിക്കുക</string>
+    <string name="btn_contact_family">വിശ്വസ്ത കോൺടാക്റ്റിനെ അറിയിക്കുക</string>
+    <string name="evidence_vault">തെളിവ് ശേഖരം</string>
+</resources>

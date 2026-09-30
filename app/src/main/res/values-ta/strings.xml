@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">ரக்ஷாகால்</string>
+    <string name="call_title">பாதுகாக்கப்பட்ட அழைப்பு</string>
+    <string name="live_protection">நேரடி AI பாதுகாப்பு காவலர்</string>
+    <string name="safe_risk">பாதுகாப்பானது</string>
+    <string name="low_risk">குறைந்த ஆபத்து</string>
+    <string name="medium_risk">நடுத்தர ஆபத்து</string>
+    <string name="high_risk">அதிக ஆபத்து</string>
+    <string name="critical_risk">மிக ஆபத்தான அச்சுறுத்தல்</string>
+    <string name="safety_brake_title">ரக்ஷா பாதுகாப்பு பிரேக்</string>
+    <string name="safety_brake_desc">மோசடி மற்றும் வற்புறுத்தல் கண்டறியப்பட்டது. OTP, PIN பகிரவோ பணம் அனுப்பவோ வேண்டாம்.</string>
+    <string name="btn_pause">இடைநிறுத்தி சிந்தியுங்கள்</string>
+    <string name="btn_resume">பாதுகாப்பை தொடரவும்</string>
+    <string name="btn_verify">அழைப்பாளரை சரிபார்க்கவும்</string>
+    <string name="btn_end_call">அழைப்பை துண்டிக்கவும்</string>
+    <string name="btn_contact_family">நம்பகமான நபருக்கு எச்சரிக்கை</string>
+    <string name="evidence_vault">சான்று பெட்டகம்</string>
+</resources>
