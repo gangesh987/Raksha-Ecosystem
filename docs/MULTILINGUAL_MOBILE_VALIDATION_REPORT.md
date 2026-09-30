@@ -3,6 +3,7 @@
 ## Git
 - **Repository:** https://github.com/gangesh987/Raksha-Ecosystem
 - **Branch:** `kamal`
+- **Commit:** `e8da3a6b356ed9b1578dde7ff76d8d795e993464`
 - **Target Remote:** `origin/kamal` (Strict branch protection: `main` untouched)
 
 ## APK
