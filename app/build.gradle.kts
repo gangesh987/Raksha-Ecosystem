@@ -11,17 +11,23 @@ android {
         applicationId = "com.example.rakshacall"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "2.1.0-VALIDATION"
         buildConfigField("String", "DEFAULT_BACKEND_URL", "\"https://api.rakshacall.org\"")
         buildConfigField("String", "EMULATOR_BACKEND_URL", "\"http://10.0.2.2:8000\"")
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "DEBUG_BACKEND_URL", "\"http://10.0.2.2:8000\"")
+            manifestPlaceholders["usesCleartextTraffic"] = "true"
+        }
         release {
             isMinifyEnabled = false
             signingConfig = signingConfigs.getByName("debug")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            buildConfigField("String", "DEBUG_BACKEND_URL", "\"https://api.rakshacall.org\"")
+            manifestPlaceholders["usesCleartextTraffic"] = "false"
         }
     }
     compileOptions {

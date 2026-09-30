@@ -1,0 +1,71 @@
+{
+  "provider": {
+    "provider": "faster-whisper",
+    "model_size": "base",
+    "device": "cpu",
+    "compute_type": "int8",
+    "is_available": true,
+    "init_error": null,
+    "vad_filter": true
+  },
+  "iterations": 20,
+  "audio_duration_sec": 5.96,
+  "latencies": {
+    "audio_framing_250ms": {
+      "p50_ms": 0.06,
+      "p95_ms": 0.08,
+      "p99_ms": 0.08,
+      "mean_ms": 0.06,
+      "min_ms": 0.04,
+      "max_ms": 0.08
+    },
+    "hubert_feature_extraction": {
+      "p50_ms": 0.61,
+      "p95_ms": 0.72,
+      "p99_ms": 0.88,
+      "mean_ms": 0.63,
+      "min_ms": 0.52,
+      "max_ms": 0.92
+    },
+    "language_identification_lid": {
+      "p50_ms": 0.17,
+      "p95_ms": 0.2,
+      "p99_ms": 0.24,
+      "mean_ms": 0.17,
+      "min_ms": 0.14,
+      "max_ms": 0.25
+    },
+    "chunk_buffer_ingestion": {
+      "p50_ms": 0.27,
+      "p95_ms": 0.35,
+      "p99_ms": 0.36,
+      "mean_ms": 0.28,
+      "min_ms": 0.24,
+      "max_ms": 0.37
+    },
+    "streaming_partial_transcript": {
+      "p50_ms": 9451.55,
+      "p95_ms": 11619.17,
+      "p99_ms": 27897.0,
+      "mean_ms": 9790.8,
+      "min_ms": 5511.65,
+      "max_ms": 31966.45
+    },
+    "streaming_final_transcript": {
+      "p50_ms": 9850.32,
+      "p95_ms": 13752.54,
+      "p99_ms": 33709.65,
+      "mean_ms": 11021.57,
+      "min_ms": 4929.91,
+      "max_ms": 38698.93
+    },
+    "full_asr_inference_3s_audio": {
+      "p50_ms": 1464.56,
+      "p95_ms": 1952.6,
+      "p99_ms": 5284.98,
+      "mean_ms": 1723.3,
+      "min_ms": 1402.83,
+      "max_ms": 6118.08
+    }
+  }
+}

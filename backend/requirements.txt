@@ -19,6 +19,12 @@ google-genai>=1.40.0
 groq>=0.11.0
 google-auth>=2.20.0
 
+# Real Multilingual ASR Engine (Phase 1)
+faster-whisper>=1.0.0
+ctranslate2>=4.0.0
+onnxruntime>=1.14.0
+av<14.0.0
+
 # Neural ML Inference & Evaluation
 torch>=2.0.0
 scikit-learn>=1.3.0

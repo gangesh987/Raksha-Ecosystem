@@ -469,11 +469,72 @@ async def ws_session(websocket: WebSocket, sid: int):
 
                 elif typ == "audio_pcm16":
                     data = base64.b64decode(raw.get("data", ""))
-                    if data and live_session:
-                        from google.genai import types
-                        await live_session.send_realtime_input(
-                            audio=types.Blob(data=data, mime_type="audio/pcm;rate=16000")
-                        )
+                    if data:
+                        if live_session:
+                            from google.genai import types
+                            await live_session.send_realtime_input(
+                                audio=types.Blob(data=data, mime_type="audio/pcm;rate=16000")
+                            )
+                        else:
+                            # Real Local Multilingual ASR (Phase 1)
+                            from ..ai.multilingual_asr import asr_engine, ASRStatus
+                            asr_result = asr_engine.transcribe_audio(data, session_id=str(sid))
+                            if asr_result.normalized_text:
+                                text = asr_result.normalized_text
+                                last_transcript = text
+                                await websocket.send_json({
+                                    "type": "transcript",
+                                    "text": text,
+                                    "canonical_text": asr_result.canonical_text,
+                                    "language": asr_result.detected_language,
+                                    "language_confidence": asr_result.language_confidence,
+                                    "confidence": asr_result.token_confidence,
+                                    "code_switch": asr_result.code_switch_detected,
+                                    "status": asr_result.status
+                                })
+
+                                result = pipeline.analyze(
+                                    transcript=text,
+                                    session_id=str(sid),
+                                    detected_language=asr_result.detected_language
+                                )
+                                api_result = result.to_api_dict()
+                                await websocket.send_json({
+                                    "type": "risk_update",
+                                    "event_id": None,
+                                    "asr_status": asr_result.status,
+                                    "detected_language": asr_result.detected_language,
+                                    "language_confidence": asr_result.language_confidence,
+                                    "token_confidence": asr_result.token_confidence,
+                                    "code_switch_detected": asr_result.code_switch_detected,
+                                    **api_result
+                                })
+
+                                # Persist to DB with own session
+                                from ..db import SessionLocal
+                                with SessionLocal() as db_sess:
+                                    s = db_sess.get(Session, sid)
+                                    if s:
+                                        e = RiskEvent(
+                                            session_id=sid,
+                                            transcript=text,
+                                            conversation_score=result.conversation_score,
+                                            visual_score=result.visual_score,
+                                            liveness_score=result.liveness_score,
+                                            fused_score=result.fused_score,
+                                            risk_level=result.risk_level,
+                                            reasons=result.reasons,
+                                        )
+                                        db_sess.add(e)
+                                        s.risk_level = result.risk_level
+                                        s.risk_score = result.fused_score
+                                        db_sess.commit()
+                            elif asr_result.status in (ASRStatus.ERROR.value, ASRStatus.UNAVAILABLE.value):
+                                await websocket.send_json({
+                                    "type": "ai_status",
+                                    "status": asr_result.status,
+                                    "reason": asr_result.error_message or "ASR decoding error"
+                                })
 
                 elif typ == "video_jpeg":
                     data = base64.b64decode(raw.get("data", ""))

@@ -9,9 +9,11 @@ import android.os.Vibrator
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -53,6 +55,14 @@ fun ProtectedRoomScreen(
     var detectedTactics by remember { mutableStateOf<List<RiskSignal>>(emptyList()) }
     var transcriptEvents by remember { mutableStateOf<List<TranscriptEvent>>(emptyList()) }
 
+    // Phase 1 Multilingual ASR Validation State
+    var showAsrValidationHud by remember { mutableStateOf(true) }
+    var currentAsrLanguage by remember { mutableStateOf("Tamil") }
+    var currentAsrConfidence by remember { mutableFloatStateOf(0.89f) }
+    var currentAsrTranscript by remember { mutableStateOf("உங்கள் வங்கி கணக்கு முடக்கப்பட்டுள்ளது.") }
+    var currentAsrCodeSwitch by remember { mutableStateOf(false) }
+    var currentAsrStatus by remember { mutableStateOf("ASR_OK") }
+
     var showSafetyBrake by remember { mutableStateOf(false) }
     var showInviteDialog by remember { mutableStateOf(false) }
     var testInputText by remember { mutableStateOf("") }
@@ -84,15 +94,63 @@ fun ProtectedRoomScreen(
         } catch (e: Exception) { /* ignore */ }
     }
 
-    fun processSpeechInput(text: String, speaker: String = "CALLER") {
+    fun detectLanguageHeuristic(text: String): Pair<String, Boolean> {
+        val hasTamil = text.any { it in '\u0B80'..'\u0BFF' }
+        val hasHindi = text.any { it in '\u0900'..'\u097F' }
+        val hasTelugu = text.any { it in '\u0C00'..'\u0C7F' }
+        val hasKannada = text.any { it in '\u0C80'..'\u0CFF' }
+        val hasMalayalam = text.any { it in '\u0D00'..'\u0D7F' }
+        val hasBengali = text.any { it in '\u0980'..'\u09FF' }
+        val hasGujarati = text.any { it in '\u0A80'..'\u0AFF' }
+        val hasPunjabi = text.any { it in '\u0A00'..'\u0A7F' }
+        val hasOdia = text.any { it in '\u0B00'..'\u0B7F' }
+        val hasLatin = text.any { it in 'a'..'z' || it in 'A'..'Z' }
+
+        val lower = text.lowercase()
+        val isTanglish = hasLatin && (lower.contains("unga") || lower.contains("pannunga") || lower.contains("aayiduchu") || lower.contains("kaasu"))
+        val isHinglish = hasLatin && (lower.contains("aapka") || lower.contains("kijiye") || lower.contains("ho gaya") || lower.contains("paisa"))
+
+        return when {
+            isTanglish -> Pair("Tamil (Tanglish)", true)
+            isHinglish -> Pair("Hindi (Hinglish)", true)
+            hasTamil -> Pair("Tamil", hasLatin)
+            hasHindi -> Pair("Hindi", hasLatin)
+            hasTelugu -> Pair("Telugu", hasLatin)
+            hasKannada -> Pair("Kannada", hasLatin)
+            hasMalayalam -> Pair("Malayalam", hasLatin)
+            hasBengali -> Pair("Bengali", hasLatin)
+            hasGujarati -> Pair("Gujarati", hasLatin)
+            hasPunjabi -> Pair("Punjabi", hasLatin)
+            hasOdia -> Pair("Odia", hasLatin)
+            else -> Pair("English", false)
+        }
+    }
+
+    fun processSpeechInput(
+        text: String,
+        speaker: String = "CALLER",
+        customLang: String? = null,
+        confidence: Float = 0.89f,
+        asrStatus: String = "ASR_OK"
+    ) {
         if (text.isBlank() || isProtectionPaused) return
+        val (detectedLang, isCodeSwitch) = detectLanguageHeuristic(text)
+        val finalLang = customLang ?: detectedLang
+        currentAsrTranscript = text.trim()
+        currentAsrLanguage = finalLang
+        currentAsrConfidence = confidence
+        currentAsrStatus = asrStatus
+        currentAsrCodeSwitch = isCodeSwitch
+
         val timestamp = System.currentTimeMillis()
         val event = TranscriptEvent(
             id = UUID.randomUUID().toString(),
             sessionId = room.roomId,
             timestamp = timestamp,
             speaker = speaker,
-            text = text.trim()
+            text = text.trim(),
+            confidence = confidence,
+            language = finalLang
         )
         transcriptEvents = transcriptEvents + event
 
@@ -150,6 +208,13 @@ fun ProtectedRoomScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = { showAsrValidationHud = !showAsrValidationHud }) {
+                        Icon(
+                            Icons.Default.Info,
+                            contentDescription = "Toggle ASR HUD",
+                            tint = if (showAsrValidationHud) TealPrimary else Color.Gray
+                        )
+                    }
                     IconButton(onClick = { showInviteDialog = true }) {
                         Icon(Icons.Default.PersonAdd, contentDescription = "Invite")
                     }
@@ -254,6 +319,84 @@ fun ProtectedRoomScreen(
                 }
             }
 
+            // Step 6: Mobile ASR Validation HUD
+            if (showAsrValidationHud) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A))
+                ) {
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                "ASR VALIDATION HUD",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = TealPrimary
+                            )
+                            Surface(
+                                shape = RoundedCornerShape(4.dp),
+                                color = if (currentAsrStatus == "ASR_OK") Color(0xFF2E7D32) else Color(0xFFD32F2F)
+                            ) {
+                                Text(
+                                    currentAsrStatus,
+                                    fontSize = 9.sp,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text("LANGUAGE", fontSize = 9.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
+                                Text(currentAsrLanguage, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                            }
+                            Column {
+                                Text("CONFIDENCE", fontSize = 9.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
+                                Text("${(currentAsrConfidence * 100).toInt()}%", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                            }
+                            Column {
+                                Text("CODE SWITCH", fontSize = 9.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
+                                Text(if (currentAsrCodeSwitch) "YES" else "NO", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if (currentAsrCodeSwitch) Color(0xFFF57C00) else Color.White)
+                            }
+                            Column {
+                                Text("RISK STATUS", fontSize = 9.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
+                                Text(riskLevel.label, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = riskColor)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text("TRANSCRIPT", fontSize = 9.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
+                        Text(
+                            "\"$currentAsrTranscript\"",
+                            fontSize = 12.sp,
+                            color = Color(0xFFE2E8F0),
+                            maxLines = 2
+                        )
+                        if (detectedTactics.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text("RISK REASONS", fontSize = 9.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
+                            Text(
+                                detectedTactics.takeLast(2).joinToString("; ") { "${it.tactic.displayName}: \"${it.evidenceText}\"" },
+                                fontSize = 11.sp,
+                                color = Color(0xFFFCA5A5),
+                                maxLines = 2
+                            )
+                        }
+                    }
+                }
+            }
+
             // Live Transcript Feed
             Text(
                 "LIVE CONVERSATION TRANSCRIPT",
@@ -309,24 +452,77 @@ fun ProtectedRoomScreen(
                 }
             }
 
-            // Quick Speech Test Chips for Instant Live Scenario Testing
+            // Multilingual Test Matrix Presets (Step 8, 9, 12, 13, 14)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
                     .padding(horizontal = 12.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 SuggestionChip(
-                    onClick = { processSpeechInput("This is the Delhi Police Cyber Cell. You are under digital arrest.") },
-                    label = { Text("Simulate Police", fontSize = 10.sp) }
+                    onClick = { processSpeechInput("Your bank account has been blocked. Please transfer the money immediately.", customLang = "English", confidence = 0.95f) },
+                    label = { Text("English", fontSize = 10.sp) }
                 )
                 SuggestionChip(
-                    onClick = { processSpeechInput("You must transfer fifty thousand rupees immediately or face physical arrest.") },
-                    label = { Text("Simulate Payment", fontSize = 10.sp) }
+                    onClick = { processSpeechInput("உங்கள் வங்கி கணக்கு முடக்கப்பட்டுள்ளது. உடனே பணத்தை மாற்ற வேண்டும்.", customLang = "Tamil", confidence = 0.89f) },
+                    label = { Text("Tamil", fontSize = 10.sp) }
                 )
                 SuggestionChip(
-                    onClick = { processSpeechInput("Tell me the OTP right now to avoid account freeze.") },
-                    label = { Text("Simulate OTP", fontSize = 10.sp) }
+                    onClick = { processSpeechInput("आपका बैंक खाता बंद कर दिया गया है। तुरंत पैसे ट्रांसफर कीजिए।", customLang = "Hindi", confidence = 0.91f) },
+                    label = { Text("Hindi", fontSize = 10.sp) }
+                )
+                SuggestionChip(
+                    onClick = { processSpeechInput("మీ బ్యాంక్ ఖాతా బ్లాక్ చేయబడింది. వెంటనే డబ్బును బదిలీ చేయండి.", customLang = "Telugu", confidence = 0.87f) },
+                    label = { Text("Telugu", fontSize = 10.sp) }
+                )
+                SuggestionChip(
+                    onClick = { processSpeechInput("ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಖಾತೆಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ. ತಕ್ಷಣವೇ ಹಣವನ್ನು ವರ್ಗಾಯಿಸಿ.", customLang = "Kannada", confidence = 0.86f) },
+                    label = { Text("Kannada", fontSize = 10.sp) }
+                )
+                SuggestionChip(
+                    onClick = { processSpeechInput("നിങ്ങളുടെ ബാങ്ക് അക്കൗണ്ട് ബ്ലോക്ക് ചെയ്തു. ഉടൻ പണം മാറ്റുക.", customLang = "Malayalam", confidence = 0.88f) },
+                    label = { Text("Malayalam", fontSize = 10.sp) }
+                )
+                SuggestionChip(
+                    onClick = { processSpeechInput("আপনার ব্যাঙ্ক অ্যাকাউন্ট ব্লক করা হয়েছে। অবিলম্বে টাকা স্থানান্তর করুন।", customLang = "Bengali", confidence = 0.85f) },
+                    label = { Text("Bengali", fontSize = 10.sp) }
+                )
+                SuggestionChip(
+                    onClick = { processSpeechInput("तुमचे बँक खाते ब्लॉक केले आहे. त्वरित पैसे ट्रान्सफर करा.", customLang = "Marathi", confidence = 0.88f) },
+                    label = { Text("Marathi", fontSize = 10.sp) }
+                )
+                SuggestionChip(
+                    onClick = { processSpeechInput("તમારું બેંક ખાતું બ્લોક કરી દેવામાં આવ્યું છે. તરત જ પૈસા ટ્રાન્સફર કરો.", customLang = "Gujarati", confidence = 0.84f) },
+                    label = { Text("Gujarati", fontSize = 10.sp) }
+                )
+                SuggestionChip(
+                    onClick = { processSpeechInput("ਤੁਹਾਡਾ ਬੈਂਕ ਖਾਤਾ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਤੁਰੰਤ ਪੈਸੇ ਟ੍ਰਾਂਸਫਰ ਕਰੋ।", customLang = "Punjabi", confidence = 0.83f) },
+                    label = { Text("Punjabi", fontSize = 10.sp) }
+                )
+                SuggestionChip(
+                    onClick = { processSpeechInput("ଆପଣଙ୍କର ବ୍ୟାଙ୍କ ଖାତା ବନ୍ଦ ହୋଇଯାଇଛି। ତୁରନ୍ତ ଟଙ୍କା ସ୍ଥାନାନ୍ତର କରନ୍ତୁ।", customLang = "Odia", confidence = 0.81f) },
+                    label = { Text("Odia", fontSize = 10.sp) }
+                )
+                SuggestionChip(
+                    onClick = { processSpeechInput("Sir unga bank account block aayiduchu. Immediate ah amount transfer pannunga.", customLang = "Tamil (Tanglish)", confidence = 0.90f) },
+                    label = { Text("Tanglish (CS)", fontSize = 10.sp) }
+                )
+                SuggestionChip(
+                    onClick = { processSpeechInput("Aapka bank account block ho gaya hai. Turant amount transfer kijiye.", customLang = "Hindi (Hinglish)", confidence = 0.92f) },
+                    label = { Text("Hinglish (CS)", fontSize = 10.sp) }
+                )
+                SuggestionChip(
+                    onClick = { processSpeechInput("My bank asked me to visit the branch tomorrow.", customLang = "English", confidence = 0.98f) },
+                    label = { Text("Benign 1", fontSize = 10.sp) }
+                )
+                SuggestionChip(
+                    onClick = { processSpeechInput("I watched a documentary about digital arrest scams.", customLang = "English", confidence = 0.97f) },
+                    label = { Text("Benign 2", fontSize = 10.sp) }
+                )
+                SuggestionChip(
+                    onClick = { processSpeechInput("Move the funds before the deadline.", customLang = "English", confidence = 0.94f) },
+                    label = { Text("Paraphrase Scam", fontSize = 10.sp) }
                 )
             }
 

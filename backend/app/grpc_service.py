@@ -70,10 +70,19 @@ class ProtectionServiceImpl(pb2_grpc.ProtectionServiceServicer):
 
             if payload_type == "audio_pcm16":
                 # Raw audio chunk received: decode with Multilingual Indic ASR
-                asr_result = asr_engine.transcribe_audio(frame.audio_pcm16, language_hint=lang_code)
+                asr_result = asr_engine.transcribe_audio(
+                    frame.audio_pcm16,
+                    language_hint=lang_code,
+                    session_id=session_id
+                )
                 transcript_text = asr_result.normalized_text
                 lang_code = asr_result.detected_language
                 session_ctx.total_audio_duration_seconds += asr_result.duration_seconds
+                if asr_result.status in ("ASR_ERROR", "ASR_UNAVAILABLE"):
+                    logger.warning(
+                        f"Session {session_id} ASR status: {asr_result.status} - "
+                        f"{asr_result.error_message or 'Speech decoding unavailable'}"
+                    )
             elif payload_type == "transcript_snippet":
                 transcript_text = frame.transcript_snippet.strip()
             elif payload_type == "video_frame_jpeg":

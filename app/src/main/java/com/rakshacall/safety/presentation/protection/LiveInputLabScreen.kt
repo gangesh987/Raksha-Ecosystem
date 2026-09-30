@@ -367,6 +367,24 @@ fun LiveInputLabScreen(
                     DemoPhraseChip("5. OTP Pressure: \"Give me your OTP right now to stop arrest warrant.\"") {
                         processInputText("Give me your OTP right now to stop arrest warrant.")
                     }
+                    DemoPhraseChip("6. Tamil Scam: \"உங்கள் வங்கி கணக்கு முடக்கப்பட்டுள்ளது. உடனே பணத்தை மாற்ற வேண்டும்.\"") {
+                        processInputText("உங்கள் வங்கி கணக்கு முடக்கப்பட்டுள்ளது. உடனே பணத்தை மாற்ற வேண்டும்.")
+                    }
+                    DemoPhraseChip("7. Hindi Scam: \"आपका बैंक खाता बंद कर दिया गया है। तुरंत पैसे ट्रांसफर कीजिए।\"") {
+                        processInputText("आपका बैंक खाता बंद कर दिया गया है। तुरंत पैसे ट्रांसफर कीजिए।")
+                    }
+                    DemoPhraseChip("8. Tanglish (Code-Switch): \"Sir unga bank account block aayiduchu. Immediate ah amount transfer pannunga.\"") {
+                        processInputText("Sir unga bank account block aayiduchu. Immediate ah amount transfer pannunga.")
+                    }
+                    DemoPhraseChip("9. Hinglish (Code-Switch): \"Aapka bank account block ho gaya hai. Turant amount transfer kijiye.\"") {
+                        processInputText("Aapka bank account block ho gaya hai. Turant amount transfer kijiye.")
+                    }
+                    DemoPhraseChip("10. Benign (False Positive Test): \"My bank asked me to visit the branch tomorrow.\"") {
+                        processInputText("My bank asked me to visit the branch tomorrow.")
+                    }
+                    DemoPhraseChip("11. Paraphrased Scam: \"Move the funds before the deadline.\"") {
+                        processInputText("Move the funds before the deadline.")
+                    }
                 }
             }
 
