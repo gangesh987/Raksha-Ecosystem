@@ -15,6 +15,14 @@ import com.rakshacall.safety.intelligence.visual.VideoFrameSample
 import com.rakshacall.safety.intelligence.visual.VisualThreatDetector
 import com.rakshacall.safety.intelligence.visual.VisualThreatType
 import com.rakshacall.safety.webrtc.WebRtcConfig
+import com.rakshacall.safety.domain.model.RiskSignal
+import com.rakshacall.safety.intelligence.ProtectionDecision
+import com.rakshacall.safety.protection.EvidenceStrength
+import com.rakshacall.safety.protection.ProtectionController
+import com.rakshacall.safety.protection.ProtectionMode
+import com.rakshacall.safety.protection.ProtectionPolicy
+import com.rakshacall.safety.protection.ProtectionState
+import com.rakshacall.safety.protection.UIMode
 import org.junit.Assert.*
 import org.junit.Test
 import java.util.UUID
@@ -219,5 +227,134 @@ class RealtimeMultilingualAIPlatformTest {
         assertTrue(d4.safetyBrakeTriggered)
         assertTrue(d4.explanations.isNotEmpty())
         assertTrue(d4.explanations.any { it.contains("OTP/PIN") || it.contains("money transfer") })
+    }
+
+    @Test
+    fun testProtectionPolicyDefaultsAndCustomization() {
+        val controller = ProtectionController()
+        val defaultPolicy = controller.policy.value
+        assertEquals(ProtectionMode.STRONG_PROTECTION, defaultPolicy.mode)
+        assertFalse(defaultPolicy.autoProtectEnabled)
+        assertEquals(5, defaultPolicy.countdownSeconds)
+        assertEquals(UIMode.ADVANCED, defaultPolicy.uiMode)
+
+        // Customization
+        controller.setUIMode(UIMode.SIMPLE_ELDERLY)
+        assertEquals(UIMode.SIMPLE_ELDERLY, controller.policy.value.uiMode)
+
+        // Attempting AUTO_PROTECT without explicit user consent
+        controller.setProtectionMode(ProtectionMode.AUTO_PROTECT, autoProtectConsent = false)
+        assertEquals(ProtectionMode.AUTO_PROTECT, controller.policy.value.mode)
+        assertFalse(controller.policy.value.autoProtectEnabled)
+
+        // Enabling with explicit consent
+        controller.setProtectionMode(ProtectionMode.AUTO_PROTECT, autoProtectConsent = true)
+        assertTrue(controller.policy.value.autoProtectEnabled)
+    }
+
+    @Test
+    fun testEvidenceStrengthCalculationTiers() {
+        val controller = ProtectionController()
+        val sessId = "strength-test"
+
+        // Tier 1: WEAK - empty tactics
+        val decisionWeak = ProtectionDecision(
+            sessionId = sessId,
+            riskScore = 10,
+            riskLevel = RiskLevel.LOW,
+            confidence = 0.5f,
+            currentStage = ScamStage.CONTACT,
+            manipulationVelocity = 0.1f,
+            detectedLanguages = listOf("en"),
+            primaryLanguage = "en",
+            isCodeSwitching = false,
+            detectedTactics = emptyList(),
+            safetyBrakeTriggered = false,
+            explanations = emptyList()
+        )
+        assertEquals(EvidenceStrength.WEAK, controller.calculateEvidenceStrength(decisionWeak))
+
+        // Tier 2: MODERATE - 1 tactic
+        val decisionModerate = decisionWeak.copy(
+            detectedTactics = listOf(
+                RiskSignal("1", tactic = ScamTactic.AUTHORITY_IMPERSONATION, confidence = 0.8f, riskContribution = 20, evidenceText = "police", sessionId = sessId)
+            )
+        )
+        assertEquals(EvidenceStrength.MODERATE, controller.calculateEvidenceStrength(decisionModerate))
+
+        // Tier 3: STRONG - 2 independent categories
+        val decisionStrong = decisionWeak.copy(
+            detectedTactics = listOf(
+                RiskSignal("1", tactic = ScamTactic.AUTHORITY_IMPERSONATION, confidence = 0.8f, riskContribution = 20, evidenceText = "police", sessionId = sessId),
+                RiskSignal("2", tactic = ScamTactic.ISOLATION, confidence = 0.85f, riskContribution = 25, evidenceText = "do not tell", sessionId = sessId)
+            )
+        )
+        assertEquals(EvidenceStrength.STRONG, controller.calculateEvidenceStrength(decisionStrong))
+
+        // Tier 4: VERY_STRONG - 3+ categories and confidence >= 0.85f
+        val decisionVeryStrong = decisionWeak.copy(
+            confidence = 0.90f,
+            detectedTactics = listOf(
+                RiskSignal("1", tactic = ScamTactic.AUTHORITY_IMPERSONATION, confidence = 0.9f, riskContribution = 20, evidenceText = "police", sessionId = sessId),
+                RiskSignal("2", tactic = ScamTactic.ISOLATION, confidence = 0.9f, riskContribution = 25, evidenceText = "do not tell", sessionId = sessId),
+                RiskSignal("3", tactic = ScamTactic.PAYMENT_DEMAND, confidence = 0.95f, riskContribution = 35, evidenceText = "transfer now", sessionId = sessId)
+            )
+        )
+        assertEquals(EvidenceStrength.VERY_STRONG, controller.calculateEvidenceStrength(decisionVeryStrong))
+    }
+
+    @Test
+    fun testForceCutSafetyConstraints() {
+        var autoTerminated = false
+        val controller = ProtectionController(
+            initialPolicy = ProtectionPolicy(
+                mode = ProtectionMode.STRONG_PROTECTION,
+                autoProtectEnabled = false
+            ),
+            onAutoTerminate = { autoTerminated = true }
+        )
+
+        val criticalDecision = ProtectionDecision(
+            sessionId = "sess-crit",
+            riskScore = 95,
+            riskLevel = RiskLevel.CRITICAL,
+            confidence = 0.95f,
+            currentStage = ScamStage.PAYMENT_CREDENTIAL,
+            manipulationVelocity = 0.9f,
+            detectedLanguages = listOf("en"),
+            primaryLanguage = "en",
+            isCodeSwitching = false,
+            detectedTactics = listOf(
+                RiskSignal("1", tactic = ScamTactic.AUTHORITY_IMPERSONATION, confidence = 0.9f, riskContribution = 20, evidenceText = "cbi", sessionId = "sess-crit"),
+                RiskSignal("2", tactic = ScamTactic.ISOLATION, confidence = 0.9f, riskContribution = 25, evidenceText = "don't speak to anyone", sessionId = "sess-crit"),
+                RiskSignal("3", tactic = ScamTactic.CREDENTIAL_PRESSURE, confidence = 0.95f, riskContribution = 40, evidenceText = "send otp", sessionId = "sess-crit")
+            ),
+            safetyBrakeTriggered = true,
+            explanations = listOf("Critical credential pressure")
+        )
+
+        // In STRONG_PROTECTION mode, auto-protect countdown MUST NOT trigger
+        controller.evaluate(criticalDecision)
+        assertEquals(ProtectionState.CRITICAL, controller.state.value)
+        assertFalse(autoTerminated)
+
+        // Now enable AUTO_PROTECT with explicit user consent
+        controller.setProtectionMode(ProtectionMode.AUTO_PROTECT, autoProtectConsent = true)
+        controller.evaluate(criticalDecision)
+        assertEquals(ProtectionState.PROTECTION_PENDING, controller.state.value)
+
+        // User overrides / cancels the countdown
+        controller.cancelCountdownAndKeepCall()
+        assertEquals(ProtectionState.USER_OVERRIDE, controller.state.value)
+        assertFalse(autoTerminated)
+
+        // Subsequent evaluations must respect USER_OVERRIDE and not trigger countdown again
+        controller.evaluate(criticalDecision)
+        assertEquals(ProtectionState.USER_OVERRIDE, controller.state.value)
+        assertFalse(autoTerminated)
+
+        // User can manually end the call
+        controller.endCallNow()
+        assertEquals(ProtectionState.CALL_ENDED, controller.state.value)
     }
 }

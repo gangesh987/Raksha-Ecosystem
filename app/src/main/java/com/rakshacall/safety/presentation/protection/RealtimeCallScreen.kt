@@ -35,6 +35,7 @@ import com.rakshacall.safety.intelligence.SpeechRecognitionManager
 import com.rakshacall.safety.intelligence.visual.FrameSampler
 import com.rakshacall.safety.intelligence.visual.VisualThreatDetector
 import com.rakshacall.safety.presentation.theme.*
+import com.rakshacall.safety.protection.*
 import com.rakshacall.safety.webrtc.AudioManagerHelper
 import com.rakshacall.safety.webrtc.WebRtcConfig
 import com.rakshacall.safety.webrtc.WebRtcEngine
@@ -66,7 +67,33 @@ fun RealtimeCallScreen(
     val evidenceVault = remember { EvidenceVault() }
     val visualThreatDetector = remember { VisualThreatDetector() }
 
-    // 2. Call & Media States
+    // 2. Protection Controller (State Machine & Policy)
+    val protectionController = remember {
+        ProtectionController(
+            initialPolicy = ProtectionPolicy(
+                mode = ProtectionMode.STRONG_PROTECTION,
+                autoProtectEnabled = false,
+                countdownSeconds = 5,
+                uiMode = UIMode.ADVANCED
+            ),
+            onAutoTerminate = {
+                evidenceVault.recordEvent(
+                    sessionId = callId,
+                    eventType = "AUTO_PROTECT_TERMINATED",
+                    source = EvidenceSource.SYSTEM,
+                    description = "Automated call protection activated. High-confidence coercive interaction terminated to safeguard user."
+                )
+                onEndCall()
+            }
+        )
+    }
+
+    val protectionState by protectionController.state.collectAsState()
+    val countdownSeconds by protectionController.countdownSecondsRemaining.collectAsState()
+    val evidenceStrength by protectionController.evidenceStrength.collectAsState()
+    val policy by protectionController.policy.collectAsState()
+
+    // 3. Call & Media States
     var remoteVideoTrack by remember { mutableStateOf<VideoTrack?>(null) }
     var localVideoTrack by remember { mutableStateOf<VideoTrack?>(null) }
     var webRtcState by remember { mutableStateOf<WebRtcState>(WebRtcState.New) }
@@ -76,14 +103,17 @@ fun RealtimeCallScreen(
     var isSpeakerphoneOn by remember { mutableStateOf(true) }
     var callDurationSeconds by remember { mutableLongStateOf(0L) }
 
-    // 3. AI Safety States
+    // 4. AI Safety States
     var latestDecision by remember { mutableStateOf<ProtectionDecision?>(null) }
     var showSafetyBrakeDialog by remember { mutableStateOf(false) }
     var isCallPaused by remember { mutableStateOf(false) }
     var showEvidenceSheet by remember { mutableStateOf(false) }
+    var showPolicyDialog by remember { mutableStateOf(false) }
+    var showDetailsDialog by remember { mutableStateOf(false) }
     var recentTranscripts by remember { mutableStateOf<List<String>>(emptyList()) }
+    var visualThreatCount by remember { mutableIntStateOf(0) }
 
-    // 4. WebRTC Engine Initialization
+    // 5. WebRTC Engine Initialization
     val webRtcEngine = remember {
         val config = WebRtcConfig()
         WebRtcEngine(
@@ -95,20 +125,19 @@ fun RealtimeCallScreen(
         )
     }
 
-    // 5. Lifecycle Management
+    // 6. Lifecycle Management
     DisposableEffect(callId) {
         audioHelper.startCallAudio(speakerphone = isSpeakerphoneOn)
         webRtcEngine.initialize()
         localVideoTrack = webRtcEngine.localVideoTrack()
 
-        // Start Speech Recognition
         speechManager.startListening()
 
         evidenceVault.recordEvent(
             sessionId = callId,
             eventType = "CALL_STARTED",
             source = EvidenceSource.SYSTEM,
-            description = "Protected call session started. WebRTC & AI safety monitoring active."
+            description = "Protected call session started. WebRTC & AI safety monitoring active. Policy: ${policy.mode}"
         )
 
         val timerJob = coroutineScope.launch {
@@ -122,6 +151,7 @@ fun RealtimeCallScreen(
             timerJob.cancel()
             speechManager.stopListening()
             aiOrchestrator.endSession(callId)
+            protectionController.reset()
             audioHelper.stopCallAudio()
             webRtcEngine.release()
 
@@ -134,7 +164,7 @@ fun RealtimeCallScreen(
         }
     }
 
-    // 6. Listen to Continuous Speech Transcripts
+    // 7. Listen to Continuous Speech Transcripts
     LaunchedEffect(speechManager) {
         speechManager.transcriptFlow.collectLatest { transcript ->
             if (isCallPaused) return@collectLatest
@@ -155,6 +185,7 @@ fun RealtimeCallScreen(
             )
 
             latestDecision = decision
+            protectionController.evaluate(decision, visualThreatCount)
 
             if (transcript.isFinal) {
                 evidenceVault.recordEvent(
@@ -170,7 +201,7 @@ fun RealtimeCallScreen(
             }
 
             // Haptic alert on Safety Brake
-            if (decision.safetyBrakeTriggered && !showSafetyBrakeDialog) {
+            if (decision.safetyBrakeTriggered && !showSafetyBrakeDialog && policy.mode != ProtectionMode.MONITOR) {
                 showSafetyBrakeDialog = true
                 try {
                     val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
@@ -180,7 +211,7 @@ fun RealtimeCallScreen(
         }
     }
 
-    // 7. Video Frame Sampling for Visual Threats
+    // 8. Video Frame Sampling for Visual Threats
     val frameSampler = remember { FrameSampler("remote_video", 1500L) }
     DisposableEffect(remoteVideoTrack) {
         remoteVideoTrack?.addSink(frameSampler)
@@ -191,6 +222,7 @@ fun RealtimeCallScreen(
         frameSampler.samples.collectLatest { sample ->
             val threat = visualThreatDetector.analyzeFrame(sample)
             if (threat != null) {
+                visualThreatCount++
                 evidenceVault.recordEvent(
                     sessionId = callId,
                     eventType = "VISUAL_THREAT_DETECTED",
@@ -198,6 +230,7 @@ fun RealtimeCallScreen(
                     riskScore = threat.riskScoreBonus,
                     description = threat.description
                 )
+                latestDecision?.let { protectionController.evaluate(it, visualThreatCount) }
             }
         }
     }
@@ -225,7 +258,6 @@ fun RealtimeCallScreen(
                 .background(Color.Black)
         ) {
             // ── VIDEO VIEWPORTS ──
-            // Remote Video Track (Full Screen)
             remoteVideoTrack?.let { track ->
                 WebRtcVideoView(
                     videoTrack = track,
@@ -249,14 +281,14 @@ fun RealtimeCallScreen(
                         fontSize = 15.sp
                     )
                     Text(
-                        "RakshaCall Real-Time Multilingual Safety Active",
+                        "RakshaCall Real-Time Call Protection Active",
                         color = TealPrimary,
                         fontSize = 12.sp
                     )
                 }
             }
 
-            // Local Video Track (PiP Tile)
+            // Local PiP Video
             localVideoTrack?.let { track ->
                 if (!isCameraOff) {
                     Box(
@@ -275,11 +307,11 @@ fun RealtimeCallScreen(
                 }
             }
 
-            // ── TOP SAFETY & RISK BANNER ──
+            // ── TOP BAR (DIAGNOSTICS & UI MODE TOGGLE) ──
             Column(
                 modifier = Modifier
                     .align(Alignment.TopStart)
-                    .fillMaxWidth(0.70f)
+                    .fillMaxWidth(0.72f)
                     .padding(16.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -290,53 +322,137 @@ fun RealtimeCallScreen(
                     ) {}
                     Spacer(modifier = Modifier.width(6.dp))
                     Text("RAKSHACALL • $callId", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                }
-                Text(
-                    "$formattedDuration • Lang: ${primaryLanguage.uppercase()} • Vel: ${"%.1f".format(velocity)}x",
-                    color = Color.LightGray,
-                    fontSize = 11.sp
-                )
 
-                Spacer(modifier = Modifier.height(6.dp))
-
-                // Risk Level Card
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = riskColor.copy(alpha = 0.9f),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Spacer(modifier = Modifier.width(8.dp))
+                    // Simple / Advanced UI Mode Toggle
+                    TextButton(
+                        onClick = {
+                            val nextMode = if (policy.uiMode == UIMode.ADVANCED) UIMode.SIMPLE_ELDERLY else UIMode.ADVANCED
+                            protectionController.setUIMode(nextMode)
+                        },
+                        colors = ButtonDefaults.textButtonColors(contentColor = TealPrimary),
+                        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 2.dp)
                     ) {
-                        Column {
-                            Text(
-                                "${riskLevel.label} ($riskScore/100)",
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 12.sp
-                            )
-                            Text(
-                                "Stage: ${stage.name}",
-                                color = Color.White.copy(alpha = 0.85f),
-                                fontSize = 10.sp
-                            )
-                        }
-                        if (latestDecision?.safetyBrakeTriggered == true) {
-                            TextButton(
-                                onClick = { showSafetyBrakeDialog = true },
-                                colors = ButtonDefaults.textButtonColors(contentColor = Color.Yellow)
-                            ) {
-                                Text("BRAKE", fontWeight = FontWeight.Black, fontSize = 11.sp)
+                        Text(if (policy.uiMode == UIMode.ADVANCED) "HUD: ADV" else "HUD: SIMPLE", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+
+                if (policy.uiMode == UIMode.ADVANCED) {
+                    Text(
+                        "$formattedDuration • Mode: ${policy.mode} • Lang: ${primaryLanguage.uppercase()} • Vel: ${"%.1f".format(velocity)}x",
+                        color = Color.LightGray,
+                        fontSize = 11.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // Advanced Risk Level Card
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = riskColor.copy(alpha = 0.9f),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text(
+                                    "${riskLevel.label} ($riskScore/100) • ${evidenceStrength.name}",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp
+                                )
+                                Text(
+                                    "Stage: ${stage.name} • State: ${protectionState.name}",
+                                    color = Color.White.copy(alpha = 0.85f),
+                                    fontSize = 10.sp
+                                )
+                            }
+                            IconButton(onClick = { showPolicyDialog = true }, modifier = Modifier.size(24.dp)) {
+                                Icon(Icons.Default.Tune, contentDescription = "Policy", tint = Color.White)
                             }
                         }
                     }
                 }
             }
 
-            // ── LIVE TRANSCRIPT ACCORDION (Bottom-Center above controls) ──
-            if (recentTranscripts.isNotEmpty()) {
+            // ── ELDERLY / SIMPLE PROTECTION MODE OVERLAY (Section 31) ──
+            if (policy.uiMode == UIMode.SIMPLE_ELDERLY && (riskLevel == RiskLevel.HIGH || riskLevel == RiskLevel.CRITICAL)) {
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = Color(0xFFB71C1C).copy(alpha = 0.95f),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(24.dp)
+                        .fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(Icons.Default.Warning, contentDescription = null, tint = Color.Yellow, modifier = Modifier.size(56.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            "⚠️ POSSIBLE SCAM",
+                            color = Color.White,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Black
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            "RakshaCall noticed several unusual requests during this call.",
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Large Emergency Buttons
+                        Button(
+                            onClick = onEndCall,
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                            modifier = Modifier.fillMaxWidth().height(56.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Icon(Icons.Default.CallEnd, contentDescription = null, tint = Color.White)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("END CALL", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Button(
+                            onClick = {
+                                evidenceVault.recordEvent(
+                                    sessionId = callId,
+                                    eventType = "TRUSTED_CONTACT_ALERTED",
+                                    source = EvidenceSource.USER_ACTION,
+                                    description = "User requested emergency trusted contact notification."
+                                )
+                                showSafetyBrakeDialog = false
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = TealPrimary),
+                            modifier = Modifier.fillMaxWidth().height(56.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Icon(Icons.Default.FamilyRestroom, contentDescription = null, tint = Color.White)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("CONTACT FAMILY", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        TextButton(onClick = { protectionController.cancelCountdownAndKeepCall() }) {
+                            Text("CONTINUE CALL", color = Color.White.copy(alpha = 0.8f), fontSize = 15.sp)
+                        }
+                    }
+                }
+            }
+
+            // ── LIVE TRANSCRIPT ACCORDION (Advanced Mode) ──
+            if (policy.uiMode == UIMode.ADVANCED && recentTranscripts.isNotEmpty()) {
                 Surface(
                     shape = RoundedCornerShape(12.dp),
                     color = Color.Black.copy(alpha = 0.65f),
@@ -363,7 +479,7 @@ fun RealtimeCallScreen(
                 }
             }
 
-            // ── CALL CONTROLS BAR (Bottom) ──
+            // ── CALL CONTROLS BAR ──
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -439,8 +555,53 @@ fun RealtimeCallScreen(
             }
         }
 
-        // ── SAFETY BRAKE INTERACTIVE MODAL (Sections 22, 28, 29) ──
-        if (showSafetyBrakeDialog) {
+        // ── FORCE-CUT PROTECTION COUNTDOWN (Section 4 & 21) ──
+        if (protectionState == ProtectionState.PROTECTION_PENDING) {
+            AlertDialog(
+                onDismissRequest = { /* User must explicitly act */ },
+                icon = { Icon(Icons.Default.Shield, contentDescription = null, tint = Color.Red, modifier = Modifier.size(44.dp)) },
+                title = { Text("⚡ AUTOMATIC PROTECTION ACTIVATING", color = Color.Red, fontWeight = FontWeight.Black) },
+                text = {
+                    Column {
+                        Text(
+                            "High-risk interaction detected ($riskScore/100 • $evidenceStrength evidence).\nCoercive credential or financial demand in progress.",
+                            fontSize = 14.sp
+                        )
+                        Spacer(modifier = Modifier.height(14.dp))
+                        Text(
+                            "Call protection will activate in $countdownSeconds seconds.",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFE53935)
+                        )
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        onClick = { protectionController.cancelCountdownAndKeepCall() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF455A64))
+                    ) {
+                        Text("KEEP CALL")
+                    }
+                },
+                dismissButton = {
+                    Row {
+                        TextButton(onClick = { showDetailsDialog = true }) {
+                            Text("VIEW DETAILS")
+                        }
+                        Button(
+                            onClick = onEndCall,
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                        ) {
+                            Text("END CALL NOW")
+                        }
+                    }
+                }
+            )
+        }
+
+        // ── SAFETY BRAKE INTERACTIVE MODAL (Sections 20, 21, 22) ──
+        if (showSafetyBrakeDialog && protectionState != ProtectionState.PROTECTION_PENDING) {
             AlertDialog(
                 onDismissRequest = { showSafetyBrakeDialog = false },
                 icon = { Icon(Icons.Default.Shield, contentDescription = null, tint = Color(0xFFD32F2F), modifier = Modifier.size(36.dp)) },
@@ -453,9 +614,12 @@ fun RealtimeCallScreen(
                             fontWeight = FontWeight.Medium
                         )
                         Spacer(modifier = Modifier.height(10.dp))
-                        Text("DETECTED REASONS:", fontWeight = FontWeight.Bold, fontSize = 11.sp, color = Color.Gray)
+                        Text("WHY WAS THIS FLAGGED?", fontWeight = FontWeight.Bold, fontSize = 11.sp, color = Color.Gray)
                         latestDecision?.explanations?.forEach { reason ->
                             Text("• $reason", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface)
+                        }
+                        latestDecision?.confidence?.let {
+                            Text("Confidence: ${"%.0f".format(it * 100)}%", fontSize = 11.sp, color = Color.Gray, modifier = Modifier.padding(top = 4.dp))
                         }
                     }
                 },
@@ -467,7 +631,7 @@ fun RealtimeCallScreen(
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = TealPrimary)
                     ) {
-                        Text(if (isCallPaused) "RESUME PROTECTION" else "PAUSE & REFLECT")
+                        Text(if (isCallPaused) "RESUME CALL" else "PAUSE & REFLECT")
                     }
                 },
                 dismissButton = {
@@ -476,15 +640,84 @@ fun RealtimeCallScreen(
                             showSafetyBrakeDialog = false
                             onOpenVerificationCoach()
                         }) {
-                            Text("VERIFY CALLER")
+                            Text("VERIFY")
+                        }
+                        TextButton(onClick = {
+                            showSafetyBrakeDialog = false
+                            protectionController.dismissWarning()
+                        }) {
+                            Text("DISMISS")
                         }
                         TextButton(onClick = {
                             showSafetyBrakeDialog = false
                             onEndCall()
                         }) {
-                            Text("DISCONNECT", color = Color(0xFFD32F2F))
+                            Text("END CALL", color = Color(0xFFD32F2F))
                         }
                     }
+                }
+            )
+        }
+
+        // ── DETAILS / EXPLAINABILITY DIALOG (Section 20) ──
+        if (showDetailsDialog) {
+            AlertDialog(
+                onDismissRequest = { showDetailsDialog = false },
+                title = { Text("Incident Analysis Details", fontWeight = FontWeight.Bold) },
+                text = {
+                    Column {
+                        Text("Overall Risk Score: $riskScore/100 (${riskLevel.label})", fontWeight = FontWeight.Bold)
+                        Text("Evidence Strength: ${evidenceStrength.name}")
+                        Text("Conversation Stage: ${stage.name}")
+                        Text("Escalation Velocity: ${"%.1f".format(velocity)}x")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("Detailed Evidence Factors:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        latestDecision?.explanations?.forEach { Text("• $it", fontSize = 12.sp) }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showDetailsDialog = false }) { Text("OK") }
+                }
+            )
+        }
+
+        // ── POLICY CONFIGURATION DIALOG (Section 2 & 4) ──
+        if (showPolicyDialog) {
+            AlertDialog(
+                onDismissRequest = { showPolicyDialog = false },
+                title = { Text("Configure Protection Policy", fontWeight = FontWeight.Bold) },
+                text = {
+                    Column {
+                        Text("Active Protection Mode:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        ProtectionMode.values().forEach { mode ->
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                RadioButton(
+                                    selected = policy.mode == mode,
+                                    onClick = {
+                                        protectionController.setProtectionMode(
+                                            mode,
+                                            autoProtectConsent = (mode == ProtectionMode.AUTO_PROTECT)
+                                        )
+                                    }
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Column {
+                                    Text(mode.name, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                                    val desc = when (mode) {
+                                        ProtectionMode.MONITOR -> "Analyze & display risk without interrupting call."
+                                        ProtectionMode.WARN -> "Display warning banners and provide manual actions."
+                                        ProtectionMode.STRONG_PROTECTION -> "Persistent warning on high risk with verification pause."
+                                        ProtectionMode.AUTO_PROTECT -> "5-second countdown to termination on critical multi-signal coercion."
+                                    }
+                                    Text(desc, fontSize = 11.sp, color = Color.Gray)
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(6.dp))
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showPolicyDialog = false }) { Text("SAVE") }
                 }
             )
         }
@@ -513,7 +746,7 @@ fun RealtimeCallScreen(
                                 Text("${ev.eventType} • ${ev.source}", fontWeight = FontWeight.Bold, fontSize = 11.sp, color = TealPrimary)
                                 Text(ev.description, fontSize = 12.sp)
                                 Text("Hash: ${ev.hash.take(16)}…", fontSize = 9.sp, color = Color.Gray)
-                                Divider(modifier = Modifier.padding(top = 4.dp))
+                                HorizontalDivider(modifier = Modifier.padding(top = 4.dp))
                             }
                         }
                     }
