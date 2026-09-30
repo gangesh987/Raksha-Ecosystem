@@ -309,7 +309,7 @@ fun RakshaCallNavHost() {
                 }
 
                 is Screen.VideoCallSimulation -> {
-                    VideoCallSimulationScreen(
+                    ProtectedRoomScreen(
                         onNavigateBack = { currentScreen = Screen.Home },
                         onOpenVerificationCoach = { currentScreen = Screen.VerificationCoach }
                     )

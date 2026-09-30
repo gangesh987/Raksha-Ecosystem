@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">रक्षाकॉल</string>
+    <string name="call_title">सुरक्षित वेबआरटीसी कॉल</string>
+    <string name="live_protection">लाइव एआई सुरक्षा गार्ड</string>
+    <string name="safe_risk">सुरक्षित</string>
+    <string name="low_risk">कम जोखिम</string>
+    <string name="medium_risk">मध्यम जोखिम</string>
+    <string name="high_risk">उच्च जोखिम</string>
+    <string name="critical_risk">गंभीर खतरा</string>
+    <string name="safety_brake_title">रक्षा सेफ्टी ब्रेक</string>
+    <string name="safety_brake_desc">धोखाधड़ी और दबाव की पहचान हुई। ओटीपी, पिन साझा न करें और पैसे ट्रांसफर न करें।</string>
+    <string name="btn_pause">रोकें और सोचें</string>
+    <string name="btn_resume">सुरक्षा जारी रखें</string>
+    <string name="btn_verify">कॉलर सत्यापित करें</string>
+    <string name="btn_end_call">कॉल समाप्त करें</string>
+    <string name="btn_contact_family">भरोसेमंद संपर्क को सूचित करें</string>
+    <string name="evidence_vault">सबूत वॉल्ट</string>
+</resources>

@@ -14,6 +14,7 @@ from .intelligence.models import SignalBatch, Signal
 from .intelligence.conversation.analyzer import ConversationAnalyzer
 from .intelligence.visual.analyzer import VisualAnalyzer
 from .intelligence.fusion.analyzer import fuse
+from .intelligence.pipeline import realtime_pipeline
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -269,13 +270,56 @@ async def protection_socket(ws: WebSocket, session_id: str, authorization: str |
     if not auth_ok(auth_val) or session_id not in protection_sessions:
         await ws.close(code=1008); return
     protection_sockets.setdefault(session_id, set()).add(ws)
+
+    # Initial AI status handshake
+    await ws.send_json({
+        "version": 1,
+        "type": "ai_status",
+        "status": "connected",
+        "model": "RakshaCall-Multilingual-Semantic-v2",
+        "mode": "HYBRID",
+        "session_id": session_id,
+        "timestamp": int(time.time() * 1000)
+    })
+
     try:
         while True:
             message = await ws.receive_json()
-            if not isinstance(message, dict) or message.get("version") != 1: continue
-            if message.get("type") == "ping":
-                await ws.send_json({"version":1,"type":"pong","event_id":str(uuid.uuid4()),"session_id":session_id,"timestamp":int(time.time()*1000),"payload":{}})
-            elif message.get("type") in {"protection_started","protection_stopped","call_started","call_connected","call_ended","participant_joined","participant_left","microphone_changed","camera_changed","connection_quality","visual_signal","speech_signal","safety_action"}:
+            if not isinstance(message, dict): continue
+            typ = message.get("type")
+
+            if typ == "ping":
+                await ws.send_json({"version": 1, "type": "pong", "event_id": str(uuid.uuid4()), "session_id": session_id, "timestamp": int(time.time() * 1000), "payload": {}})
+
+            elif typ in {"text", "transcript"}:
+                text = str(message.get("text") or message.get("transcript") or "").strip()
+                if text:
+                    is_final = bool(message.get("is_final", True))
+                    analysis_ts = int(message.get("timestamp") or time.time() * 1000)
+                    
+                    # Run deep real-time multilingual intelligence pipeline
+                    contract = realtime_pipeline.analyze(
+                        transcript=text,
+                        session_id=session_id,
+                        timestamp=analysis_ts,
+                        is_final=is_final
+                    )
+
+                    # Build unified risk update event (compatible with Section 26 & Android RealtimeRiskUpdate)
+                    event = {
+                        "version": 1,
+                        "type": "risk_update",
+                        "event_id": str(uuid.uuid4()),
+                        "session_id": session_id,
+                        "call_id": protection_sessions[session_id].get("call_id", f"RCV-{session_id}"),
+                        "timestamp": analysis_ts,
+                        "payload": contract,
+                        # Top-level Section 26 contract keys
+                        **contract
+                    }
+                    await _broadcast_protection(session_id, event)
+
+            elif typ in {"protection_started", "protection_stopped", "call_started", "call_connected", "call_ended", "participant_joined", "participant_left", "microphone_changed", "camera_changed", "connection_quality", "visual_signal", "speech_signal", "safety_action"}:
                 await _broadcast_protection(session_id, message)
     except WebSocketDisconnect:
         pass
@@ -544,22 +588,25 @@ async def analyze_rakshacall_session(session_id: str, payload: dict):
     ts = int(time.time() * 1000)
 
     if sid not in conversation_analyzers:
-        conversation_analyzers[sid] = ConversationAnalyzer()
+        conversation_analyzers[sid] = ConversationAnalyzer(session_id=sid)
 
     signals = conversation_analyzers[sid].analyze(text, ts, "transcript")
     protection_signals.setdefault(sid, []).extend(signals)
     level, score, reasons, confidence = fuse(protection_signals[sid][-24:])
     stage = conversation_analyzers[sid].stage()
+    last_res = conversation_analyzers[sid].get_last_result()
 
     analysis_result = {
+        **last_res,
         "scam_probability": round(min((score or 0) / 100.0, 0.99), 2),
-        "top_tactic": reasons[0] if reasons else "None",
+        "top_tactic": last_res.get("top_tactic") or (reasons[0] if reasons else "None"),
         "stage": stage,
-        "manipulation_velocity": round((score or 0) / 120.0, 2),
+        "manipulation_velocity": round(last_res.get("manipulationVelocity", (score or 0) / 120.0), 2),
         "risk_score": float(score or 0),
         "risk_level": level,
         "safety_brake_triggered": bool(score and score >= 75),
-        "confidence": confidence
+        "confidence": confidence,
+        "reasons": reasons
     }
     return analysis_result
 

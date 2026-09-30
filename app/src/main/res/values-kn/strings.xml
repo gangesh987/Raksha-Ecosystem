@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">ರಕ್ಷಾಕಾಲ್</string>
+    <string name="call_title">ರಕ್ಷಿತ ವೆಬ್‌ಆರ್‌ಟಿಸಿ ಕರೆ</string>
+    <string name="live_protection">ಲೈವ್ AI ಸುರಕ್ಷತಾ ಗಾರ್ಡ್</string>
+    <string name="safe_risk">ಸುರಕ್ಷಿತ</string>
+    <string name="low_risk">ಕಡಿಮೆ ಅಪಾಯ</string>
+    <string name="medium_risk">ಮಧ್ಯಮ ಅಪಾಯ</string>
+    <string name="high_risk">ಹೆಚ್ಚಿನ ಅಪಾಯ</string>
+    <string name="critical_risk">ತೀವ್ರ ಬೆದರಿಕೆ</string>
+    <string name="safety_brake_title">ರಕ್ಷಾ ಸೇಫ್ಟಿ ಬ್ರೇಕ್</string>
+    <string name="safety_brake_desc">ವಂಚನೆಯ ಒತ್ತಡ ಪತ್ತೆಯಾಗಿದೆ. OTP, PIN ಹಂಚಿಕೊಳ್ಳಬೇಡಿ ಅಥವಾ ಹಣ ವರ್ಗಾಯಿಸಬೇಡಿ.</string>
+    <string name="btn_pause">ನಿಲ್ಲಿಸಿ ಯೋಚಿಸಿ</string>
+    <string name="btn_resume">ರಕ್ಷಣೆಯನ್ನು ಮುಂದುವರಿಸಿ</string>
+    <string name="btn_verify">ಕರೆದಾರರನ್ನು ಪರಿಶೀಲಿಸಿ</string>
+    <string name="btn_end_call">ಕರೆ ಕೊನೆಗೊಳಿಸಿ</string>
+    <string name="btn_contact_family">ವಿಶ್ವಾಸಾರ್ಹ ಸಂಪರ್ಕಕ್ಕೆ ಎಚ್ಚರಿಕೆ</string>
+    <string name="evidence_vault">ಸಾಕ್ಷ್ಯ ವಾಲ್ಟ್</string>
+</resources>

@@ -117,4 +117,7 @@ dependencies {
   implementation("androidx.credentials:credentials:1.3.0")
   implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
   implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
+  // Real WebRTC Media Engine (Stream WebRTC Android)
+  implementation("io.getstream:stream-webrtc-android:1.3.0")
 }

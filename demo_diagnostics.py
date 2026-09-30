@@ -169,6 +169,8 @@ try:
     with client.websocket_connect(f"/api/ws/sessions/{session_id}?authorization=Bearer%20demo-token-raksha-video") as ws_prot:
         ws_prot.send_json({"version": 1, "type": "ping", "payload": {}})
         prot_pong = ws_prot.receive_json()
+        if prot_pong.get("type") == "ai_status":
+            prot_pong = ws_prot.receive_json()
         log_test("Protection Stream WebSocket", prot_pong.get("type") == "pong", f"Session {session_id} WebSocket stream operational")
 
 except Exception as e:

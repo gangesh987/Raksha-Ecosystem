@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">রক্ষাকল</string>
+    <string name="call_title">সুরক্ষিত ওয়েবআরটিসি কল</string>
+    <string name="live_protection">লাইভ এআই সুরক্ষা প্রহরী</string>
+    <string name="safe_risk">নিরাপদ</string>
+    <string name="low_risk">স্বল্প ঝুঁকি</string>
+    <string name="medium_risk">মাঝারি ঝুঁকি</string>
+    <string name="high_risk">উচ্চ ঝুঁকি</string>
+    <string name="critical_risk">গুরুতর হুমকি</string>
+    <string name="safety_brake_title">রক্ষা সেফটি ব্রেক</string>
+    <string name="safety_brake_desc">প্রতারণামূলক চাপ সনাক্ত করা হয়েছে। ওটিপি, পিন শেয়ার করবেন না বা টাকা পাঠাবেন না।</string>
+    <string name="btn_pause">থামুন এবং চিন্তা করুন</string>
+    <string name="btn_resume">সুরক্ষা চালিয়ে যান</string>
+    <string name="btn_verify">কলার যাচাই করুন</string>
+    <string name="btn_end_call">কল শেষ করুন</string>
+    <string name="btn_contact_family">বিশ্বস্ত পরিচিতিকে সতর্ক করুন</string>
+    <string name="evidence_vault">প্রমাণ ভল্ট</string>
+</resources>

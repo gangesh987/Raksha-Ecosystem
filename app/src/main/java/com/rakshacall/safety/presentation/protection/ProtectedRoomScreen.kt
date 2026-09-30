@@ -1,5 +1,6 @@
 package com.rakshacall.safety.presentation.protection
 
+<<<<<<< HEAD
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -36,12 +37,25 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * ProtectedRoomScreen provides genuine WebRTC calling with live speech streaming,
+ * multilingual semantic intelligence, real-time risk overlay, and safety brake.
+ */
 @Composable
 fun ProtectedRoomScreen(
     onNavigateBack: () -> Unit,
     onOpenVerificationCoach: () -> Unit
 ) {
+    var useRealtimeCallScreen by remember { mutableStateOf(false) }
+
+    if (useRealtimeCallScreen) {
+        RealtimeCallScreen(
+            onEndCall = onNavigateBack,
+            onOpenVerificationCoach = onOpenVerificationCoach
+        )
+        return
+    }
+
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val roomManager = remember { WebRtcRoomManager() }

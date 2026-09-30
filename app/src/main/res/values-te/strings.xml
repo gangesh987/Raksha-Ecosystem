@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">రక్షాకాల్</string>
+    <string name="call_title">రక్షిత వెబ్‌ఆర్‌టీసీ కాల్</string>
+    <string name="live_protection">లైవ్ AI రక్షణ గార్డు</string>
+    <string name="safe_risk">సురక్షితం</string>
+    <string name="low_risk">తక్కువ ప్రమాదం</string>
+    <string name="medium_risk">మధ్యస్థ ప్రమాదం</string>
+    <string name="high_risk">అధిక ప్రమాదం</string>
+    <string name="critical_risk">తీవ్రమైన ముప్పు</string>
+    <string name="safety_brake_title">రక్షా సేఫ్టీ బ్రేక్</string>
+    <string name="safety_brake_desc">మోసపూరిత ఒత్తిడి గుర్తించబడింది. OTP, PIN లేదా డబ్బులు పంపవద్దు.</string>
+    <string name="btn_pause">నిలిపి ఆలోచించండి</string>
+    <string name="btn_resume">రక్షణను కొనసాగించండి</string>
+    <string name="btn_verify">కాలర్‌ను ధృవీకరించండి</string>
+    <string name="btn_end_call">కాల్ ముగించండి</string>
+    <string name="btn_contact_family">విశ్వసనీయ పరిచయానికి తెలియజేయండి</string>
+    <string name="evidence_vault">సాక్ష్యాల ఖజానా</string>
+</resources>

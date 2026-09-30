@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">रक्षाकॉल</string>
+    <string name="call_title">सुरक्षित वेबआरटीसी कॉल</string>
+    <string name="live_protection">थेट एआय सुरक्षा रक्षक</string>
+    <string name="safe_risk">सुरक्षित</string>
+    <string name="low_risk">कमी धोका</string>
+    <string name="medium_risk">मध्यम धोका</string>
+    <string name="high_risk">उच्च धोका</string>
+    <string name="critical_risk">गंभीर धोका</string>
+    <string name="safety_brake_title">रक्षा सेफ्टी ब्रेक</string>
+    <string name="safety_brake_desc">फसवणूक आणि जबरदस्ती आढळली. ओटीपी, पिन शेअर करू नका किंवा पैसे पाठवू नका.</string>
+    <string name="btn_pause">थांबा आणि विचार करा</string>
+    <string name="btn_resume">सुरक्षा सुरू ठेवा</string>
+    <string name="btn_verify">कॉलर पडताळा</string>
+    <string name="btn_end_call">कॉल समाप्त करा</string>
+    <string name="btn_contact_family">विश्वासू संपर्काला सतर्क करा</string>
+    <string name="evidence_vault">पुरावा तिजोरी</string>
+</resources>
