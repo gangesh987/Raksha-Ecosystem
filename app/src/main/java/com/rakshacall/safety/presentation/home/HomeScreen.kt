@@ -50,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -309,7 +310,7 @@ fun HomeScreen(
                             ) {
                                 Icon(imageVector = Icons.Default.Shield, contentDescription = null, modifier = Modifier.size(18.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("START PROTECTION", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.home_start_protection), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                             }
 
                             OutlinedButton(
@@ -319,7 +320,7 @@ fun HomeScreen(
                             ) {
                                 Icon(imageVector = Icons.Default.Videocam, contentDescription = null, modifier = Modifier.size(18.dp), tint = TealPrimary)
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("PROTECTED CALL", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.call_title), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }

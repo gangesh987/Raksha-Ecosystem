@@ -10,7 +10,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
+import com.example.rakshacall.R
 import com.rakshacall.safety.di.ServiceLocator
 import com.rakshacall.safety.domain.model.ProtectionSession
 import com.rakshacall.safety.domain.model.ScamStage
@@ -54,43 +56,43 @@ fun RakshaCallNavHost() {
                     NavigationBarItem(
                         selected = currentScreen is Screen.Home,
                         onClick = { currentScreen = Screen.Home },
-                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                        label = { Text("HOME", fontSize = 9.sp) },
+                        icon = { Icon(Icons.Default.Home, contentDescription = stringResource(R.string.nav_home)) },
+                        label = { Text(stringResource(R.string.nav_home), fontSize = 9.sp) },
                         colors = NavigationBarItemDefaults.colors(selectedIconColor = TealPrimary, indicatorColor = TealPrimary.copy(alpha = 0.15f))
                     )
                     NavigationBarItem(
                         selected = currentScreen is Screen.ProtectHub,
                         onClick = { currentScreen = Screen.ProtectHub },
-                        icon = { Icon(Icons.Default.Security, contentDescription = "Protect") },
-                        label = { Text("PROTECT", fontSize = 9.sp) },
+                        icon = { Icon(Icons.Default.Security, contentDescription = stringResource(R.string.nav_protect)) },
+                        label = { Text(stringResource(R.string.nav_protect), fontSize = 9.sp) },
                         colors = NavigationBarItemDefaults.colors(selectedIconColor = TealPrimary, indicatorColor = TealPrimary.copy(alpha = 0.15f))
                     )
                     NavigationBarItem(
                         selected = currentScreen is Screen.Calls,
                         onClick = { currentScreen = Screen.Calls },
-                        icon = { Icon(Icons.Default.PhoneCallback, contentDescription = "Calls") },
-                        label = { Text("CALLS", fontSize = 9.sp) },
+                        icon = { Icon(Icons.Default.PhoneCallback, contentDescription = stringResource(R.string.nav_calls)) },
+                        label = { Text(stringResource(R.string.nav_calls), fontSize = 9.sp) },
                         colors = NavigationBarItemDefaults.colors(selectedIconColor = TealPrimary, indicatorColor = TealPrimary.copy(alpha = 0.15f))
                     )
                     NavigationBarItem(
                         selected = currentScreen is Screen.Intelligence,
                         onClick = { currentScreen = Screen.Intelligence },
-                        icon = { Icon(Icons.Default.Analytics, contentDescription = "Intelligence") },
-                        label = { Text("INTEL", fontSize = 9.sp) },
+                        icon = { Icon(Icons.Default.Analytics, contentDescription = stringResource(R.string.nav_intel)) },
+                        label = { Text(stringResource(R.string.nav_intel), fontSize = 9.sp) },
                         colors = NavigationBarItemDefaults.colors(selectedIconColor = TealPrimary, indicatorColor = TealPrimary.copy(alpha = 0.15f))
                     )
                     NavigationBarItem(
                         selected = currentScreen is Screen.Evidence,
                         onClick = { currentScreen = Screen.Evidence },
-                        icon = { Icon(Icons.Default.FolderShared, contentDescription = "Evidence") },
-                        label = { Text("EVIDENCE", fontSize = 9.sp) },
+                        icon = { Icon(Icons.Default.FolderShared, contentDescription = stringResource(R.string.nav_evidence)) },
+                        label = { Text(stringResource(R.string.nav_evidence), fontSize = 9.sp) },
                         colors = NavigationBarItemDefaults.colors(selectedIconColor = TealPrimary, indicatorColor = TealPrimary.copy(alpha = 0.15f))
                     )
                     NavigationBarItem(
                         selected = currentScreen is Screen.Settings,
                         onClick = { currentScreen = Screen.Settings },
-                        icon = { Icon(Icons.Default.MoreHoriz, contentDescription = "More") },
-                        label = { Text("MORE", fontSize = 9.sp) },
+                        icon = { Icon(Icons.Default.MoreHoriz, contentDescription = stringResource(R.string.nav_more)) },
+                        label = { Text(stringResource(R.string.nav_more), fontSize = 9.sp) },
                         colors = NavigationBarItemDefaults.colors(selectedIconColor = TealPrimary, indicatorColor = TealPrimary.copy(alpha = 0.15f))
                     )
                 }

@@ -17,9 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.rakshacall.R
 import com.rakshacall.safety.domain.model.PlatformConnection
 import com.rakshacall.safety.presentation.theme.*
 
@@ -42,12 +44,12 @@ fun ProtectACallScreen(
     var showConsentDialog by remember { mutableStateOf(false) }
 
     val protectOptions = listOf(
-        ProtectOption("PROTECT VIDEO CALL", "Real-time audio, video, face stability & speech analysis", Icons.Default.Videocam, "VIDEO"),
-        ProtectOption("PROTECT AUDIO CALL", "Monitors ambient speakerphone audio via microphone (not background cellular line)", Icons.Default.Phone, "AUDIO"),
-        ProtectOption("PROTECT SCREEN", "User-consented Android MediaProjection for meeting audio & screen capture", Icons.Default.ScreenShare, "SCREEN"),
-        ProtectOption("PROTECT MICROPHONE", "Direct local on-device speech recognizer & local guardrail", Icons.Default.Mic, "MICROPHONE"),
-        ProtectOption("PROTECT CAMERA", "CameraX supporting visual analysis & lighting verification", Icons.Default.CameraAlt, "CAMERA"),
-        ProtectOption("PROTECT TEXT / CHAT", "Inspect suspicious SMS, WhatsApp text, or payment links", Icons.Default.Chat, "TEXT")
+        ProtectOption(stringResource(R.string.protect_video_call), stringResource(R.string.protect_video_desc), Icons.Default.Videocam, "VIDEO"),
+        ProtectOption(stringResource(R.string.protect_audio_call), stringResource(R.string.protect_audio_desc), Icons.Default.Phone, "AUDIO"),
+        ProtectOption(stringResource(R.string.protect_screen), stringResource(R.string.protect_screen_desc), Icons.Default.ScreenShare, "SCREEN"),
+        ProtectOption(stringResource(R.string.protect_microphone), stringResource(R.string.protect_microphone_desc), Icons.Default.Mic, "MICROPHONE"),
+        ProtectOption(stringResource(R.string.protect_camera), stringResource(R.string.protect_camera_desc), Icons.Default.CameraAlt, "CAMERA"),
+        ProtectOption(stringResource(R.string.protect_text), stringResource(R.string.protect_text_desc), Icons.Default.Chat, "TEXT")
     )
 
     val platforms = listOf(
@@ -128,10 +130,10 @@ fun ProtectACallScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("PROTECT A CALL", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.protect_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.btn_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -159,11 +161,11 @@ fun ProtectACallScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.Shield, contentDescription = null, tint = TealPrimary, modifier = Modifier.size(28.dp))
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Active Safety Layer", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TealPrimary)
+                            Text(stringResource(R.string.protect_active_layer), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TealPrimary)
                         }
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            "RakshaCall operates alongside your calls to detect digital-arrest pressure, authority impersonation, and payment demands in real time.",
+                            stringResource(R.string.protect_active_desc),
                             fontSize = 13.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -289,12 +291,12 @@ fun ProtectACallScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = TealPrimary)
                 ) {
-                    Text("CONTINUE WITH PROTECTION")
+                    Text(stringResource(R.string.protect_consent_continue))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showConsentDialog = false }) {
-                    Text("CANCEL")
+                    Text(stringResource(R.string.protect_consent_cancel))
                 }
             }
         )

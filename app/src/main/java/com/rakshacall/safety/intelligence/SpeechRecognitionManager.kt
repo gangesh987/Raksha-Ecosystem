@@ -86,7 +86,7 @@ class SpeechRecognitionManager(private val context: Context) {
         }
 
         val intent = createIntent(languageLocale)
-        speechRecognizer?.startListening(intent)
+        runCatching { speechRecognizer?.startListening(intent) }
         isListening = true
     }
 

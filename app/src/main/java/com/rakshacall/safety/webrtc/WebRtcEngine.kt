@@ -49,81 +49,85 @@ class WebRtcEngine(
             continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
         }
 
-        peerConnection = factory.createPeerConnection(rtcConfig, object : PeerConnection.Observer {
-            override fun onSignalingChange(newState: PeerConnection.SignalingState?) {}
+        peerConnection = runCatching {
+            factory.createPeerConnection(rtcConfig, object : PeerConnection.Observer {
+                override fun onSignalingChange(newState: PeerConnection.SignalingState?) {}
 
-            override fun onIceConnectionChange(newState: PeerConnection.IceConnectionState?) {
-                val mapped = when (newState) {
-                    PeerConnection.IceConnectionState.CONNECTED,
-                    PeerConnection.IceConnectionState.COMPLETED -> WebRtcState.Connected
-                    PeerConnection.IceConnectionState.CHECKING -> WebRtcState.Connecting
-                    PeerConnection.IceConnectionState.DISCONNECTED -> WebRtcState.Disconnected
-                    PeerConnection.IceConnectionState.FAILED -> WebRtcState.Failed
-                    PeerConnection.IceConnectionState.CLOSED -> WebRtcState.Closed
-                    else -> WebRtcState.New
+                override fun onIceConnectionChange(newState: PeerConnection.IceConnectionState?) {
+                    val mapped = when (newState) {
+                        PeerConnection.IceConnectionState.CONNECTED,
+                        PeerConnection.IceConnectionState.COMPLETED -> WebRtcState.Connected
+                        PeerConnection.IceConnectionState.CHECKING -> WebRtcState.Connecting
+                        PeerConnection.IceConnectionState.DISCONNECTED -> WebRtcState.Disconnected
+                        PeerConnection.IceConnectionState.FAILED -> WebRtcState.Failed
+                        PeerConnection.IceConnectionState.CLOSED -> WebRtcState.Closed
+                        else -> WebRtcState.New
+                    }
+                    _state.value = mapped
+                    onConnectionStateChange(mapped)
                 }
-                _state.value = mapped
-                onConnectionStateChange(mapped)
-            }
 
-            override fun onIceConnectionReceivingChange(receiving: Boolean) {}
-            override fun onIceGatheringChange(newState: PeerConnection.IceGatheringState?) {}
+                override fun onIceConnectionReceivingChange(receiving: Boolean) {}
+                override fun onIceGatheringChange(newState: PeerConnection.IceGatheringState?) {}
 
-            override fun onIceCandidate(candidate: IceCandidate) {
-                onLocalIceCandidate(candidate)
-            }
+                override fun onIceCandidate(candidate: IceCandidate) {
+                    onLocalIceCandidate(candidate)
+                }
 
-            override fun onIceCandidatesRemoved(candidates: Array<out IceCandidate>?) {}
+                override fun onIceCandidatesRemoved(candidates: Array<out IceCandidate>?) {}
 
-            override fun onAddStream(stream: MediaStream) {
-                stream.videoTracks.firstOrNull()?.let(onRemoteVideo)
-            }
+                override fun onAddStream(stream: MediaStream) {
+                    stream.videoTracks.firstOrNull()?.let(onRemoteVideo)
+                }
 
-            override fun onRemoveStream(stream: MediaStream?) {}
-            override fun onDataChannel(channel: DataChannel?) {}
-            override fun onRenegotiationNeeded() {}
+                override fun onRemoveStream(stream: MediaStream?) {}
+                override fun onDataChannel(channel: DataChannel?) {}
+                override fun onRenegotiationNeeded() {}
 
-            override fun onAddTrack(receiver: RtpReceiver, mediaStreams: Array<out MediaStream>) {
-                (receiver.track() as? VideoTrack)?.let(onRemoteVideo)
-            }
+                override fun onAddTrack(receiver: RtpReceiver, mediaStreams: Array<out MediaStream>) {
+                    (receiver.track() as? VideoTrack)?.let(onRemoteVideo)
+                }
 
-            override fun onTrack(transceiver: RtpTransceiver?) {
-                (transceiver?.receiver?.track() as? VideoTrack)?.let(onRemoteVideo)
-            }
+                override fun onTrack(transceiver: RtpTransceiver?) {
+                    (transceiver?.receiver?.track() as? VideoTrack)?.let(onRemoteVideo)
+                }
 
-            override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {}
-            override fun onStandardizedIceConnectionChange(newState: PeerConnection.IceConnectionState?) {}
-        })
+                override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {}
+                override fun onStandardizedIceConnectionChange(newState: PeerConnection.IceConnectionState?) {}
+            })
+        }.getOrNull()
 
-        requireNotNull(peerConnection) { "Unable to instantiate PeerConnection" }
-
-        // Attach local tracks
-        localMedia?.videoTrack?.let { peerConnection?.addTrack(it) }
-        localMedia?.audioTrack?.let { peerConnection?.addTrack(it) }
+        // Attach local tracks safely
+        localMedia?.videoTrack?.let { track -> runCatching { peerConnection?.addTrack(track) } }
+        localMedia?.audioTrack?.let { track -> runCatching { peerConnection?.addTrack(track) } }
     }
 
     override fun createOffer(onCreated: (SessionDescription) -> Unit) {
-        val pc = requireNotNull(peerConnection) { "PeerConnection not initialized" }
-        pc.createOffer(object : SimpleSdpObserver() {
-            override fun onCreateSuccess(description: SessionDescription?) {
-                if (description != null) {
-                    pc.setLocalDescription(SimpleSdpObserver(), description)
-                    onCreated(description)
+        val pc = peerConnection ?: return
+        runCatching {
+            pc.createOffer(object : SimpleSdpObserver() {
+                override fun onCreateSuccess(description: SessionDescription?) {
+                    if (description != null) {
+                        pc.setLocalDescription(SimpleSdpObserver(), description)
+                        onCreated(description)
+                    }
                 }
-            }
-        }, MediaConstraints())
+            }, MediaConstraints())
+        }
     }
 
     override fun createAnswer(onCreated: (SessionDescription) -> Unit) {
-        val pc = requireNotNull(peerConnection) { "PeerConnection not initialized" }
-        pc.createAnswer(object : SimpleSdpObserver() {
-            override fun onCreateSuccess(description: SessionDescription?) {
-                if (description != null) {
-                    pc.setLocalDescription(SimpleSdpObserver(), description)
-                    onCreated(description)
+        val pc = peerConnection ?: return
+        runCatching {
+            pc.createAnswer(object : SimpleSdpObserver() {
+                override fun onCreateSuccess(description: SessionDescription?) {
+                    if (description != null) {
+                        pc.setLocalDescription(SimpleSdpObserver(), description)
+                        onCreated(description)
+                    }
                 }
-            }
-        }, MediaConstraints())
+            }, MediaConstraints())
+        }
     }
 
     override fun setRemoteDescription(description: SessionDescription, onDone: () -> Unit) {
