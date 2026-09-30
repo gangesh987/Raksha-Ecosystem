@@ -17,12 +17,36 @@ import com.rakshacall.safety.intelligence.visual.VisualThreatType
 import com.rakshacall.safety.webrtc.WebRtcConfig
 import com.rakshacall.safety.domain.model.RiskSignal
 import com.rakshacall.safety.intelligence.ProtectionDecision
+import com.rakshacall.safety.intelligence.action.SafetyUserActionType
+import com.rakshacall.safety.intelligence.action.UserActionTracker
+import com.rakshacall.safety.intelligence.behaviour.BehaviourMetrics
+import com.rakshacall.safety.intelligence.behaviour.BehaviourTurn
+import com.rakshacall.safety.intelligence.behaviour.BehaviouralAIEngine
+import com.rakshacall.safety.intelligence.graph.EvidenceEdgeRelationship
+import com.rakshacall.safety.intelligence.graph.EvidenceGraph
+import com.rakshacall.safety.intelligence.graph.EvidenceNodeType
+import com.rakshacall.safety.intelligence.intent.EntityExtractionEngine
+import com.rakshacall.safety.intelligence.intent.EntityType
+import com.rakshacall.safety.intelligence.intent.InferredIntent
+import com.rakshacall.safety.intelligence.intent.OpenVocabularyIntentEngine
+import com.rakshacall.safety.intelligence.risk.AudioRisk
+import com.rakshacall.safety.intelligence.risk.BehaviourRisk
+import com.rakshacall.safety.intelligence.risk.ConfidenceAssessment
+import com.rakshacall.safety.intelligence.risk.ConfidenceEngine
+import com.rakshacall.safety.intelligence.risk.ContextRisk
+import com.rakshacall.safety.intelligence.risk.RiskFusionEngine2
+import com.rakshacall.safety.intelligence.risk.SemanticRisk
+import com.rakshacall.safety.intelligence.risk.StageRisk
+import com.rakshacall.safety.intelligence.risk.VisualRisk
+import com.rakshacall.safety.intelligence.router.ModelExecutionTier
+import com.rakshacall.safety.intelligence.router.ModelRouter
 import com.rakshacall.safety.protection.EvidenceStrength
 import com.rakshacall.safety.protection.ProtectionController
 import com.rakshacall.safety.protection.ProtectionMode
 import com.rakshacall.safety.protection.ProtectionPolicy
 import com.rakshacall.safety.protection.ProtectionState
 import com.rakshacall.safety.protection.UIMode
+import com.rakshacall.safety.webrtc.CallLifecycleState
 import org.junit.Assert.*
 import org.junit.Test
 import java.util.UUID
@@ -356,5 +380,193 @@ class RealtimeMultilingualAIPlatformTest {
         // User can manually end the call
         controller.endCallNow()
         assertEquals(ProtectionState.CALL_ENDED, controller.state.value)
+    }
+
+    @Test
+    fun testEntityExtractionAll16Types() {
+        val extractor = EntityExtractionEngine()
+        val sampleText = "The RBI bank and police cyber cell checked my bank account, money of 5 lakh, and asked for OTP, PIN, password, identity document, Aadhaar, PAN card, UPI ID, crypto wallet, and remote access via AnyDesk to my mobile screen app."
+        val entities = extractor.extractEntities(sampleText)
+        val extractedTypes = entities.map { it.type }.toSet()
+
+        assertTrue(extractedTypes.contains(EntityType.BANK))
+        assertTrue(extractedTypes.contains(EntityType.POLICE))
+        assertTrue(extractedTypes.contains(EntityType.ACCOUNT))
+        assertTrue(extractedTypes.contains(EntityType.MONEY))
+        assertTrue(extractedTypes.contains(EntityType.OTP))
+        assertTrue(extractedTypes.contains(EntityType.PIN))
+        assertTrue(extractedTypes.contains(EntityType.PASSWORD))
+        assertTrue(extractedTypes.contains(EntityType.DOCUMENT))
+        assertTrue(extractedTypes.contains(EntityType.AADHAAR))
+        assertTrue(extractedTypes.contains(EntityType.PAN))
+        assertTrue(extractedTypes.contains(EntityType.UPI))
+        assertTrue(extractedTypes.contains(EntityType.CRYPTO))
+        assertTrue(extractedTypes.contains(EntityType.REMOTE_ACCESS))
+        assertTrue(extractedTypes.contains(EntityType.SCREEN))
+        assertTrue(extractedTypes.contains(EntityType.APPLICATION))
+    }
+
+    @Test
+    fun testOpenVocabularyIntentInference() {
+        val intentEngine = OpenVocabularyIntentEngine()
+
+        // Indirect verification code extraction
+        val res1 = intentEngine.inferIntent("Just read those six numbers from the SMS right now")
+        assertEquals(InferredIntent.POSSIBLE_VERIFICATION_CODE_REQUEST, res1.intent)
+        assertTrue(res1.confidence >= 0.90f)
+
+        // Indirect fund redirection
+        val res2 = intentEngine.inferIntent("Move the amount temporarily to the secure holding account")
+        assertEquals(InferredIntent.POSSIBLE_FINANCIAL_TRANSFER_REQUEST, res2.intent)
+
+        // Remote access request
+        val res3 = intentEngine.inferIntent("Please open QuickSupport and share your screen for verification")
+        assertEquals(InferredIntent.POSSIBLE_REMOTE_ACCESS_REQUEST, res3.intent)
+
+        // Isolation demand
+        val res4 = intentEngine.inferIntent("Do not tell your family and close the room door")
+        assertEquals(InferredIntent.POSSIBLE_ISOLATION_DEMAND, res4.intent)
+
+        // Safe defensive advice (Strict Hard Negative Guard)
+        val res5 = intentEngine.inferIntent("Never share your OTP or PIN with any bank employee")
+        assertEquals(InferredIntent.SAFE_ADVICE_OR_DEFENSE, res5.intent)
+        assertFalse(res5.intent.isCoercive)
+    }
+
+    @Test
+    fun testBehaviouralPressureAndVelocity() {
+        val behaviouralEngine = BehaviouralAIEngine()
+        val now = System.currentTimeMillis()
+
+        behaviouralEngine.recordTurn(BehaviourTurn(now - 120_000, InferredIntent.POSSIBLE_IDENTITY_COERCION, listOf(ScamTactic.AUTHORITY_IMPERSONATION), "CALLER"))
+        behaviouralEngine.recordTurn(BehaviourTurn(now - 80_000, InferredIntent.POSSIBLE_ARREST_THREAT, listOf(ScamTactic.CRIMINAL_ALLEGATION), "CALLER"))
+        behaviouralEngine.recordTurn(BehaviourTurn(now - 40_000, InferredIntent.POSSIBLE_ISOLATION_DEMAND, listOf(ScamTactic.ISOLATION), "CALLER"))
+        behaviouralEngine.recordTurn(BehaviourTurn(now, InferredIntent.POSSIBLE_VERIFICATION_CODE_REQUEST, listOf(ScamTactic.CREDENTIAL_PRESSURE), "CALLER"))
+
+        val metrics = behaviouralEngine.calculateMetrics()
+        assertTrue("Authority pressure expected", metrics.authorityPressure > 0f)
+        assertTrue("Threat pressure expected", metrics.threatEscalation > 0f)
+        assertTrue("Isolation pressure expected", metrics.isolationPressure > 0f)
+        assertTrue("Credential pressure expected", metrics.credentialPressure > 0f)
+        assertTrue("Overall behavioural risk should escalate", metrics.overallBehaviouralRisk >= 0.35f)
+    }
+
+    @Test
+    fun testEvidenceGraphCausalLinkages() {
+        val graph = EvidenceGraph()
+
+        val n1 = graph.addNode(EvidenceNodeType.CALLER_CLAIM, "Caller claims to be CBI officer")
+        val n2 = graph.addNode(EvidenceNodeType.THREAT, "Arrest warrant threatened")
+        val n3 = graph.addNode(EvidenceNodeType.CREDENTIAL_REQUEST, "Demands 6-digit OTP")
+
+        val nodes = graph.getNodes()
+        val edges = graph.getEdges()
+        assertEquals(3, nodes.size)
+        assertEquals(2, edges.size)
+
+        // Escalation relationship from Threat to Credential Request
+        val lastEdge = edges.last()
+        assertEquals(EvidenceEdgeRelationship.ESCALATED_TO, lastEdge.relationship)
+        assertTrue(graph.hasCriticalEscalation())
+        assertTrue(graph.calculateCorroborationScore() > 0.4f)
+    }
+
+    @Test
+    fun testRiskFusionEngine2DecompositionAndSmoothing() {
+        val fusion = RiskFusionEngine2(smoothingFactor = 0.5f)
+        val conf = ConfidenceAssessment(score = 0.90f, evidenceStrength = EvidenceStrength.STRONG, corroboratingSourcesCount = 2, explanation = "Strong multi-source")
+
+        val semantic = SemanticRisk(score = 80, tactics = listOf(ScamTactic.CREDENTIAL_PRESSURE), primaryIntent = InferredIntent.POSSIBLE_VERIFICATION_CODE_REQUEST)
+        val behaviour = BehaviourRisk(score = 70, metrics = BehaviourMetrics(manipulationVelocity = 0.8f))
+        val visual = VisualRisk(score = 20, threatCount = 1)
+        val audio = AudioRisk(score = 10)
+        val context = ContextRisk(score = 15)
+        val stage = StageRisk(score = 75, stage = ScamStage.PAYMENT_CREDENTIAL)
+
+        val result1 = fusion.fuse(semantic, behaviour, visual, audio, context, stage, conf)
+        assertTrue("Smoothed risk should be elevated", result1.smoothedRisk >= 50)
+        assertTrue("Risk level should be at least MEDIUM/HIGH", result1.riskLevel == RiskLevel.HIGH || result1.riskLevel == RiskLevel.CRITICAL)
+
+        // Now test safe phrase suppression
+        val safeSemantic = SemanticRisk(score = 0, tactics = emptyList(), primaryIntent = InferredIntent.SAFE_ADVICE_OR_DEFENSE)
+        val safeConf = ConfidenceAssessment(score = 0.95f, evidenceStrength = EvidenceStrength.WEAK, corroboratingSourcesCount = 1, explanation = "Safe")
+        val safeResult = fusion.fuse(safeSemantic, behaviour, visual, audio, context, stage, safeConf)
+        assertEquals(0, safeResult.smoothedRisk)
+        assertEquals(RiskLevel.LOW, safeResult.riskLevel)
+    }
+
+    @Test
+    fun testOrthogonalConfidenceEngine() {
+        val engine = ConfidenceEngine()
+
+        // High risk but only 1 source and low ASR confidence -> Moderate confidence
+        val res1 = engine.evaluateConfidence(
+            asrConfidence = 0.60f,
+            tacticsCount = 1,
+            distinctSourceCount = 1,
+            graphCorroborationScore = 0.20f,
+            hasVisualCorroboration = false,
+            isHardNegativeSafe = false
+        )
+        assertTrue(res1.score < 0.70f)
+        assertEquals(EvidenceStrength.MODERATE, res1.evidenceStrength)
+
+        // Multi-source corroborated -> High confidence
+        val res2 = engine.evaluateConfidence(
+            asrConfidence = 0.95f,
+            tacticsCount = 3,
+            distinctSourceCount = 3,
+            graphCorroborationScore = 0.85f,
+            hasVisualCorroboration = true,
+            isHardNegativeSafe = false
+        )
+        assertTrue(res2.score >= 0.85f)
+        assertEquals(EvidenceStrength.VERY_STRONG, res2.evidenceStrength)
+    }
+
+    @Test
+    fun testModelRouterAndDisagreementArbitration() {
+        val router = ModelRouter()
+
+        // Cloud routing when authorized and network good
+        val decision = router.route(isNetworkAvailable = true, isCloudAuthorized = true, localModelLoaded = true, averageLatencyMs = 250L)
+        assertEquals(ModelExecutionTier.CLOUD, decision.activeTier)
+
+        // Local fallback when cloud not authorized
+        val localDecision = router.route(isNetworkAvailable = false, isCloudAuthorized = false, localModelLoaded = true, averageLatencyMs = 120L)
+        assertEquals(ModelExecutionTier.ADVANCED_LOCAL, localDecision.activeTier)
+
+        // Model consensus
+        val consensus = router.arbitrate(modelAScore = 85, modelAConfidence = 0.9f, modelBScore = 80, modelBConfidence = 0.88f, hasSupportingVisualThreat = false)
+        assertFalse(consensus.hasDisagreement)
+        assertTrue(consensus.resolvedRiskScore in 80..85)
+
+        // Model divergence arbitration (Safety-First principle)
+        val divergence = router.arbitrate(modelAScore = 85, modelAConfidence = 0.9f, modelBScore = 20, modelBConfidence = 0.70f, hasSupportingVisualThreat = true)
+        assertTrue(divergence.hasDisagreement)
+        assertEquals(85, divergence.resolvedRiskScore)
+    }
+
+    @Test
+    fun testUserActionTracker() {
+        val tracker = UserActionTracker()
+        tracker.recordAction(SafetyUserActionType.OPENED_PAYMENT_INTERFACE, "GPay opened")
+        assertTrue(tracker.hasCriticalUserAction())
+        assertEquals(1, tracker.getActions().size)
+    }
+
+    @Test
+    fun testCallLifecycleStates() {
+        var state = CallLifecycleState.OUTGOING
+        assertFalse(state.isMediaActive)
+        assertFalse(state.isTerminal)
+
+        state = CallLifecycleState.CONNECTED
+        assertTrue(state.isMediaActive)
+        assertFalse(state.isTerminal)
+
+        state = CallLifecycleState.ENDED
+        assertTrue(state.isTerminal)
+        assertFalse(state.isMediaActive)
     }
 }

@@ -37,14 +37,22 @@ import com.rakshacall.safety.intelligence.visual.VisualThreatDetector
 import com.rakshacall.safety.presentation.theme.*
 import com.rakshacall.safety.protection.*
 import com.rakshacall.safety.webrtc.AudioManagerHelper
+import com.rakshacall.safety.webrtc.CallLifecycleState
 import com.rakshacall.safety.webrtc.WebRtcConfig
 import com.rakshacall.safety.webrtc.WebRtcEngine
 import com.rakshacall.safety.webrtc.WebRtcState
+import com.rakshacall.safety.signaling.SignalingClient
+import com.rakshacall.safety.intelligence.telemetry.PerformanceTelemetry
+import com.rakshacall.safety.intelligence.action.UserActionTracker
+import com.rakshacall.safety.intelligence.action.SafetyUserActionType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import org.webrtc.EglBase
+import org.webrtc.IceCandidate
+import org.webrtc.SessionDescription
 import org.webrtc.SurfaceViewRenderer
 import org.webrtc.VideoTrack
 import java.util.UUID
@@ -93,7 +101,13 @@ fun RealtimeCallScreen(
     val evidenceStrength by protectionController.evidenceStrength.collectAsState()
     val policy by protectionController.policy.collectAsState()
 
-    // 3. Call & Media States
+    // 3. Call, Media & Telemetry States
+    val telemetry = remember { PerformanceTelemetry() }
+    val userActionTracker = remember { UserActionTracker() }
+    var callLifecycleState by remember { mutableStateOf(if (isCaller) CallLifecycleState.OUTGOING else CallLifecycleState.RINGING) }
+    var showDiagnosticsDialog by remember { mutableStateOf(false) }
+    val telemetrySnapshot by telemetry.snapshot.collectAsState()
+
     var remoteVideoTrack by remember { mutableStateOf<VideoTrack?>(null) }
     var localVideoTrack by remember { mutableStateOf<VideoTrack?>(null) }
     var webRtcState by remember { mutableStateOf<WebRtcState>(WebRtcState.New) }
@@ -113,19 +127,40 @@ fun RealtimeCallScreen(
     var recentTranscripts by remember { mutableStateOf<List<String>>(emptyList()) }
     var visualThreatCount by remember { mutableIntStateOf(0) }
 
-    // 5. WebRTC Engine Initialization
+    var signalingClient: SignalingClient? by remember { mutableStateOf(null) }
+
+    // 5. WebRTC Engine Initialization with Real Signaling Hook
     val webRtcEngine = remember {
         val config = WebRtcConfig()
         WebRtcEngine(
             context = context,
             config = config,
-            onLocalIceCandidate = { /* Signaling handles ICE */ },
-            onRemoteVideo = { track -> remoteVideoTrack = track },
-            onConnectionStateChange = { newState -> webRtcState = newState }
+            onLocalIceCandidate = { candidate ->
+                signalingClient?.sendIceCandidate(
+                    callId = callId,
+                    sdpMid = candidate.sdpMid,
+                    sdpMLineIndex = candidate.sdpMLineIndex,
+                    candidate = candidate.sdp
+                )
+            },
+            onRemoteVideo = { track ->
+                remoteVideoTrack = track
+                callLifecycleState = CallLifecycleState.CONNECTED
+            },
+            onConnectionStateChange = { newState ->
+                webRtcState = newState
+                callLifecycleState = when (newState) {
+                    WebRtcState.Connected -> CallLifecycleState.CONNECTED
+                    WebRtcState.Connecting -> CallLifecycleState.CONNECTING
+                    WebRtcState.Disconnected -> CallLifecycleState.RECONNECTING
+                    WebRtcState.Closed, WebRtcState.Failed -> CallLifecycleState.DISCONNECTED
+                    else -> callLifecycleState
+                }
+            }
         )
     }
 
-    // 6. Lifecycle Management
+    // 6. Lifecycle Management & Signaling Protocol
     DisposableEffect(callId) {
         audioHelper.startCallAudio(speakerphone = isSpeakerphoneOn)
         webRtcEngine.initialize()
@@ -133,11 +168,77 @@ fun RealtimeCallScreen(
 
         speechManager.startListening()
 
+        // Real Signaling Client Setup (Phase 2)
+        val signalingUrl = com.rakshacall.safety.data.remote.config.AppConfig.DEFAULT_BASE_URL
+            .replace("http://", "ws://")
+            .replace("https://", "wss://") + "/api/ws/sessions/$callId"
+
+        val client = SignalingClient(
+            serverUrl = signalingUrl,
+            token = "",
+            listener = object : SignalingClient.Listener {
+                override fun onOpen() {
+                    callLifecycleState = CallLifecycleState.CONNECTING
+                    if (isCaller) {
+                        webRtcEngine.createOffer { offer ->
+                            signalingClient?.sendSdpOffer(callId, offer.description)
+                        }
+                    }
+                }
+
+                override fun onClosed() {
+                    callLifecycleState = CallLifecycleState.ENDED
+                }
+
+                override fun onFailure(message: String) {
+                    // Graceful fallback to standalone peer/preview mode if signaling server is unavailable
+                }
+
+                override fun onMessage(type: String, payload: JSONObject) {
+                    when (type) {
+                        "sdp_offer" -> {
+                            val sdp = payload.optString("sdp")
+                            if (sdp.isNotBlank()) {
+                                val desc = SessionDescription(SessionDescription.Type.OFFER, sdp)
+                                webRtcEngine.setRemoteDescription(desc) {
+                                    webRtcEngine.createAnswer { answer ->
+                                        signalingClient?.sendSdpAnswer(callId, answer.description)
+                                    }
+                                }
+                            }
+                        }
+                        "sdp_answer" -> {
+                            val sdp = payload.optString("sdp")
+                            if (sdp.isNotBlank()) {
+                                val desc = SessionDescription(SessionDescription.Type.ANSWER, sdp)
+                                webRtcEngine.setRemoteDescription(desc) {}
+                            }
+                        }
+                        "ice_candidate" -> {
+                            val sdpMid = payload.optString("sdp_mid")
+                            val sdpMLineIndex = payload.optInt("sdp_mline_index")
+                            val candidateStr = payload.optString("candidate")
+                            if (candidateStr.isNotBlank()) {
+                                val candidate = IceCandidate(sdpMid, sdpMLineIndex, candidateStr)
+                                webRtcEngine.addIceCandidate(candidate)
+                            }
+                        }
+                        "call_end" -> {
+                            callLifecycleState = CallLifecycleState.ENDED
+                            onEndCall()
+                        }
+                    }
+                }
+            }
+        )
+        signalingClient = client
+        runCatching { client.connect() }
+
         evidenceVault.recordEvent(
             sessionId = callId,
             eventType = "CALL_STARTED",
             source = EvidenceSource.SYSTEM,
-            description = "Protected call session started. WebRTC & AI safety monitoring active. Policy: ${policy.mode}"
+            description = "Protected call session started. WebRTC lifecycle: ${callLifecycleState.displayName}. Policy: ${policy.mode}"
         )
 
         val timerJob = coroutineScope.launch {
@@ -150,6 +251,9 @@ fun RealtimeCallScreen(
         onDispose {
             timerJob.cancel()
             speechManager.stopListening()
+            signalingClient?.sendCallEnd(callId)
+            signalingClient?.close()
+            signalingClient = null
             aiOrchestrator.endSession(callId)
             protectionController.reset()
             audioHelper.stopCallAudio()
@@ -159,33 +263,57 @@ fun RealtimeCallScreen(
                 sessionId = callId,
                 eventType = "CALL_ENDED",
                 source = EvidenceSource.SYSTEM,
-                description = "Call ended. Cleaned up media streams and cleared temporary session memory."
+                description = "Call ended. Cleaned up media streams, signaling socket, and temporary session memory."
             )
         }
     }
 
-    // 7. Listen to Continuous Speech Transcripts
+    // 8. Video Frame Sampling for Visual Threats with Adaptive Sampling (Phase 16)
+    val frameSampler = remember { FrameSampler("remote_video", 1500L) }
+    DisposableEffect(remoteVideoTrack) {
+        remoteVideoTrack?.addSink(frameSampler)
+        onDispose { remoteVideoTrack?.removeSink(frameSampler) }
+    }
+
+    // 7. Listen to Continuous Speech Transcripts with Telemetry & Speaker Attribution (Phase 4 & 5)
     LaunchedEffect(speechManager) {
+        telemetry.markAsrStart()
         speechManager.transcriptFlow.collectLatest { transcript ->
+            telemetry.recordAsrCompleted()
             if (isCallPaused) return@collectLatest
 
-            recentTranscripts = (recentTranscripts + transcript.text).takeLast(10)
+            val speakerLabel = transcript.speaker.label
+            val formattedTranscript = "[$speakerLabel]: ${transcript.text}"
+            recentTranscripts = (recentTranscripts + formattedTranscript).takeLast(10)
 
             val event = TranscriptEvent(
                 id = UUID.randomUUID().toString(),
                 sessionId = callId,
                 timestamp = transcript.timestamp,
-                speaker = "CALLER",
+                speaker = speakerLabel,
                 text = transcript.text
             )
 
+            telemetry.markAiStart()
             val decision = aiOrchestrator.processTranscript(
                 event = event,
-                isFinal = transcript.isFinal
+                isFinal = transcript.isFinal,
+                visualRiskBonus = visualThreatCount * 10,
+                visualThreatCount = visualThreatCount
             )
+            telemetry.recordAiCompleted()
 
             latestDecision = decision
             protectionController.evaluate(decision, visualThreatCount)
+
+            // Dynamic Adaptive Frame Sampling (Phase 16)
+            val score = decision.riskScore
+            val adaptiveInterval = when {
+                score >= 80 -> 400L // Critical rate: maximum safe analysis
+                score >= 40 -> 1000L // Suspicious rate
+                else -> 2000L // Normal rate: power-saving
+            }
+            frameSampler.setAdaptiveInterval(adaptiveInterval)
 
             if (transcript.isFinal) {
                 evidenceVault.recordEvent(
@@ -196,7 +324,7 @@ fun RealtimeCallScreen(
                     stage = decision.currentStage.name,
                     riskScore = decision.riskScore,
                     confidence = decision.confidence,
-                    description = transcript.text
+                    description = formattedTranscript
                 )
             }
 
@@ -209,13 +337,6 @@ fun RealtimeCallScreen(
                 } catch (_: Exception) {}
             }
         }
-    }
-
-    // 8. Video Frame Sampling for Visual Threats
-    val frameSampler = remember { FrameSampler("remote_video", 1500L) }
-    DisposableEffect(remoteVideoTrack) {
-        remoteVideoTrack?.addSink(frameSampler)
-        onDispose { remoteVideoTrack?.removeSink(frameSampler) }
     }
 
     LaunchedEffect(frameSampler) {
@@ -543,6 +664,14 @@ fun RealtimeCallScreen(
                     Icon(Icons.Default.History, contentDescription = "Evidence", tint = Color.White)
                 }
 
+                // Telemetry & Diagnostics Dashboard (Phase 36)
+                FilledIconButton(
+                    onClick = { showDiagnosticsDialog = true },
+                    colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color(0xFF334155))
+                ) {
+                    Icon(Icons.Default.MonitorHeart, contentDescription = "Diagnostics", tint = Color.White)
+                }
+
                 // End Call Button
                 IconButton(
                     onClick = onEndCall,
@@ -753,6 +882,85 @@ fun RealtimeCallScreen(
                 },
                 confirmButton = {
                     TextButton(onClick = { showEvidenceSheet = false }) {
+                        Text("CLOSE")
+                    }
+                }
+            )
+        }
+
+        // ── DIAGNOSTIC OBSERVABILITY DASHBOARD (Phase 36) ──
+        if (showDiagnosticsDialog) {
+            AlertDialog(
+                onDismissRequest = { showDiagnosticsDialog = false },
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.MonitorHeart, contentDescription = null, tint = TealPrimary)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("TELEMETRY & OBSERVABILITY", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    }
+                },
+                text = {
+                    LazyColumn(modifier = Modifier.heightIn(max = 420.dp)) {
+                        item {
+                            Card(
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                            ) {
+                                Column(modifier = Modifier.padding(10.dp)) {
+                                    Text("PIPELINE LATENCIES & HARDWARE", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = TealPrimary)
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text("• ASR Latency: ${telemetrySnapshot.asrLatencyMs} ms", fontSize = 11.sp)
+                                    Text("• AI Inference Latency: ${telemetrySnapshot.aiLatencyMs} ms", fontSize = 11.sp)
+                                    Text("• Risk Update Latency: ${telemetrySnapshot.riskUpdateLatencyMs} ms", fontSize = 11.sp)
+                                    Text("• Video Render: ${telemetrySnapshot.videoFps} FPS", fontSize = 11.sp)
+                                    Text("• Process Memory: ${telemetrySnapshot.memoryUsageMb} MB", fontSize = 11.sp)
+                                    Text("• Execution Tier: ${latestDecision?.executionMode?.name ?: "HYBRID"}", fontSize = 11.sp)
+                                }
+                            }
+                        }
+
+                        item {
+                            Card(
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                            ) {
+                                Column(modifier = Modifier.padding(10.dp)) {
+                                    Text("WEBRTC & SIGNALING STATE", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = TealPrimary)
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text("• Lifecycle: ${callLifecycleState.displayName}", fontSize = 11.sp)
+                                    Text("• ICE State: ${webRtcState::class.simpleName}", fontSize = 11.sp)
+                                    Text("• Local Tracks: Video=${if (isCameraOff) "OFF" else "ON"}, Audio=${if (isMicMuted) "MUTED" else "ACTIVE"}", fontSize = 11.sp)
+                                    Text("• Remote Video: ${if (remoteVideoTrack != null) "STREAMING" else "WAITING"}", fontSize = 11.sp)
+                                }
+                            }
+                        }
+
+                        item {
+                            Card(
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                            ) {
+                                Column(modifier = Modifier.padding(10.dp)) {
+                                    Text("INTELLIGENCE & EVIDENCE GRAPH", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = TealPrimary)
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text("• Primary Intent: ${latestDecision?.inferredIntent?.name ?: "ANALYZING"}", fontSize = 11.sp)
+                                    Text("• Orthogonal Confidence: ${((latestDecision?.confidence ?: 0.5f) * 100).toInt()}%", fontSize = 11.sp)
+                                    Text("• Evidence Strength: $evidenceStrength", fontSize = 11.sp)
+                                    Text("• Graph Nodes: ${aiOrchestrator.evidenceGraph.getNodes().size} (Edges: ${aiOrchestrator.evidenceGraph.getEdges().size})", fontSize = 11.sp)
+                                    Text("• Corroboration Score: ${((aiOrchestrator.evidenceGraph.calculateCorroborationScore()) * 100).toInt()}%", fontSize = 11.sp)
+                                    Text("• Manipulation Velocity: ${((latestDecision?.manipulationVelocity ?: 0f) * 100).toInt()}%", fontSize = 11.sp)
+                                    val summary = latestDecision?.sessionSummary
+                                    if (!summary.isNullOrBlank()) {
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text("• Summary: $summary", fontSize = 10.sp, color = Slate500)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showDiagnosticsDialog = false }) {
                         Text("CLOSE")
                     }
                 }

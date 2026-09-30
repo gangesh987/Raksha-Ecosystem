@@ -11,9 +11,17 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import java.util.Locale
 
+enum class SpeakerType(val label: String) {
+    LOCAL_USER("LOCAL"),
+    REMOTE_CALLER("REMOTE"),
+    UNKNOWN("UNKNOWN")
+}
+
 data class SpeechTranscript(
     val text: String,
     val isFinal: Boolean,
+    val speaker: SpeakerType = SpeakerType.REMOTE_CALLER,
+    val confidence: Float = 0.92f,
     val timestamp: Long = System.currentTimeMillis()
 )
 

@@ -5,6 +5,8 @@ import com.rakshacall.safety.domain.model.ScamStage
 import com.rakshacall.safety.domain.model.TranscriptEvent
 import java.util.concurrent.ConcurrentHashMap
 
+import com.rakshacall.safety.intelligence.intent.EntityType
+
 data class CallSegment(
     val id: String,
     val timestamp: Long,
@@ -19,6 +21,7 @@ data class SessionMemory(
     val startedAt: Long = System.currentTimeMillis(),
     val segments: MutableList<CallSegment> = mutableListOf(),
     val cumulativeTactics: MutableList<RiskSignal> = mutableListOf(),
+    val cumulativeEntities: MutableSet<EntityType> = mutableSetOf(),
     val detectedLanguages: MutableSet<String> = mutableSetOf(),
     var currentStage: ScamStage = ScamStage.CONTACT,
     var currentRiskScore: Int = 0
@@ -78,6 +81,25 @@ class ConversationMemory(private val maxWindowSegments: Int = 20) {
                 session.currentStage = stage
                 session.currentRiskScore = score
             }
+        }
+    }
+
+    fun generateSessionSummary(sessionId: String): String {
+        val session = sessions[sessionId] ?: return "No session context available."
+        synchronized(session) {
+            val tactics = session.cumulativeTactics.map { it.tactic.displayName }.distinct()
+            val entities = session.cumulativeEntities.map { it.name }.distinct()
+            val stages = session.currentStage.displayName
+
+            val parts = mutableListOf<String>()
+            if (tactics.isNotEmpty()) {
+                parts.add("Observed Coercive Patterns: ${tactics.joinToString(", ")}.")
+            }
+            if (entities.isNotEmpty()) {
+                parts.add("Referenced Entities: ${entities.joinToString(", ")}.")
+            }
+            parts.add("Current Progression: $stages (Risk: ${session.currentRiskScore}/100).")
+            return parts.joinToString(" ")
         }
     }
 
